@@ -16,11 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var responsiveWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SizedBox(
-        height: responsiveHeight,
-        width: responsiveWidth,
-        child: const Text("Lista de comandas") //TODO: LISTA DE ComandaCard(),
-      ),
+      body: ComandaCard(),
       bottomNavigationBar: const BottomNavBar(),
     );
   }

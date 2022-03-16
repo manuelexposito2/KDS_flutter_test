@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
@@ -95,7 +93,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               ],
             ),
             SizedBox(
-              width: responsiveWidth / 7,
+              width: 280.0,
               child: Row(
                 ///// 4 OPCIONES
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
