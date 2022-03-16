@@ -7,11 +7,11 @@ abstract class OrdersEvent extends Equatable{
   List<Object> get props => [];
 }
 
-class FetchOrdersWithType extends OrdersEvent{
-  final String type;
+class FetchOrdersWithFilterEvent extends OrdersEvent{
+  final String filter;
 
-  const FetchOrdersWithType(this.type);
+  const FetchOrdersWithFilterEvent(this.filter);
 
   @override 
-  List<Object> get props => [type];
+  List<Object> get props => [filter];
 }

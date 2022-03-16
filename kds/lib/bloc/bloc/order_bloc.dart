@@ -1,17 +1,30 @@
-import 'dart:html';
-
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/repository/repository/order_repository.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
-  OrderBloc() : super(OrdersInitial()) {
-    on<OrdersEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+
+  final OrderRepository orderRepository;
+
+  OrderBloc(this.orderRepository) : super(OrdersInitial()) {
+    on<FetchOrdersWithFilterEvent>(_getOrdersFetched);
+  }
+
+  FutureOr<void> _getOrdersFetched(FetchOrdersWithFilterEvent event, Emitter<OrdersState> emit) async {
+
+    try{
+      final orders = await orderRepository.getOrders(event.filter);
+      emit(OrdersFetchSuccessState(event.filter, orders));
+    } on Exception catch(e){
+
+      emit(OrdersFetchErrorState(e.toString()));
+    }
+
+
   }
 }

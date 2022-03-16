@@ -9,26 +9,37 @@ abstract class OrdersState extends Equatable{
 
 class OrdersInitial extends OrdersState{}
 
-class OrdersFetchError extends OrdersState {
+
+class OrdersFetchSuccessState extends OrdersState{
+final String filter;
+final List<Order> orders;
+const OrdersFetchSuccessState(this.filter, this.orders);
+
+@override
+List<Object> get props => [filter];
+
+}
+
+class OrdersFetchErrorState extends OrdersState {
   final String message;
-  const OrdersFetchError(this.message);
+  const OrdersFetchErrorState(this.message);
 
   @override
   List<Object> get props => [message];
 }
 
 
-class OrdersFetchNoOrders extends OrdersState{
+class OrdersFetchNoOrdersState extends OrdersState{
   final String message;
-  const OrdersFetchNoOrders(this.message);
+  const OrdersFetchNoOrdersState(this.message);
 
   @override 
   List<Object> get props => [message];
 }
 
-class OrdersFetchEmpty extends OrdersState{
+class OrdersFetchEmptyState extends OrdersState{
   final String message;
-  const OrdersFetchEmpty(this.message);
+  const OrdersFetchEmptyState(this.message);
 
   @override 
   List<Object> get props => [message];

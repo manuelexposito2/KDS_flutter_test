@@ -3,11 +3,11 @@
 import 'dart:convert';
 
 import 'package:kds/models/last_orders_response.dart';
-import 'package:kds/repository/repository/comanda_repository.dart';
+import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
-class ComandaRepositoryImpl implements ComandaRepository{
+class OrderRepositoryImpl implements OrderRepository{
   
   
   @override
