@@ -11,12 +11,14 @@ class ComandaCard extends StatefulWidget {
 }
 
 class _ComandaCardState extends State<ComandaCard> {
+  
+
   @override
   Widget build(BuildContext context) {
     return Container(
      
       margin: EdgeInsets.all(10),
-      color: Colors.green,
+      color: Styles.succesColor,
       width: 300,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -30,7 +32,7 @@ class _ComandaCardState extends State<ComandaCard> {
                   child: Row(
                     
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('10 min.', style: TextStyle(color: Colors.white),), Text('1/5', style: TextStyle(color: Colors.white),)],
+                  children: [Text('10 min.', style: Styles.regularText,), Text('1/5', style: Styles.regularText,)],
                 ),),
                 Container(
                   child: Row(
@@ -42,7 +44,7 @@ class _ComandaCardState extends State<ComandaCard> {
                       ),
                       Text(
                         'Nombre',
-                        style: TextStyle(color: Colors.white),
+                        style: Styles.regularText,
                       )
                     ],
                   ),
@@ -53,7 +55,7 @@ class _ComandaCardState extends State<ComandaCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        children: [Icon(Icons.push_pin, color: Colors.white,), Text('1', style: TextStyle(color: Colors.white),)],
+                        children: [Icon(Icons.push_pin, color: Colors.white,), Text('1', style: Styles.regularText,)],
                       ),
                       Container(
                         width: 40,
@@ -86,7 +88,7 @@ class _ComandaCardState extends State<ComandaCard> {
                     onPressed: () {},
                     icon: Icon(
                       Icons.play_arrow,
-                      color: Color.fromARGB(255, 54, 115, 194), size: 30,
+                      color: Styles.baseColor, size: 30,
                     ),
                     label: Text(
                       'Preparar',
@@ -108,11 +110,11 @@ class _ComandaCardState extends State<ComandaCard> {
           ),
           Container(
             width: MediaQuery.of(context).size.width,
-            color: Color.fromARGB(255, 223, 60, 49),
+            color: Styles.alertColor,
             alignment: Alignment.center,
             height: 50,
             //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
-            child: Text('¡¡¡URGENTE!!!', style: TextStyle(fontSize: 25, color: Colors.white),),
+            child: Text('¡¡¡URGENTE!!!', style: Styles.urgent,),
           ),
           Container(
             color: Color.fromARGB(255, 241, 241, 241),
@@ -120,7 +122,7 @@ class _ComandaCardState extends State<ComandaCard> {
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
             height: 50,
-            child: Text('Comandas'),
+            child: Text('Comandas', style: Styles.textTitle,),
           )
         ],
       ),
