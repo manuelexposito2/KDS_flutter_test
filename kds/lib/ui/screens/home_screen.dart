@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SizedBox(
         height: responsiveHeight,
         width: responsiveWidth,
-        child: ComandaCard(),
+        child: const Text("Lista de comandas") //TODO: LISTA DE ComandaCard(),
       ),
       bottomNavigationBar: const BottomNavBar(),
     );
