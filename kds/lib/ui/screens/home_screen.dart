@@ -15,6 +15,9 @@ class _HomeScreenState extends State<HomeScreen> {
     var responsiveHeight = MediaQuery.of(context).size.height;
     var responsiveWidth = MediaQuery.of(context).size.width;
 
+    //TODO: MONTAR BLOC EN UI PARA TRAER LA LISTA DE COMANDAS
+    //TODO: CREAR WIDGET PARA RESUMEN CON TODAS LAS LÍNEAS 
+
     return Scaffold(
       body: ComandaCard(),
       bottomNavigationBar: const BottomNavBar(),
