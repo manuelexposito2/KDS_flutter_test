@@ -42,7 +42,10 @@ dependencies:
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
   shared_preferences: ^2.0.13
-  
+  socket_io: ^1.0.1
+  rikulo_commons: ^5.2.0+1
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

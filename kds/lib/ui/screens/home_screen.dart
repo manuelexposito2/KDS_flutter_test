@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
@@ -19,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  late String filter = '';
+  String filter = 'T';
 
   late OrderRepository orderRepository;
 
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    Preferences.getQueryParam().then((value) => value = filter);
+    
   }
 
   @override
@@ -82,31 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Wrap(
+      direction: Axis.horizontal,
       children: [
         ListView.separated(
           itemBuilder: ((context, index) {
           return _createOrderItem(context, orders[index]);
         }
-        
         ), 
         itemCount: orders.length, 
         separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),)
       ],
     );
   }
-  /*
-  ListView.separated(
-          itemBuilder: (context, index) =>
-              _createOrderItem(context, orders[index]),
-        )
-  */
 
-  /*
-  Scaffold(
-      body: OrderCard(),
-      bottomNavigationBar: const BottomNavBar(),
-    );
-  */
 
   Widget _createOrderItem(BuildContext context, Order order) {
     return Container(
