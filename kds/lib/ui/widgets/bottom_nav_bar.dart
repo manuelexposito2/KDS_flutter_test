@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -73,18 +75,24 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    Preferences.setQueryParam("COMANDAS EN PROCESO");
+                  },
                   child: Text("En proceso",
                       style: Styles.btnTextSize(Colors.white)),
                   style: Styles.buttonEnProceso,
                 ),
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      Preferences.setQueryParam("COMANDAS TERMINADAS");
+                    },
                     child: Text("Terminadas",
                         style: Styles.btnTextSize(Colors.white)),
                     style: Styles.buttonTerminadas),
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      Preferences.setQueryParam("TODAS LAS COMANDAS");
+                    },
                     child: Text(
                       "Todas",
                       style: Styles.btnTextSize(Colors.black),
