@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/utils/constants.dart';
@@ -17,7 +18,7 @@ class OrderRepositoryImpl implements OrderRepository{
 
   final response = await http.get(Uri.parse(url));
 
-
+  debugPrint(response.statusCode.toString());
   if (response.statusCode == 200){
 
     return LastOrdersResponse.fromJson(jsonDecode(response.body)).getLastOrders;
