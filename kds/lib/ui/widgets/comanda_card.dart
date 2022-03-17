@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kds/ui/styles/styles.dart';
 
 class ComandaCard extends StatefulWidget {
-  const ComandaCard({Key? key}) : super(key: key);
+  const ComandaCard({Key? key,}) : super(key: key);
 
   @override
   State<ComandaCard> createState() => _ComandaCardState();
@@ -128,4 +128,8 @@ class _ComandaCardState extends State<ComandaCard> {
       ),
     );
   }
+
+
+
+
 }

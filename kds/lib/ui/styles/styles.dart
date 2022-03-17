@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 class Styles {
 // Colors
-  static const Color succesColor = Color.fromARGB(255, 52, 172, 42);
+  static const Color succesColor = Color(0xFF449D44);
   static const Color mediumColor = Color(0xFFEFA617);
   static const Color baseColor = Color.fromARGB(255, 14, 148, 226);
-  static const Color alertColor = Color.fromARGB(255, 212, 22, 22);
+  static const Color alertColor = Color(0xFFB85C5C);
   static final Color yellowBtn = Color(0xFFF0AD4E);
   static final Color greenBtn = Color(0xFF5CB85C);
   static final Color whiteBtn = Colors.white;
