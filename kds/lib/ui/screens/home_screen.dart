@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
 import 'package:kds/ui/widgets/comanda_card.dart';
+import 'package:kds/ui/widgets/resume_orders.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,7 +20,14 @@ class _HomeScreenState extends State<HomeScreen> {
     //TODO: CREAR WIDGET PARA RESUMEN CON TODAS LAS LÍNEAS 
 
     return Scaffold(
-      body: ComandaCard(),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ComandaCard(),
+          ResumeOrdersWidget()
+        ],
+      ),
       bottomNavigationBar: const BottomNavBar(),
     );
   }

@@ -13,7 +13,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  var navbarHeight = 70.0;
+  
 
   String? _timeString;
 
@@ -48,7 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     double responsiveWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      height: navbarHeight,
+      height: Styles.navbarHeight,
       color: Styles.bottomNavColor,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),

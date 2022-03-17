@@ -13,7 +13,7 @@ class Styles {
   static final Color blueBtnColor = Color(0xFF337AB7);
 
   static final Color bottomNavColor = Color.fromARGB(136, 41, 34, 34);
-
+  static final Color black = Color(0xFF3D3D3D);
 //SIZES
 
   static TextStyle btnTextSize(color) =>
@@ -21,8 +21,8 @@ class Styles {
   static double btnPaddingV = 26.0;
   static double btnPaddingH = 70.0;
 
+  static double navbarHeight = 70.0;
 
-  
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -57,6 +57,12 @@ class Styles {
 
   //Text
 
+  static TextStyle get resumeTitle => GoogleFonts.getFont('Roboto',
+      fontSize: 25, color: Colors.white, fontWeight: FontWeight.w900);
+
+  static TextStyle get productResumeLine => GoogleFonts.getFont('Roboto',
+      fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600);
+
   static TextStyle get textTitle => GoogleFonts.getFont('Roboto',
       fontSize: 23,
       color: Color.fromARGB(255, 87, 87, 87),
@@ -67,4 +73,8 @@ class Styles {
 
   static TextStyle get regularText =>
       GoogleFonts.getFont('Roboto', fontSize: 15, color: Colors.white);
+
+  //BORDER
+
+  static Border borderSimple = Border.all(color: Colors.black, width: 1.0);
 }
