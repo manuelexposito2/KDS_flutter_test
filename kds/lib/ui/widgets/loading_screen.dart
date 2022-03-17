@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lottie/lottie.dart';
+
 
 class LoadingScreen extends StatelessWidget {
   final String message;
@@ -17,7 +17,7 @@ class LoadingScreen extends StatelessWidget {
         children: [
           Container(
             width: 300,
-            child: Lottie.asset('assets/images/loading.json'),
+            
           ),
           Container(child: Text(message, textAlign: TextAlign.center,),)
         ],
