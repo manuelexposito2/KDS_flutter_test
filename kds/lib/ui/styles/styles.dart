@@ -89,7 +89,7 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
   //Text
 
   static TextStyle get textTitle => GoogleFonts.getFont('Roboto',
-      fontSize: 23,
+      fontSize: 24,
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
 
@@ -97,7 +97,7 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
       fontSize: 23, color: Colors.white, fontWeight: FontWeight.w700);
 
   static TextStyle get regularText =>
-      GoogleFonts.getFont('Roboto', fontSize: 15, color: Colors.white);
+      GoogleFonts.getFont('Roboto', fontSize: 17, color: Colors.white);
 
   static TextStyle get textWarning => GoogleFonts.getFont('Roboto',
       fontSize: 25,);
