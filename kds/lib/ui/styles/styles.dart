@@ -48,6 +48,38 @@ class Styles {
             topRight: Radius.circular(5), bottomRight: Radius.circular(5))),
   );
 
+//Botones pantalla pequeña
+
+static final buttonEnProcesomin = ElevatedButton.styleFrom(
+  minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: yellowBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+  static final buttonTerminadasmin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: greenBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+  static final buttonTodasmin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: whiteBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+
+//
+
   static final btnActionStyle = ElevatedButton.styleFrom(
       primary: blueBtnColor,
       padding: const EdgeInsets.all(20.0),
