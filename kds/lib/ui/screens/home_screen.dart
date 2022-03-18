@@ -97,8 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
 //BuildContext context, Order order
   Widget _createOrderItem() {
     return Container(
+      decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
-      color: Styles.succesColor,
       width: 300,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            color: Colors.white,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
             margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
