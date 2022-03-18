@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -40,13 +41,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return DateFormat('Hms', 'en_US').format(dateTime);
   }
 
-
 //BOTTOM BAR
   @override
   Widget build(BuildContext context) {
-    
     double responsiveWidth = MediaQuery.of(context).size.width;
-
     return Container(
       height: navbarHeight,
       color: Styles.bottomNavColor,
