@@ -99,7 +99,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget _time() {
     return RichText(
       text: TextSpan(
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white,),
         children: [
           TextSpan(text: version),
           WidgetSpan(
