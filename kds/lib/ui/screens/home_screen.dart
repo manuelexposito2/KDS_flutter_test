@@ -8,7 +8,6 @@ import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
-import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -62,13 +61,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CircularProgressIndicator(),
           );
         } else if (state is OrdersFetchErrorState) {
-          return ErrorScreen();
+          return const ErrorScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchEmptyState) {
-          return LoadingScreen(message: state.message);
+          return LoadingScreen(message: state.message,
+          );
           //Incluir el retry
         } else if (state is OrdersFetchNoOrdersState) {
-          return WatingScreen();
+          return const WaitingScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
           return _createOrdersView(context, state.orders);
@@ -86,26 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: ((context, index) {
           return _createOrderItem(context, orders[index]);
         }
-        
         ), 
         itemCount: orders.length, 
         separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),)
       ],
     );
   }
-  /*
-  ListView.separated(
-          itemBuilder: (context, index) =>
-              _createOrderItem(context, orders[index]),
-        )
-  */
-
-  /*
-  Scaffold(
-      body: OrderCard(),
-      bottomNavigationBar: const BottomNavBar(),
-    );
-  */
 
   Widget _createOrderItem(BuildContext context, Order order) {
     return Container(
@@ -115,80 +101,79 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        order.camHora,
-                        style: Styles.regularText,
-                      ),
-                      Text(
-                        '1/5',
-                        style: Styles.regularText,
-                      )
-                    ],
-                  ),
+          Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      // ************
+                      '10 min.',
+                      style: Styles.regularText,
+                    ),
+                    Text(
+                      '1/5',
+                      style: Styles.regularText,
+                    )
+                  ],
                 ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        'Nombre',
-                        style: Styles.regularText,
-                      )
-                    ],
-                  ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      'Nombre',
+                      style: Styles.regularText,
+                    )
+                  ],
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.push_pin,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            '1',
-                            style: Styles.regularText,
-                          )
-                        ],
-                      ),
-                      Container(
-                        width: 40,
-                        height: 30,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              primary: Color.fromARGB(255, 71, 71, 71)),
-                          child: Icon(Icons.info),
-                          onPressed: () {},
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.push_pin,
+                          color: Colors.white,
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+                        Text(
+                          '1',
+                          style: Styles.regularText,
+                        )
+                      ],
+                    ),
+                    Container(
+                      width: 40,
+                      height: 30,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            primary: const Color.fromARGB(255, 71, 71, 71)),
+                        child: const Icon(Icons.info),
+                        onPressed: () {},
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 2),
+            margin: const EdgeInsets.symmetric(horizontal: 2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
+                SizedBox(
                   width: 195,
                   height: 50,
                   child: TextButton.icon(
@@ -197,17 +182,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         primary: Color.fromARGB(255, 87, 87, 87),
                         textStyle: TextStyle(fontSize: 18)),
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.play_arrow,
                       color: Styles.baseColor,
                       size: 30,
                     ),
-                    label: Text(
+                    label: const Text(
                       'Preparar',
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 100,
                   height: 50,
                   child: TextButton(
