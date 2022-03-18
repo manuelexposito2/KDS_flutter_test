@@ -23,21 +23,26 @@ class ErrorScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.warning,
-                    color: Color(0xFFA94442),
-                    size: 70,
+                  Padding(
+                    padding: EdgeInsets.only(right: 30),
+                    child: Icon(
+                      Icons.warning,
+                      color: Color(0xFFA94442),
+                      size: 70,
+                    ),
                   ),
                   Text(
                     'Atención',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w700, fontSize: 60),
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 60),
                   ),
-                  Icon(
-                    Icons.warning,
-                    color: Color(0xFFA94442),
-                    size: 70,
-                  )
+                  Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Icon(
+                      Icons.warning,
+                      color: Color(0xFFA94442),
+                      size: 70,
+                    ),
+                  ),
                 ],
               ),
               Container(
