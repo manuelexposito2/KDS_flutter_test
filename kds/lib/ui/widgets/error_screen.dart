@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:kds/ui/styles/styles.dart';
 
 class ErrorScreen extends StatelessWidget {
   const ErrorScreen({Key? key}) : super(key: key);
@@ -10,18 +12,55 @@ class ErrorScreen extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       alignment: Alignment.topCenter,
       child: Container(
-        alignment: Alignment.center,
-        margin: EdgeInsets.only(top: 80),
-        width: 600,
-        height: 100,
-        color: Colors.white,
-        child: const Text(
-          
-          'Error..',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 60),
-        ),
-      ),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: 80),
+          width: 900,
+          height: 400,
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 30),
+                    child: Icon(
+                      Icons.warning,
+                      color: Color(0xFFA94442),
+                      size: 70,
+                    ),
+                  ),
+                  Text(
+                    'Atención',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 60),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Icon(
+                      Icons.warning,
+                      color: Color(0xFFA94442),
+                      size: 70,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 30, bottom: 30),
+                child: Text(
+                  'No se ha podido conectar con el servidor. Inicie Numier TPV y Numier PDA y pulse el botón Recargar',
+                  style: Styles.textWarning,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.replay_outlined),
+                label: Text('Recargar'),
+                style: Styles.btnActionStyle,
+              )
+            ],
+          )),
     );
   }
 }
