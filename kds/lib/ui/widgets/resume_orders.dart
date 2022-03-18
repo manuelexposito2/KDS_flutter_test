@@ -19,7 +19,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
       margin: const EdgeInsets.all(5.0),
       height: respHeight - Styles.navbarHeight,
       decoration: BoxDecoration(
-          border: Styles.borderSimple,
+          //border: Styles.borderSimple,
           borderRadius: BorderRadius.circular(5.0)),
       child: Column(
         children: [

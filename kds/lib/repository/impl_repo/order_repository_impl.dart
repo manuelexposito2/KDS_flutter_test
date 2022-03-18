@@ -8,7 +8,6 @@ import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/utils/constants.dart';
 //import 'package:http/http.dart;
 
-
 class OrderRepositoryImpl implements OrderRepository {
   //final Client _client = Client();
 
@@ -23,12 +22,12 @@ class OrderRepositoryImpl implements OrderRepository {
 
     Map<String, String> headers = {
       "callback": "getLastOrders",
-      "Access-Control-Allow-Origin": "http://$apiBaseUrl:$puertoPDA",
-      "Content-Type" : "text/plain",
-      "Accept" : "*/*",
-      "Accept-Encoding" : "gzip, deflate"
-
+      //"Access-Control-Allow-Origin": "*",
+      "Content-Type": "text/plain"
+      //  "Accept" : "*/*",
+      //"Accept-Encoding" : "gzip, deflate"
     };
+ 
 
     final request = await http.get(Uri.parse(url), headers: headers);
 

@@ -15,6 +15,10 @@ class Styles {
   
   static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
+
+
+//TODO: Rehacer estilo para el borde de las cajas de RESUME
+
 //SIZES
 
   static TextStyle btnTextSize(color) =>
