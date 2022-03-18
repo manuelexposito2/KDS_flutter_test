@@ -50,6 +50,38 @@ class Styles {
             topRight: Radius.circular(5), bottomRight: Radius.circular(5))),
   );
 
+//Botones pantalla pequeña
+
+static final buttonEnProcesomin = ElevatedButton.styleFrom(
+  minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: yellowBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+  static final buttonTerminadasmin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: greenBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+  static final buttonTodasmin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60) ,
+  maximumSize: Size(250, 60),
+    primary: whiteBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+
+//
+
   static final btnActionStyle = ElevatedButton.styleFrom(
       primary: blueBtnColor,
       padding: const EdgeInsets.all(20.0),
@@ -65,7 +97,7 @@ class Styles {
       fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600);
 
   static TextStyle get textTitle => GoogleFonts.getFont('Roboto',
-      fontSize: 23,
+      fontSize: 24,
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
 
@@ -73,9 +105,9 @@ class Styles {
       fontSize: 23, color: Colors.white, fontWeight: FontWeight.w700);
 
   static TextStyle get regularText =>
-      GoogleFonts.getFont('Roboto', fontSize: 15, color: Colors.white);
+      GoogleFonts.getFont('Roboto', fontSize: 17, color: Colors.white);
 
-  //BORDER
-
-  static Border borderSimple = Border.all(color: Colors.black, width: 1.0);
+  static TextStyle get textWarning => GoogleFonts.getFont('Roboto',
+      fontSize: 25,);
+  
 }

@@ -49,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (context) =>
           OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter)),
       child: Scaffold(
-        body: _createOrder(context),
+        //_createOrder(context)
+        body: _createOrderItem(),
         bottomNavigationBar: const BottomNavBar(),
       ),
     );
@@ -87,7 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         ListView.separated(
           itemBuilder: ((context, index) {
-          return _createOrderItem(context, orders[index]);
+            //context, orders[index]
+          return _createOrderItem();
         }
         ), 
         itemCount: orders.length, 
@@ -95,11 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-  Widget _createOrderItem(BuildContext context, Order order) {
+//BuildContext context, Order order
+  Widget _createOrderItem() {
     return Container(
+      decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
-      color: Styles.succesColor,
       width: 300,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -172,9 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2),
+            margin: const EdgeInsets.symmetric(horizontal: 1),
+            color: Colors.grey.shade400,
+            height: 55,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 SizedBox(
                   width: 195,
@@ -187,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {},
                     icon: const Icon(
                       Icons.play_arrow,
-                      color: Styles.baseColor,
+                      color: Color(0xFF337AB7),
                       size: 30,
                     ),
                     label: const Text(
@@ -196,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(
-                  width: 100,
+                  width: 95,
                   height: 50,
                   child: TextButton(
                     style: TextButton.styleFrom(
@@ -221,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            color: Color.fromARGB(255, 241, 241, 241),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
             margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
