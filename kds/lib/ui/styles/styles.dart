@@ -98,4 +98,8 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
 
   static TextStyle get regularText =>
       GoogleFonts.getFont('Roboto', fontSize: 15, color: Colors.white);
+
+  static TextStyle get textWarning => GoogleFonts.getFont('Roboto',
+      fontSize: 25,);
+  
 }
