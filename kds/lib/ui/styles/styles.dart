@@ -12,8 +12,9 @@ class Styles {
   static final Color whiteBtn = Colors.white;
   static final Color blueBtnColor = Color(0xFF337AB7);
 
-  static final Color bottomNavColor = Color.fromARGB(136, 41, 34, 34);
+  
   static final Color black = Color(0xFF3D3D3D);
+  static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
 //SIZES
 
   static TextStyle btnTextSize(color) =>

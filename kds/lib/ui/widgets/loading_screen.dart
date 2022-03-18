@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 
 class LoadingScreen extends StatelessWidget {
@@ -12,15 +13,18 @@ class LoadingScreen extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          Container(
-            width: 300,
-            
-          ),
-          Container(child: Text(message, textAlign: TextAlign.center,),)
-        ],
+      alignment: Alignment.topCenter,
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(top: 80),
+        width: 600,
+        height: 100,
+        color: Colors.white,
+        child: const Text(
+          'Cargando..',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 60),
+        ),
       ),
     );
   }

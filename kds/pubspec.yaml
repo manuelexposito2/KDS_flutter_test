@@ -45,6 +45,7 @@ dependencies:
   socket_io: ^1.0.1
   rikulo_commons: ^5.2.0+1
 
+  responsive_framework: ^0.1.7
 
 dev_dependencies:
   flutter_test:
