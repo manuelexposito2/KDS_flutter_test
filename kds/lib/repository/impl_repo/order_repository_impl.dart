@@ -1,21 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
 
-import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/utils/constants.dart';
 //import 'package:http/http.dart;
-import 'dart:js' as js;
 
-import 'package:rikulo_commons/io.dart';
-import 'package:rikulo_commons/util.dart';
 
 class OrderRepositoryImpl implements OrderRepository {
-  final Client _client = Client();
+  //final Client _client = Client();
 
   //TODO:
   //https://pub.dev/documentation/rikulo_commons/latest/rikulo_io/ajax.html
@@ -28,10 +23,14 @@ class OrderRepositoryImpl implements OrderRepository {
 
     Map<String, String> headers = {
       "callback": "getLastOrders",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "http://$apiBaseUrl:$puertoPDA",
+      "Content-Type" : "text/plain",
+      "Accept" : "*/*",
+      "Accept-Encoding" : "gzip, deflate"
+
     };
 
-    final request = await _client.get(Uri.parse(url), headers: headers);
+    final request = await http.get(Uri.parse(url), headers: headers);
 
     if (request.statusCode == 501) {
       debugPrint(request.statusCode.toString());
@@ -46,15 +45,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 }
 
-requestComplete(HttpRequest httpRequest) {
-  if (httpRequest.status == 200) {
-    final response = httpRequest.responseText;
-    if (response != null) {
-      LastOrdersResponse.fromJson(jsonDecode(response)).getLastOrders;
-      return;
-    }
-  }
-}
+
 
 
 

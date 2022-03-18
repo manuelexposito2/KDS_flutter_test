@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kds/ui/styles/styles.dart';
-import 'package:kds/ui/widgets/bottom_nav_bar.dart';
 
 class ResumeOrdersWidget extends StatefulWidget {
   const ResumeOrdersWidget({Key? key}) : super(key: key);

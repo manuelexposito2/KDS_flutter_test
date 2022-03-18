@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 
 class OrderCard extends StatefulWidget {

@@ -5,9 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/utils/preferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 

@@ -1,4 +1,4 @@
-import 'dart:js';
+
 
 class LastOrdersResponse {
   LastOrdersResponse(
@@ -15,7 +15,7 @@ class LastOrdersResponse {
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['getLastOrders'] = getLastOrders.map((e)=>e.toJson()).toList();
-    context['getLastOrders'] = JsObject.jsify(_data);
+    
     return _data;
   }
 }

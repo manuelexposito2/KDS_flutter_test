@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
-import 'package:kds/utils/preferences.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
