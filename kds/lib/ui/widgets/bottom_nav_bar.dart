@@ -49,7 +49,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     double responsiveWidth = MediaQuery.of(context).size.width;
-    return LayoutBuilder(
+    return Container(
+            height: navbarHeight,
+            color: Styles.bottomNavColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [_time(), _buttonsNavigate(), _buttonsFilter()],
+            ));
+  }
+    /*LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
 
         if (constraints.minWidth > responsiveWidth / 3) {
@@ -91,11 +99,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
           );
         }
       },
-    );
-  }
+    );*/
+  
 
   Widget _time() {
-    return Expanded(
+    return Container(
       child: RichText(
         text: TextSpan(
           style: TextStyle(color: Colors.white,),
