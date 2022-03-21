@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/preferences.dart';
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
 
+class BottomNavBar extends StatefulWidget {
+  BottomNavBar({Key? key}) : super(key: key);
+  String? filter = "";
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-
-  
-
   double navbarHeightmin = 280.0;
   double navbarHeightMedium = 150.0;
   double navbarHeight = 70.0;
@@ -48,65 +47,22 @@ class _BottomNavBarState extends State<BottomNavBar> {
 //BOTTOM BAR
   @override
   Widget build(BuildContext context) {
-    double responsiveWidth = MediaQuery.of(context).size.width;
     return Container(
-            height: navbarHeight,
-            color: Styles.bottomNavColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [_time(), _buttonsNavigate(), _buttonsFilter()],
-            ));
+        height: navbarHeight,
+        color: Styles.bottomNavColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [_time(), _buttonsNavigate(), _buttonsFilter()],
+        ));
   }
-    /*LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-
-        if (constraints.minWidth > responsiveWidth / 3) {
-          return Container(
-            height: navbarHeight,
-            color: Styles.bottomNavColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [_time(), _buttonsNavigate(), _buttonsFilter()],
-            ),
-          );
-        } else if (constraints.minWidth > responsiveWidth / 2){
-          return Container(
-            height: navbarHeightMedium,
-            color: Styles.bottomNavColor,
-            child: Column(
-            children: [
-              Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [_time(), _buttonsNavigate(), _buttonsFilter()],
-              )
-            ],
-          ),
-          );
-        }
-        
-         else {
-          return Container(
-            height: navbarHeightmin,
-            width: responsiveWidth,
-            color: Styles.bottomNavColor,
-            child: Column(
-            children: [
-              Column(
-            children: [_time(), _buttonsNavigateMin(), _buttonsFilter()],
-              )
-            ],
-          ),
-          );
-        }
-      },
-    );*/
-  
 
   Widget _time() {
     return Container(
       child: RichText(
         text: TextSpan(
-          style: TextStyle(color: Colors.white,),
+          style: TextStyle(
+            color: Colors.white,
+          ),
           children: [
             TextSpan(text: version),
             WidgetSpan(
@@ -126,50 +82,37 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
       children: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            //Preferences.setQueryParam(enProceso);
+            setState(() {
+              widget.filter = enProceso;
+            });
+          },
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
         ),
         ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              //Preferences.setQueryParam(terminadas);
+              setState(() {
+                widget.filter = terminadas;
+              });
+            },
             child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
             style: Styles.buttonTerminadas),
         ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              //Preferences.setQueryParam(todas);
+              setState(() {
+                widget.filter = todas;
+              });
+            },
             child: Text(
               "Todas",
               style: Styles.btnTextSize(Colors.black),
             ),
             style: Styles.buttonTodas)
       ],
-    );
-  }
-
-  Widget _buttonsNavigateMin() {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 10.0, top: 5.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {},
-            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonEnProcesomin,
-          ),
-          ElevatedButton(
-              onPressed: () {},
-              child:
-                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-              style: Styles.buttonTerminadasmin),
-          ElevatedButton(
-              onPressed: () {},
-              child: Text(
-                "Todas",
-                style: Styles.btnTextSize(Colors.black),
-              ),
-              style: Styles.buttonTodasmin)
-        ],
-      ),
     );
   }
 
