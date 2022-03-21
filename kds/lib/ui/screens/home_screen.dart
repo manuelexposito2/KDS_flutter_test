@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter)),
       child: Scaffold(
         //_createOrder(context)
-        body: _createOrderItem(),
+        body: _createOrder(context),
         bottomNavigationBar: const BottomNavBar(),
       ),
     );
@@ -83,26 +83,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: [
-        ListView.separated(
-          itemBuilder: ((context, index) {
-            //context, orders[index]
-          return _createOrderItem();
-        }
-        ), 
-        itemCount: orders.length, 
-        separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),)
-      ],
-    );
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemBuilder: ((context, index) {
+        //context, orders[index]
+      return _createOrderItem(context, orders[index]);
+    }
+    ), 
+    itemCount: orders.length, 
+    separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
   }
 //BuildContext context, Order order
-  Widget _createOrderItem() {
+  Widget _createOrderItem(BuildContext context, Order order) {
     return Container(
       decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
+      
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -134,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white,
                     ),
                     Text(
-                      'Nombre',
+                      order.camOperario,
                       style: Styles.regularText,
                     )
                   ],

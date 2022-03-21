@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import './../../utils/string_extension.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:kds/models/last_orders_response.dart';
@@ -23,20 +25,22 @@ class OrderRepositoryImpl implements OrderRepository {
       "callback": "getLastOrders",
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "text/plain"
-      //  "Accept" : "*/*",
-      //"Accept-Encoding" : "gzip, deflate"
     };
  
 
     final request = await http.get(Uri.parse(url), headers: headers);
-
-    if (request.statusCode == 501) {
-      debugPrint(request.statusCode.toString());
-    }
-
+    debugPrint(request.statusCode.toString());
     if (request.statusCode == 200) {
-      return LastOrdersResponse.fromJson(jsonDecode(request.body))
-          .getLastOrders;
+      
+      //Código mejorable. Conversión de JSONP a JSON
+
+      var callback = "getLastOrders";
+      var dataBody = request.body.strip("(").strip(")");
+      var jsonPtoJson = "{${dataBody.replaceAll(callback, '"${callback}":')}}";
+      //debugPrint(jsonPtoJson);
+
+      return LastOrdersResponse.fromJson(jsonDecode(jsonPtoJson)).getLastOrders;
+          
     } else {
       throw Exception(request.body.toString());
     }
