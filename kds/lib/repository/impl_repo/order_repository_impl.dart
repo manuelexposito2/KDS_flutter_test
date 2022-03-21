@@ -17,12 +17,11 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<List<Order>> getOrders(String filter) async {
-    String url =
-        'http://$apiBaseUrl:$puertoPDA/KDS/getOrders.htm?state=$filter&callback=getLastOrders&_=1647520250758';
-
+    //String url ='http://$apiBaseUrl:$puertoPDA/KDS/getOrders.htm?state=$filter&callback=getLastOrders&_=1647520250758';
+    String url ='http://$apiBaseUrl:$puertoPDA/KDS/getOrders.htm?state=$filter';
     Map<String, String> headers = {
       "callback": "getLastOrders",
-      //"Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "*",
       "Content-Type": "text/plain"
       //  "Accept" : "*/*",
       //"Accept-Encoding" : "gzip, deflate"

@@ -6,6 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomIcons{
 
-  static Widget clock(color, width) => SvgPicture.asset('assets/images/clock.svg', color: color, width: width);
+  static Widget clock(color, double width) => SvgPicture.asset('assets/images/clock.svg', color: color, width: width);
 
 }
