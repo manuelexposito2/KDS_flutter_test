@@ -85,14 +85,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemBuilder: ((context, index) {
-        //context, orders[index]
-      return _createOrderItem(context, orders[index]);
-    }
-    ), 
-    itemCount: orders.length, );
+    return Container(
+      height: 300,
+      child: ListView.builder(
+        
+        scrollDirection: Axis.horizontal ,
+        itemCount: orders.length,
+        itemBuilder: ((context, index) {
+          //context, orders[index]
+        return _createOrderItem(context, orders[index]);
+      }
+      )),
+    );
     //separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
   }
 //BuildContext context, Order order
