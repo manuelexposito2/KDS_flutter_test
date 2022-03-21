@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_time_ago/get_time_ago.dart';
+import 'package:intl/intl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
@@ -19,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  String filter = 'T';
+  String filter = 'ALL';
 
   late OrderRepository orderRepository;
 
@@ -39,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var responsiveHeight = MediaQuery.of(context).size.height;
-    var responsiveWidth = MediaQuery.of(context).size.width;
+    //var responsiveHeight = MediaQuery.of(context).size.height;
+    //var responsiveWidth = MediaQuery.of(context).size.width;
 
     //TODO: MONTAR BLOC EN UI PARA TRAER LA LISTA DE COMANDAS
     //TODO: CREAR WIDGET PARA RESUMEN CON TODAS LAS LÍNEAS
@@ -83,25 +85,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return ListView.separated(
+    return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemBuilder: ((context, index) {
         //context, orders[index]
       return _createOrderItem(context, orders[index]);
     }
     ), 
-    itemCount: orders.length, 
-    separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
+    itemCount: orders.length, );
+    //separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
   }
 //BuildContext context, Order order
   Widget _createOrderItem(BuildContext context, Order order) {
+
+  //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
+  String total() {
+    var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini * 1000);
+    var date2 = DateTime.now();
+    final horatotal = date2.difference(date);
+    return horatotal.inMinutes.toString();
+  }
+
     return Container(
+      
       decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        //mainAxisSize: MainAxisSize.min,
         children: [
           Column(
             children: [
@@ -111,8 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      // ************
-                      '10 min.',
+                    total() + ' min.',
                       style: Styles.regularText,
                     ),
                     Text(
@@ -149,21 +159,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white,
                         ),
                         Text(
-                          '1',
+                          order.camMesa.toString(),
                           style: Styles.regularText,
                         )
                       ],
                     ),
                     Container(
+                      alignment: Alignment.center,
+                      color: Colors.white,
                       width: 40,
-                      height: 30,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            primary: const Color.fromARGB(255, 71, 71, 71)),
-                        child: const Icon(Icons.info),
-                        onPressed: () {},
-                      ),
+                      height: 40,
+                      child: IconButton(onPressed: () {}, icon: Icon(Icons.info, color: Color.fromARGB(255, 87, 87, 87),))
                     )
                   ],
                 ),
@@ -210,7 +216,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Container(
+          
+          itemPedido(context, order)
+        ],
+      ),
+    );
+  }
+
+  //Hacer una condicional para que solo pase si se marca como urgente
+  Widget urgente(){
+    return Container(
             width: MediaQuery.of(context).size.width,
             color: Styles.alertColor,
             alignment: Alignment.center,
@@ -220,22 +235,24 @@ class _HomeScreenState extends State<HomeScreen> {
               '¡¡¡URGENTE!!!',
               style: Styles.urgent,
             ),
-          ),
-          Container(
+          );
+  }
+
+
+
+
+
+  Widget itemPedido(BuildContext context, Order order){
+    return Container(
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
             margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
             height: 50,
             child: Text(
-              'Comandas',
+              order.details.first.demTitulo,
               style: Styles.textTitle,
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
-
-
 }
