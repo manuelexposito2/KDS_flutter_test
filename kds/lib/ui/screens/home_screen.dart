@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kds/bloc/order/order_bloc.dart';
-import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository/order_repository.dart';
-import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/bottom_nav_bar.dart';
+import 'package:kds/bloc/order/order_bloc.dart';
+import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
@@ -18,7 +18,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late String prepare = '';
+
+  String filter = 'T';
 
   late OrderRepository orderRepository;
 
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
+    
   }
 
   @override
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return BlocProvider(
       create: (context) =>
-          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(prepare)),
+          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter)),
       child: Scaffold(
         //_createOrder(context)
         body: _createOrderItem(),
@@ -82,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Wrap(
+      direction: Axis.horizontal,
       children: [
         ListView.separated(
           itemBuilder: ((context, index) {
@@ -236,4 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
 }

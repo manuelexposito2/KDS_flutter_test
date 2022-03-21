@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/ui/styles/styles.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-
+import 'package:kds/utils/preferences.dart';
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 
@@ -14,9 +13,12 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  var navbarHeightmin = 280.0;
-  var navbarHeightMedium = 150.0;
-  var navbarHeight = 70.0;
+
+  
+
+  double navbarHeightmin = 280.0;
+  double navbarHeightMedium = 150.0;
+  double navbarHeight = 70.0;
 
   String? _timeString;
 
@@ -26,7 +28,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     _timeString = _formatDateTime(DateTime.now());
-    Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
     super.initState();
   }
 
@@ -49,47 +51,43 @@ class _BottomNavBarState extends State<BottomNavBar> {
     double responsiveWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        if (constraints.minWidth > 1250) {
+
+        if (constraints.minWidth > responsiveWidth / 3) {
           return Container(
             height: navbarHeight,
             color: Styles.bottomNavColor,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [_time(), _buttonsNavigate(), _buttonsFilter()],
-                )),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [_time(), _buttonsNavigate(), _buttonsFilter()],
+            ),
           );
-        } else if (constraints.minWidth > 900){
+        } else if (constraints.minWidth > responsiveWidth / 2){
           return Container(
             height: navbarHeightMedium,
             color: Styles.bottomNavColor,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                child: Column(
+            child: Column(
             children: [
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [_time(), _buttonsNavigate(), _buttonsFilter()],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [_time(), _buttonsNavigate(), _buttonsFilter()],
               )
             ],
-          )),
+          ),
           );
         }
         
          else {
           return Container(
             height: navbarHeightmin,
+            width: responsiveWidth,
             color: Styles.bottomNavColor,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                child: Column(
+            child: Column(
             children: [
               Column(
-                children: [_time(), _buttonsNavigateMin(), _buttonsFilter()],
+            children: [_time(), _buttonsNavigateMin(), _buttonsFilter()],
               )
             ],
-          )),
+          ),
           );
         }
       },
@@ -97,16 +95,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   Widget _time() {
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(color: Colors.white,),
-        children: [
-          TextSpan(text: version),
-          WidgetSpan(
-            child: CustomIcons.clock(Colors.white, 28),
-          ),
-          TextSpan(text: _timeString, style: TextStyle(fontSize: 30.0)),
-        ],
+    return Expanded(
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Colors.white,),
+          children: [
+            TextSpan(text: version),
+            WidgetSpan(
+              child: CustomIcons.clock(Colors.white, 28.0),
+            ),
+            TextSpan(text: _timeString, style: TextStyle(fontSize: 30.0)),
+          ],
+        ),
       ),
     );
   }
@@ -139,7 +139,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   Widget _buttonsNavigateMin() {
     return Container(
-      padding: EdgeInsets.only(bottom: 10, top: 5),
+      padding: const EdgeInsets.only(bottom: 10.0, top: 5.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

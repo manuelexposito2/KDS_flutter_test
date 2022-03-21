@@ -1,8 +1,12 @@
+
+
 class LastOrdersResponse {
-  LastOrdersResponse({
+  LastOrdersResponse(
+    {
     required this.getLastOrders,
   });
   late final List<Order> getLastOrders;
+  
   
   LastOrdersResponse.fromJson(Map<String, dynamic> json){
     getLastOrders = List.from(json['getLastOrders']).map((e)=>Order.fromJson(e)).toList();
@@ -11,6 +15,7 @@ class LastOrdersResponse {
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['getLastOrders'] = getLastOrders.map((e)=>e.toJson()).toList();
+    
     return _data;
   }
 }

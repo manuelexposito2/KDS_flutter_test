@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 
@@ -15,13 +16,13 @@ class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
     on<FetchOrdersWithFilterEvent>(_getOrdersFetched);
   }
 
-  FutureOr<void> _getOrdersFetched(FetchOrdersWithFilterEvent event, Emitter<OrdersState> emit) async {
+  _getOrdersFetched(FetchOrdersWithFilterEvent event, Emitter<OrdersState> emit) async {
 
     try{
       final orders = await orderRepository.getOrders(event.filter);
       emit(OrdersFetchSuccessState(event.filter, orders));
     } on Exception catch(e){
-
+      debugPrint(e.toString());
       emit(OrdersFetchErrorState(e.toString()));
     }
 

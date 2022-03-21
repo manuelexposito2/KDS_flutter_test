@@ -12,7 +12,13 @@ class Styles {
   static final Color whiteBtn = Colors.white;
   static final Color blueBtnColor = Color(0xFF337AB7);
 
+  
+  static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
+
+
+//TODO: Rehacer estilo para el borde de las cajas de RESUME
+
 //SIZES
 
   static TextStyle btnTextSize(color) =>
@@ -20,8 +26,8 @@ class Styles {
   static double btnPaddingV = 26.0;
   static double btnPaddingH = 70.0;
 
+  static double navbarHeight = 70.0;
 
-  
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -87,6 +93,12 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
           borderRadius: BorderRadius.all(Radius.circular(5.0))));
 
   //Text
+
+  static TextStyle get resumeTitle => GoogleFonts.getFont('Roboto',
+      fontSize: 25, color: Colors.white, fontWeight: FontWeight.w900);
+
+  static TextStyle get productResumeLine => GoogleFonts.getFont('Roboto',
+      fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600);
 
   static TextStyle get textTitle => GoogleFonts.getFont('Roboto',
       fontSize: 24,
