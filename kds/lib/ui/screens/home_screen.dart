@@ -1,19 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:intl/intl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository/order_repository.dart';
-import 'package:kds/ui/widgets/bottom_nav_bar.dart';
+import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
+import 'package:kds/utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,16 +23,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  String filter = 'ALL';
 
+  String? filter = '';
+  var version = "v.1.1.9";
   late OrderRepository orderRepository;
+  String? _timeString;
 
   @override
   void initState() {
     // TODO: implement initState
+
+    _timeString = _formatDateTime(DateTime.now());
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    
   }
 
   @override
@@ -41,20 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //var responsiveHeight = MediaQuery.of(context).size.height;
-    //var responsiveWidth = MediaQuery.of(context).size.width;
-
-    //TODO: MONTAR BLOC EN UI PARA TRAER LA LISTA DE COMANDAS
-    //TODO: CREAR WIDGET PARA RESUMEN CON TODAS LAS LÍNEAS
 
     return BlocProvider(
       create: (context) =>
-          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter)),
-      child: Scaffold(
-        //_createOrder(context)
-        body: _createOrder(context),
-        bottomNavigationBar: const BottomNavBar(),
-      ),
+          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter!)),
+      child: _createOrder(context),
     );
   }
 
@@ -69,17 +66,29 @@ class _HomeScreenState extends State<HomeScreen> {
           return const ErrorScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchEmptyState) {
-          return LoadingScreen(message: state.message,
+          return LoadingScreen(
+            message: state.message,
           );
           //Incluir el retry
         } else if (state is OrdersFetchNoOrdersState) {
           return const WaitingScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
-          return _createOrdersView(context, state.orders);
+       
+          return Scaffold(
+            body: _createOrdersView(context, state.orders),
+            bottomNavigationBar: bottomNavBar(context),
+          );
         } else {
           return const Text('Not Support');
         }
+      },
+    
+      buildWhen: (context, state) {
+        return state is OrdersFetchSuccessState ||
+            state is OrdersFetchErrorState ||
+            state is OrdersFetchEmptyState ||
+            state is OrdersFetchNoOrdersState;
       },
     );
   }
@@ -99,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     //separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
   }
+
 //BuildContext context, Order order
   Widget _createOrderItem(BuildContext context, Order order) {
 
@@ -121,7 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -247,8 +258,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget itemPedido(BuildContext context, Order order){
-    return Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
+    return 
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(5),
+                    bottomRight: Radius.circular(5))),
             margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
             width: MediaQuery.of(context).size.width,
             alignment: Alignment.center,
@@ -258,5 +274,130 @@ class _HomeScreenState extends State<HomeScreen> {
               style: Styles.textTitle,
             ),
           );
+  }
+
+  //BOTTOMNAVBAR
+  Widget bottomNavBar(BuildContext context) {
+    return Container(
+        height: Styles.navbarHeight,
+        color: Styles.bottomNavColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [_time(), _buttonsFilter(context), _buttonsOptions()],
+        ));
+  }
+
+  //TIME
+
+  //MOSTRAR LA HORA
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('Hms', 'en_US').format(dateTime);
+  }
+
+  Widget _time() {
+    return Container(
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(
+            color: Colors.white,
+          ),
+          children: [
+            TextSpan(text: version),
+            WidgetSpan(
+              child: CustomIcons.clock(Colors.white, 28.0),
+            ),
+            TextSpan(text: _timeString, style: TextStyle(fontSize: 30.0)),
+          ],
+        ),
+      ),
+    );
+  }
+
+//BUTTONS
+
+  Widget _buttonsFilter(BuildContext context) {
+    return Row(
+      //3 BOTONES
+      mainAxisAlignment: MainAxisAlignment.center,
+
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              filter = enProceso;
+            });
+            BlocProvider.of<OrderBloc>(context)
+                .add(FetchOrdersWithFilterEvent(filter!));
+          },
+          child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
+          style: Styles.buttonEnProceso,
+        ),
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = terminadas;
+              });
+
+              BlocProvider.of<OrderBloc>(context)
+                  .add(FetchOrdersWithFilterEvent(filter!));
+            },
+            child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
+            style: Styles.buttonTerminadas),
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = todas;
+              });
+
+              BlocProvider.of<OrderBloc>(context)
+                  .add(FetchOrdersWithFilterEvent(filter!));
+            },
+            child: Text(
+              "Todas",
+              style: Styles.btnTextSize(Colors.black),
+            ),
+            style: Styles.buttonTodas)
+      ],
+    );
+  }
+
+  Widget _buttonsOptions() {
+    return SizedBox(
+      width: 280.0,
+      child: Row(
+        ///// 4 OPCIONES
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            child: Icon(Icons.menu),
+            style: Styles.btnActionStyle,
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Icon(Icons.person),
+            style: Styles.btnActionStyle,
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Icon(Icons.refresh),
+            style: Styles.btnActionStyle,
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Icon(Icons.fullscreen),
+            style: Styles.btnActionStyle,
+          )
+        ],
+      ),
+    );
   }
 }
