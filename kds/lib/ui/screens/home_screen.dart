@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return Scaffold(
             body: Row(children: [
               Expanded(
-                  flex: 2, child: _createOrdersView(context, state.orders)),
+                  flex: 3, child: _createOrdersView(context, state.orders)),
               showResumen
                   ? Expanded(flex: 1, child: ResumeOrdersWidget())
                   : Container()

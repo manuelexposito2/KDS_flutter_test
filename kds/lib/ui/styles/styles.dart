@@ -18,6 +18,7 @@ class Styles {
 
 
 //TODO: Rehacer estilo para el borde de las cajas de RESUME
+  static BoxBorder borderSimple = Border.all(color: black);
 
 //SIZES
 
