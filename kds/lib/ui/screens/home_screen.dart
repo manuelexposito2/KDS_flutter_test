@@ -102,14 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
       //width: MediaQuery.of(context).size.width / 2,
       //height: 300,
       child: ListView.builder(
-        
-        scrollDirection: Axis.horizontal ,
-        itemCount: orders.length,
-        itemBuilder: ((context, index) {
-          //context, orders[index]
-        return _createOrderItem(context, orders[index]);
-      }
-      )),
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: orders.length,
+          itemBuilder: ((context, index) {
+            //context, orders[index]
+            return _createOrderItem(context, orders[index]);
+          })),
     );
     
   }*/
@@ -141,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }*/
 
-//BuildContext context, Order order
   Widget _createOrderItem(BuildContext context, Order order) {
     //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
     String total() {
@@ -152,13 +150,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Container(
+      
       decoration: BoxDecoration(
           color: Styles.succesColor,
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      child: Column(
-        //mainAxisSize: MainAxisSize.min,
+      child: Wrap(
+        // mainAxisSize: MainAxisSize.max,
         children: [
           Column(
             children: [
@@ -267,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          itemPedido(context, order)
+          _listViewPedido(context, order.details)
         ],
       ),
     );
@@ -284,6 +283,28 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         '¡¡¡URGENTE!!!',
         style: Styles.urgent,
+      ),
+    );
+  }
+
+  Widget _listViewPedido(BuildContext context, List<Details> details) {
+    return ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemCount: details.length,
+        itemBuilder: (context, index) {
+          return _itemPedido(context, details.elementAt(index));
+        });
+  }
+
+  Widget _itemPedido(BuildContext context, Details details) {
+    return Card(
+      child: ListTile(
+        title: Text(
+          details.demTitulo,
+          style: Styles.textTitle,
+        ),
       ),
     );
   }
