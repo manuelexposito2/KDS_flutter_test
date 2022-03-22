@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kds/ui/screens/home_screen.dart';
-import 'package:kds/ui/widgets/prueba.dart';
+
 
 void main() {
   runApp(const MyApp());
