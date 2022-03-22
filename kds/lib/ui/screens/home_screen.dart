@@ -124,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Container(
-      
       decoration: BoxDecoration(
           color: Styles.succesColor,
           borderRadius: BorderRadius.all(Radius.circular(5))),
@@ -237,10 +236,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {},
                   ),
                 )
+                
               ],
             ),
           ),
-          _listViewPedido(context, order.details)
+          //urgente(),
+          Container( margin: EdgeInsets.all(1), child: pruebaItem(context, order.details),)
+          
         ],
       ),
     );
@@ -261,9 +263,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+ /*
   Widget _listViewPedido(BuildContext context, List<Details> details) {
     return ListView.builder(
-        physics: const BouncingScrollPhysics(),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemCount: details.length,
@@ -272,8 +274,14 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+ */
+
+
   Widget _itemPedido(BuildContext context, Details details) {
-    return Card(
+    return Container(
+      
+      margin: EdgeInsets.only(left: 1, right: 1),
+      color: Colors.white,
       child: ListTile(
         title: Text(
           details.demTitulo,
@@ -283,22 +291,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget itemPedido(BuildContext context, Order order) {
+  Widget pruebaItem(BuildContext context, List<Details> details){
+    return Wrap(
+        direction: Axis.horizontal,
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        children: [
+          for(var d in details)
+            _itemPedido(context, d)
+    
+        ],
+      );
+  }
+
+  /*
+  Widget itemPedido(BuildContext context, Details details) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
-      margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
+      margin: EdgeInsets.only(left: 1, right: 1),
       width: MediaQuery.of(context).size.width,
       alignment: Alignment.center,
       height: 50,
       child: Text(
-        order.details.first.demTitulo,
+        details.demTitulo,
         style: Styles.textTitle,
       ),
     );
   }
+  */
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
