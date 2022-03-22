@@ -7,7 +7,7 @@ class ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(body: Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       alignment: Alignment.topCenter,
@@ -50,7 +50,9 @@ class ErrorScreen extends StatelessWidget {
                 child: Text(
                   'No se ha podido conectar con el servidor. Inicie Numier TPV y Numier PDA y pulse el botón Recargar',
                   style: Styles.textWarning,
+                  
                   textAlign: TextAlign.center,
+                  
                 ),
               ),
               ElevatedButton.icon(
@@ -61,6 +63,6 @@ class ErrorScreen extends StatelessWidget {
               )
             ],
           )),
-    );
+    ),);
   }
 }
