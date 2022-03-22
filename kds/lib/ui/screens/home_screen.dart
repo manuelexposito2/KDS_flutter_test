@@ -22,8 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
   String? filter = '';
   var version = "v.1.1.9";
   late OrderRepository orderRepository;
@@ -47,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocProvider(
       create: (context) =>
           OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter!)),
@@ -74,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
           return const WaitingScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
-       
           return Scaffold(
             body: _createOrdersView(context, state.orders),
             bottomNavigationBar: bottomNavBar(context),
@@ -83,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
           return const Text('Not Support');
         }
       },
-    
       buildWhen: (context, state) {
         return state is OrdersFetchSuccessState ||
             state is OrdersFetchErrorState ||
@@ -95,37 +90,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Container(
-      height: 800,
+      width: 320,
       child: ListView.builder(
-        
-        scrollDirection: Axis.horizontal ,
-        itemCount: orders.length,
-        itemBuilder: ((context, index) {
-          //context, orders[index]
-        return _createOrderItem(context, orders[index]);
-      }
-      )),
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemCount: orders.length,
+          itemBuilder: ((context, index) {
+            //context, orders[index]
+            return _createOrderItem(context, orders[index]);
+          })),
     );
-    //separatorBuilder: (BuildContext context, int index) => const VerticalDivider(color: Colors.transparent, width: 6.0,),);
   }
 
-//BuildContext context, Order order
   Widget _createOrderItem(BuildContext context, Order order) {
-
-  //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
-  String total() {
-    var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini * 1000);
-    var date2 = DateTime.now();
-    final horatotal = date2.difference(date);
-    return horatotal.inMinutes.toString();
-  }
+    //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
+    String total() {
+      var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini * 1000);
+      var date2 = DateTime.now();
+      final horatotal = date2.difference(date);
+      return horatotal.inMinutes.toString();
+    }
 
     return Container(
-      decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
+      
+      decoration: BoxDecoration(
+          color: Styles.succesColor,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
+      child: Wrap(
+        // mainAxisSize: MainAxisSize.max,
         children: [
           Column(
             children: [
@@ -136,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                    total() + ' min.',
+                      total() + ' min.',
                       style: Styles.regularText,
                     ),
                     Text(
@@ -179,12 +173,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     Container(
-                      alignment: Alignment.center,
-                      color: Colors.white,
-                      width: 40,
-                      height: 40,
-                      child: IconButton(onPressed: () {}, icon: Icon(Icons.info, color: Color.fromARGB(255, 87, 87, 87),))
-                    )
+                        alignment: Alignment.center,
+                        color: Colors.white,
+                        width: 40,
+                        height: 40,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.info,
+                              color: Color.fromARGB(255, 87, 87, 87),
+                            )))
                   ],
                 ),
               )
@@ -230,65 +228,64 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          
-          Expanded(child: _listViewPedido(context, order.details))
+          _listViewPedido(context, order.details)
         ],
       ),
     );
   }
 
   //Hacer una condicional para que solo pase si se marca como urgente
-  Widget urgente(){
+  Widget urgente() {
     return Container(
-            width: MediaQuery.of(context).size.width,
-            color: Styles.alertColor,
-            alignment: Alignment.center,
-            height: 50,
-            //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
-            child: Text(
-              '¡¡¡URGENTE!!!',
-              style: Styles.urgent,
-            ),
-          );
+      width: MediaQuery.of(context).size.width,
+      color: Styles.alertColor,
+      alignment: Alignment.center,
+      height: 50,
+      //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
+      child: Text(
+        '¡¡¡URGENTE!!!',
+        style: Styles.urgent,
+      ),
+    );
   }
 
-  Widget _listViewPedido(BuildContext context, List<Details> details){
+  Widget _listViewPedido(BuildContext context, List<Details> details) {
     return ListView.builder(
-    physics: const BouncingScrollPhysics(),
-    shrinkWrap: true,
-    scrollDirection: Axis.vertical,
+        physics: const BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
         itemCount: details.length,
         itemBuilder: (context, index) {
-          return _itemPedido(context, details.elementAt(index));});
+          return _itemPedido(context, details.elementAt(index));
+        });
   }
 
+  Widget _itemPedido(BuildContext context, Details details) {
+    return Card(
+      child: ListTile(
+        title: Text(
+          details.demTitulo,
+          style: Styles.textTitle,
+        ),
+      ),
+    );
+  }
 
-  Widget _itemPedido(BuildContext context, Details details){
+  Widget itemPedido(BuildContext context, Order order) {
     return Container(
-      child: ListTile(title: Text(
-              details.demTitulo,
-              style: Styles.textTitle,
-            ),),);
-  }
-
-
-  Widget itemPedido(BuildContext context, Order order){
-    return 
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(5),
-                    bottomRight: Radius.circular(5))),
-            margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
-            width: MediaQuery.of(context).size.width,
-            alignment: Alignment.center,
-            height: 50,
-            child: Text(
-              order.details.first.demTitulo,
-              style: Styles.textTitle,
-            ),
-          );
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
+      margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
+      width: MediaQuery.of(context).size.width,
+      alignment: Alignment.center,
+      height: 50,
+      child: Text(
+        order.details.first.demTitulo,
+        style: Styles.textTitle,
+      ),
+    );
   }
 
   //BOTTOMNAVBAR
