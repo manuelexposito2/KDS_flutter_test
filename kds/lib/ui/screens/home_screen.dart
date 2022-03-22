@@ -95,50 +95,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-/*
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      //width: MediaQuery.of(context).size.width / 2,
-      //height: 300,
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: orders.length,
-          itemBuilder: ((context, index) {
-            //context, orders[index]
-            return _createOrderItem(context, orders[index]);
-          })),
-    );
-    
-  }*/
 
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return GridView.builder(
-      shrinkWrap: true,
-      //controller: ScrollController(keepScrollOffset: true),
-      itemCount: orders.length,
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 800, childAspectRatio: 1),
-        itemBuilder: ((context, index) {
-          return _createOrderItem(context, orders[index]);
-        }));
+
+ Widget _createOrdersView(BuildContext context, List<Order> orders) {
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        for(var o in orders)
+          _createOrderItem(context, o)
+
+      ],
+    );
   }
-/*
 
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width / 2,
-      child: CustomScrollView(
-        scrollDirection: Axis.horizontal,
-        slivers: [
-          SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-            return _createOrderItem(context, orders[index]);
-          }, childCount: orders.length))
-        ],
-      ),
-    );
-  }*/
 
   Widget _createOrderItem(BuildContext context, Order order) {
     //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
