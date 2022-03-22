@@ -11,6 +11,7 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
+import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
 
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var version = "v.1.1.9";
   late OrderRepository orderRepository;
   String? _timeString;
-
+  bool showResumen = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -72,7 +73,13 @@ class _HomeScreenState extends State<HomeScreen> {
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
           return Scaffold(
-            body: _createOrdersView(context, state.orders),
+            body: Row(children: [
+              Expanded(
+                  flex: 2, child: _createOrdersView(context, state.orders)),
+              showResumen
+                  ? Expanded(flex: 1, child: ResumeOrdersWidget())
+                  : Container()
+            ]),
             bottomNavigationBar: bottomNavBar(context),
           );
         } else {
@@ -88,19 +95,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Container(
-      width: 320,
-      child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: orders.length,
-          itemBuilder: ((context, index) {
-            //context, orders[index]
-            return _createOrderItem(context, orders[index]);
-          })),
+
+
+ Widget _createOrdersView(BuildContext context, List<Order> orders) {
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        for(var o in orders)
+          _createOrderItem(context, o)
+
+      ],
     );
   }
+
 
   Widget _createOrderItem(BuildContext context, Order order) {
     //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
@@ -389,7 +398,11 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                showResumen = !showResumen;
+              });
+            },
             child: Icon(Icons.menu),
             style: Styles.btnActionStyle,
           ),
