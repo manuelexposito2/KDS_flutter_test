@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Container(
-      height: 300,
+      height: 800,
       child: ListView.builder(
         
         scrollDirection: Axis.horizontal ,
@@ -121,12 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
     return Container(
-      
       decoration: BoxDecoration(color: Styles.succesColor, borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
       child: Column(
-        //mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Column(
             children: [
@@ -232,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           
-          itemPedido(context, order)
+          Expanded(child: _listViewPedido(context, order.details))
         ],
       ),
     );
@@ -253,8 +252,24 @@ class _HomeScreenState extends State<HomeScreen> {
           );
   }
 
+  Widget _listViewPedido(BuildContext context, List<Details> details){
+    return ListView.builder(
+    physics: const BouncingScrollPhysics(),
+    shrinkWrap: true,
+    scrollDirection: Axis.vertical,
+        itemCount: details.length,
+        itemBuilder: (context, index) {
+          return _itemPedido(context, details.elementAt(index));});
+  }
 
 
+  Widget _itemPedido(BuildContext context, Details details){
+    return Container(
+      child: ListTile(title: Text(
+              details.demTitulo,
+              style: Styles.textTitle,
+            ),),);
+  }
 
 
   Widget itemPedido(BuildContext context, Order order){
