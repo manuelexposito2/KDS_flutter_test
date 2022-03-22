@@ -98,15 +98,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: [
-        for(var o in orders)
-          _createOrderItem(context, o)
-
-      ],
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Wrap(
+        direction: Axis.horizontal,
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        children: [
+          for(var o in orders)
+            _createOrderItem(context, o)
+    
+        ],
+      ),
     );
   }
 
