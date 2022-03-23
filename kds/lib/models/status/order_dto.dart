@@ -6,8 +6,8 @@ class OrderDto{
     required this.status
   });
 
-  late final String idOrder;
-  late final String status;
+  late final String? idOrder;
+  late final String? status;
 
   Map<String, dynamic> toJson(){
     final _data = <String, dynamic>{};

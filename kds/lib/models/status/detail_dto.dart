@@ -10,9 +10,9 @@ class DetailDto{
     required this.idDetail,
     required this.status
   });
-  late final String idOrder;
-  late final String idDetail;
-  late final String status;
+  late final String? idOrder;
+  late final String? idDetail;
+  late final String? status;
 
   Map<String, dynamic> toJson(){
     final _data = <String, dynamic>{};
