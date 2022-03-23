@@ -22,7 +22,28 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
+
+  /*
+  details.demEstado.contains('E');
+    details.demEstado.contains('R');
+    details.demEstado.contains('P');
+    details.demEstado.contains('T');
+  */
+
+  void _toogleStateButton(Details details){
+    setState(() {
+      if(details.demEstado.contains('E')){
+        details.demEstado = 'P';
+      }else if(details.demEstado.contains('P')){
+        details.demEstado = 'T';
+      }else {
+        details.demEstado = 'E';
+      }
+    });
+  }
+
   String? filter = '';
   var version = "v.1.1.9";
   late OrderRepository orderRepository;
@@ -95,24 +116,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _createOrdersView(BuildContext context, List<Order> orders) {
 
-
- Widget _createOrdersView(BuildContext context, List<Order> orders) {
+    
     return Align(
       alignment: Alignment.topLeft,
       child: Wrap(
         direction: Axis.horizontal,
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.start,
-        children: [
-          for(var o in orders)
-            _createOrderItem(context, o)
-    
-        ],
+        children: [for (var o in orders) _createOrderItem(context, o)],
       ),
     );
   }
-
 
   Widget _createOrderItem(BuildContext context, Order order) {
     //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
@@ -236,13 +252,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {},
                   ),
                 )
-                
               ],
             ),
           ),
           //urgente(),
-          Container( margin: EdgeInsets.all(1), child: pruebaItem(context, order.details),)
-          
+          Container(
+            margin: EdgeInsets.all(1),
+            color: Colors.white,
+            child: pruebaItem(context, order.details),
+          )
         ],
       ),
     );
@@ -263,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
- /*
+  /*
   Widget _listViewPedido(BuildContext context, List<Details> details) {
     return ListView.builder(
         shrinkWrap: true,
@@ -276,12 +294,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
  */
 
-
   Widget _itemPedido(BuildContext context, Details details) {
-    return Container(
-      
-      margin: EdgeInsets.only(left: 1, right: 1),
-      color: Colors.white,
+    details.demEstado.contains('E');
+    details.demEstado.contains('R');
+    details.demEstado.contains('P');
+    details.demEstado.contains('T');
+    Color nuevo = Colors.white;
+
+    if (details.demEstado.contains('E')) {
+            nuevo = Colors.white;
+          } else if (details.demEstado.contains('P')) {
+            nuevo = Color(0xFFF5CB8F);
+          } else if (details.demEstado.contains('R')) {
+            nuevo = Colors.purple;
+          } else if (details.demEstado.contains('T')) {
+            nuevo = Color(0xFFB0E1A0);
+          } else {
+            nuevo = Colors.white;
+          }
+
+    return TextButton(
+      style: TextButton.styleFrom(
+        backgroundColor: nuevo,
+        primary: Color.fromARGB(255, 87, 87, 87),
+      ),
+      onPressed: () {
+        
+         _toogleStateButton(details);
+        
+      },
       child: ListTile(
         title: Text(
           details.demTitulo,
@@ -291,17 +332,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget pruebaItem(BuildContext context, List<Details> details){
+  Widget pruebaItem(BuildContext context, List<Details> details) {
     return Wrap(
-        direction: Axis.horizontal,
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: [
-          for(var d in details)
-            _itemPedido(context, d)
-    
-        ],
-      );
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [for (var d in details) _itemPedido(context, d)],
+    );
   }
 
   /*
