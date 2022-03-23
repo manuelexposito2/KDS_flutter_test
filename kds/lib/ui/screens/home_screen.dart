@@ -22,7 +22,28 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
+
+  /*
+  details.demEstado.contains('E');
+    details.demEstado.contains('R');
+    details.demEstado.contains('P');
+    details.demEstado.contains('T');
+  */
+
+  void _toogleStateButton(Details details){
+    setState(() {
+      if(details.demEstado.contains('E')){
+        details.demEstado = 'P';
+      }else if(details.demEstado.contains('P')){
+        details.demEstado = 'T';
+      }else {
+        details.demEstado = 'E';
+      }
+    });
+  }
+
   String? filter = '';
   var version = "v.1.1.9";
   late OrderRepository orderRepository;
@@ -95,24 +116,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _createOrdersView(BuildContext context, List<Order> orders) {
 
-
- Widget _createOrdersView(BuildContext context, List<Order> orders) {
+    
     return Align(
       alignment: Alignment.topLeft,
       child: Wrap(
         direction: Axis.horizontal,
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.start,
-        children: [
-          for(var o in orders)
-            _createOrderItem(context, o)
-    
-        ],
+        children: [for (var o in orders) _createOrderItem(context, o)],
       ),
     );
   }
-
 
   Widget _createOrderItem(BuildContext context, Order order) {
     //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
@@ -124,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Container(
-      
       decoration: BoxDecoration(
           color: Styles.succesColor,
           borderRadius: BorderRadius.all(Radius.circular(5))),
@@ -240,7 +255,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          _listViewPedido(context, order.details)
+          //urgente(),
+          Container(
+            margin: EdgeInsets.all(1),
+            color: Colors.white,
+            child: pruebaItem(context, order.details),
+          )
         ],
       ),
     );
@@ -261,9 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /*
   Widget _listViewPedido(BuildContext context, List<Details> details) {
     return ListView.builder(
-        physics: const BouncingScrollPhysics(),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemCount: details.length,
@@ -272,8 +292,37 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+ */
+
   Widget _itemPedido(BuildContext context, Details details) {
-    return Card(
+    details.demEstado.contains('E');
+    details.demEstado.contains('R');
+    details.demEstado.contains('P');
+    details.demEstado.contains('T');
+    Color nuevo = Colors.white;
+
+    if (details.demEstado.contains('E')) {
+            nuevo = Colors.white;
+          } else if (details.demEstado.contains('P')) {
+            nuevo = Color(0xFFF5CB8F);
+          } else if (details.demEstado.contains('R')) {
+            nuevo = Colors.purple;
+          } else if (details.demEstado.contains('T')) {
+            nuevo = Color(0xFFB0E1A0);
+          } else {
+            nuevo = Colors.white;
+          }
+
+    return TextButton(
+      style: TextButton.styleFrom(
+        backgroundColor: nuevo,
+        primary: Color.fromARGB(255, 87, 87, 87),
+      ),
+      onPressed: () {
+        
+         _toogleStateButton(details);
+        
+      },
       child: ListTile(
         title: Text(
           details.demTitulo,
@@ -283,22 +332,33 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget itemPedido(BuildContext context, Order order) {
+  Widget pruebaItem(BuildContext context, List<Details> details) {
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [for (var d in details) _itemPedido(context, d)],
+    );
+  }
+
+  /*
+  Widget itemPedido(BuildContext context, Details details) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
-      margin: EdgeInsets.only(left: 1, right: 1, bottom: 1),
+      margin: EdgeInsets.only(left: 1, right: 1),
       width: MediaQuery.of(context).size.width,
       alignment: Alignment.center,
       height: 50,
       child: Text(
-        order.details.first.demTitulo,
+        details.demTitulo,
         style: Styles.textTitle,
       ),
     );
   }
+  */
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
