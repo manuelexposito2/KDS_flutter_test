@@ -1,6 +1,7 @@
 // ignore_for_file: void_checks
 
 import 'package:flutter/material.dart';
+import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 
 class ResumeOrdersWidget extends StatefulWidget {
@@ -16,15 +17,16 @@ class ResumeOrdersWidget extends StatefulWidget {
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   //Para probar el stream
 
-  List<String> lista = ["Producto 1", "Producto 2", "Producto 3"];
+  List<String> lista = ["Producto 1"];
 
   @override
   Widget build(BuildContext context) {
     //widget.lineasComandas = Stream.value("Otro dato");
+    List<String>? words;
+
     widget.lineasComandas = Stream.fromIterable(lista);
-    
-    //bucle???s
-    //widget.lineasComandas?.map((event) => '$event').listen(print);
+    //widget.lineasComandas.
+    //widget.lineasComandas?.listen((event) { words!.add(event); });
 
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
@@ -37,23 +39,44 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
           borderRadius: BorderRadius.circular(5.0)),
       child: Column(
         children: [
-          Container(
-            width: respWidth,
-            padding: const EdgeInsets.all(10.0),
-            decoration: BoxDecoration(color: Styles.black),
-            child: Text(
-              "Resumen",
-              textAlign: TextAlign.center,
-              style: Styles.resumeTitle,
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.topCenter,
+              width: respWidth,
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(color: Styles.black),
+              child: Text(
+                "Resumen",
+                textAlign: TextAlign.center,
+                style: Styles.resumeTitle,
+              ),
             ),
           ),
+
+          Expanded(
+            flex: 20,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              
+              itemCount: lista.length,
+              itemBuilder: (context, index) {
+              
+              return Text(widget.lineasComandas!.elementAt(index).toString());
+              //return Text(lista[index], textAlign: TextAlign.center,);
+
+            },),
+          ),
+
+          /*
           StreamBuilder(
             stream: widget.lineasComandas,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 //return TILE CLICKABLE
-                //TODO: Ver por qué saca el último del stream solamente
-                return Text(snapshot.data!.toString());
+                for(var w in words!){
+                  return Text(w);
+                }
               }
 
               if (snapshot.hasError) {
@@ -63,25 +86,13 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               }
             },
           )
-
-          /*
-          Container(
-            width: respWidth,
-            padding: const EdgeInsets.all(14.0),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(width: 1.0, color: Colors.grey),
-              ),
-            ),
-            //TODO: TRAER DATOS REALES
-            child: Text(
-              "1 X PRODUCTO",
-              textAlign: TextAlign.center,
-              style: Styles.productResumeLine,
-            ),
-          ),*/
+*/
+       
         ],
       ),
     );
   }
+
+
+
 }
