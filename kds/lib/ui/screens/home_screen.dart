@@ -11,6 +11,7 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
+import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
@@ -23,13 +24,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /*
-  details.demEstado.contains('E');
-    details.demEstado.contains('R');
-    details.demEstado.contains('P');
-    details.demEstado.contains('T');
-  */
-
   void _toogleStateButton(Details details) {
     setState(() {
       if (details.demEstado.contains('E')) {
@@ -121,241 +115,12 @@ class _HomeScreenState extends State<HomeScreen> {
         direction: Axis.horizontal,
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.start,
-        children: [for (var o in orders) _createOrderItem(context, o)],
+        children: [for (var o in orders) OrderCard(order: o)],
       ),
     );
   }
 
-  Widget _createOrderItem(BuildContext context, Order order) {
-    //Imprime los minutos buscando la diferencia entre la fecha actual y la fecha de inicio
-    String total() {
-      var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini * 1000);
-      var date2 = DateTime.now();
-      final horatotal = date2.difference(date);
-      return horatotal.inMinutes.toString();
-    }
 
-    return Container(
-      decoration: BoxDecoration(
-          color: Styles.succesColor,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      margin: EdgeInsets.all(10),
-      width: 300,
-      child: Wrap(
-        // mainAxisSize: MainAxisSize.max,
-        children: [
-          Column(
-            children: [
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      total() + ' min.',
-                      style: Styles.regularText,
-                    ),
-                    Text(
-                      '1/5',
-                      style: Styles.regularText,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.person,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      order.camOperario,
-                      style: Styles.regularText,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.push_pin,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          order.camMesa.toString(),
-                          style: Styles.regularText,
-                        )
-                      ],
-                    ),
-                    Container(
-                        alignment: Alignment.center,
-                        color: Colors.white,
-                        width: 40,
-                        height: 40,
-                        child: TextButton(
-                          onPressed: () {
-                              information();
-                            },
-                            child: Icon(
-                              Icons.info,
-                              color: Color.fromARGB(255, 87, 87, 87),
-                            )
-                        ))
-                  ],
-                ),
-              )
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 1),
-            color: Colors.grey.shade400,
-            height: 55,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: 195,
-                  height: 50,
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Color.fromARGB(255, 87, 87, 87),
-                        textStyle: TextStyle(fontSize: 18)),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.play_arrow,
-                      color: Color(0xFF337AB7),
-                      size: 30,
-                    ),
-                    label: const Text(
-                      'Preparar',
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 95,
-                  height: 50,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Color.fromARGB(255, 87, 87, 87)),
-                    child: Icon(Icons.print),
-                    onPressed: () {},
-                  ),
-                )
-              ],
-            ),
-          ),
-          //urgente(),
-          Container(
-            margin: EdgeInsets.all(1),
-            color: Colors.white,
-            child: pruebaItem(context, order.details),
-          )
-        ],
-      ),
-    );
-  }
-
-  //Hacer una condicional para que solo pase si se marca como urgente
-  Widget urgente() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      color: Styles.alertColor,
-      alignment: Alignment.center,
-      height: 50,
-      //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
-      child: Text(
-        '¡¡¡URGENTE!!!',
-        style: Styles.urgent,
-      ),
-    );
-  }
-
-  /*
-  Widget _listViewPedido(BuildContext context, List<Details> details) {
-    return ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemCount: details.length,
-        itemBuilder: (context, index) {
-          return _itemPedido(context, details.elementAt(index));
-        });
-  }
-
- */
-
-  Widget _itemPedido(BuildContext context, Details details) {
-    details.demEstado.contains('E');
-    details.demEstado.contains('R');
-    details.demEstado.contains('P');
-    details.demEstado.contains('T');
-    Color nuevo = Colors.white;
-
-    if (details.demEstado.contains('E')) {
-      nuevo = Colors.white;
-    } else if (details.demEstado.contains('P')) {
-      nuevo = Color(0xFFF5CB8F);
-    } else if (details.demEstado.contains('R')) {
-      nuevo = Colors.purple;
-    } else if (details.demEstado.contains('T')) {
-      nuevo = Color(0xFFB0E1A0);
-    } else {
-      nuevo = Colors.white;
-    }
-
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: nuevo,
-        primary: Color.fromARGB(255, 87, 87, 87),
-      ),
-      onPressed: () {
-        _toogleStateButton(details);
-      },
-      child: ListTile(
-        title: Text(
-          details.demTitulo,
-          style: Styles.textTitle,
-        ),
-      ),
-    );
-  }
-
-  Widget pruebaItem(BuildContext context, List<Details> details) {
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: [for (var d in details) _itemPedido(context, d)],
-    );
-  }
-
-  /*
-  Widget itemPedido(BuildContext context, Details details) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(5), bottomRight: Radius.circular(5))),
-      margin: EdgeInsets.only(left: 1, right: 1),
-      width: MediaQuery.of(context).size.width,
-      alignment: Alignment.center,
-      height: 50,
-      child: Text(
-        details.demTitulo,
-        style: Styles.textTitle,
-      ),
-    );
-  }
-  */
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
@@ -486,51 +251,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget information() {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        height: 800,
-        child: Column(
-          children: [
-            Container(
-              child: Text('Información de comanda'),
-            ),
-            Divider(),
-            Row(children: [
-              Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(children: [
-                Text('General'),
-                Divider(),
-                Row(children: [Icon(Icons.person), Text('Cliente:'), Text('Nombre del cliente')],),
-                 Row(children: [Icon(Icons.business_outlined), Text('Agencia:'), Text('Nombre de la agencia')],),
-                Row(children: [Icon(Icons.adjust_outlined), Text('Operario:'), Text('Nombre del operario')],),
-                Row(children: [Icon(Icons.push_pin), Text('Salón:'), Text('Número del salon')],),
-                Row(children: [Icon(Icons.query_stats_rounded), Text('Estado:'), Text('En espera')],),
-                Row(children: [Icon(Icons.chat_bubble), Text('Notas:'), Text('Ejemplo de notas')],),
-                Divider(),
-                Row(children: [Icon(Icons.euro_outlined), Text('Pagado:'), /* */ Icon(Icons.check), Text('Si')],),
-                Divider()
-              ],),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(children: [
-                Text('Cliente'),
-                Divider(),
-                Row(children: [Icon(Icons.person), Text('Nombre:'), Text('Nombre del cliente')],),
-                 Row(children: [Icon(Icons.phone), Text('Teléfono:'), Text('Teléfono')],),
-                Row(children: [Icon(Icons.place), Text('Dirección:'), Text('Dirección del cliente')],),
-                Row(children: [Icon(Icons.zoom_in_map_rounded), Text('Zona:'), Text('Zona en la que se encuentra')],),
-                Row(children: [Icon(Icons.chat_bubble), Text('Notas:'), Text('Ejemplo de notas')],),
-              ],),
-            )
-            
-            ],)
-          ],
-        ),
-      ),
-    );
-  }
+ 
 }
