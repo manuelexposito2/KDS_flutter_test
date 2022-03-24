@@ -85,12 +85,32 @@ class _HomeScreenState extends State<HomeScreen> {
           return const WaitingScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
+          List<Details>? resumeList = [];
+
+          if (state.orders.isNotEmpty) {
+            for (var comanda in state.orders) {
+              if (comanda.details.isNotEmpty) {
+                
+                //TODO: Filtrar según la petición
+                //comanda.details.where((element) => !element.demEstado.contains(filter.toString()));
+
+                for (var d in comanda.details) {
+                  resumeList.add(d);
+                }
+              }
+            }
+          }
+
           return Scaffold(
             body: Row(children: [
               Expanded(
                   flex: 3, child: _createOrdersView(context, state.orders)),
               showResumen
-                  ? Expanded(flex: 1, child: ResumeOrdersWidget())
+                  ? Expanded(
+                      flex: 1,
+                      child: ResumeOrdersWidget(
+                        lineasComandas: resumeList,
+                      ))
                   : Container()
             ]),
             bottomNavigationBar: bottomNavBar(context),
@@ -119,8 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
@@ -250,6 +268,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
- 
 }

@@ -5,11 +5,11 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
 
 class ResumeOrdersWidget extends StatefulWidget {
-  ResumeOrdersWidget({Key? key, Stream<String>? lineasComandas})
+  ResumeOrdersWidget({Key? key, required this.lineasComandas})
       : super(key: key);
 
   //TODO: Hacer una operación STREAM desde HOME y pasarla a ResumeOrdersWidget
-  Stream<String>? lineasComandas;
+  final List<Details>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();
 }
@@ -17,16 +17,9 @@ class ResumeOrdersWidget extends StatefulWidget {
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   //Para probar el stream
 
-  List<String> lista = ["Producto 1"];
-
   @override
   Widget build(BuildContext context) {
     //widget.lineasComandas = Stream.value("Otro dato");
-    List<String>? words;
-
-    widget.lineasComandas = Stream.fromIterable(lista);
-    //widget.lineasComandas.
-    //widget.lineasComandas?.listen((event) { words!.add(event); });
 
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
@@ -53,19 +46,36 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               ),
             ),
           ),
-
           Expanded(
             flex: 20,
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              
-              itemCount: lista.length,
+              itemCount: widget.lineasComandas!.length,
               itemBuilder: (context, index) {
-              
-              return Text(widget.lineasComandas!.elementAt(index).toString());
-              //return Text(lista[index], textAlign: TextAlign.center,);
 
-            },),
+                //TODO:
+                //Método que transforme el título separandolo por la X y sumando por nombre.
+
+                var titulo = widget.lineasComandas!
+                    .elementAt(index)
+                    .demTitulo
+                    .toString();
+
+                return TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    primary: Color.fromARGB(255, 87, 87, 87),
+                  ),
+                  onPressed: () {},
+                  child: ListTile(
+                    title: Text(
+                      titulo,
+                      style: Styles.textTitle,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
 
           /*
@@ -87,12 +97,8 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             },
           )
 */
-       
         ],
       ),
     );
   }
-
-
-
 }
