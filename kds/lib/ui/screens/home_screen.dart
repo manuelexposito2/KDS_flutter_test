@@ -22,9 +22,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-
 class _HomeScreenState extends State<HomeScreen> {
-
   /*
   details.demEstado.contains('E');
     details.demEstado.contains('R');
@@ -32,13 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
     details.demEstado.contains('T');
   */
 
-  void _toogleStateButton(Details details){
+  void _toogleStateButton(Details details) {
     setState(() {
-      if(details.demEstado.contains('E')){
+      if (details.demEstado.contains('E')) {
         details.demEstado = 'P';
-      }else if(details.demEstado.contains('P')){
+      } else if (details.demEstado.contains('P')) {
         details.demEstado = 'T';
-      }else {
+      } else {
         details.demEstado = 'E';
       }
     });
@@ -117,8 +115,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-
-    
     return Align(
       alignment: Alignment.topLeft,
       child: Wrap(
@@ -204,12 +200,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white,
                         width: 40,
                         height: 40,
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
+                        child: TextButton(
+                          onPressed: () {
+                              information();
+                            },
+                            child: Icon(
                               Icons.info,
                               color: Color.fromARGB(255, 87, 87, 87),
-                            )))
+                            )
+                        ))
                   ],
                 ),
               )
@@ -302,16 +301,16 @@ class _HomeScreenState extends State<HomeScreen> {
     Color nuevo = Colors.white;
 
     if (details.demEstado.contains('E')) {
-            nuevo = Colors.white;
-          } else if (details.demEstado.contains('P')) {
-            nuevo = Color(0xFFF5CB8F);
-          } else if (details.demEstado.contains('R')) {
-            nuevo = Colors.purple;
-          } else if (details.demEstado.contains('T')) {
-            nuevo = Color(0xFFB0E1A0);
-          } else {
-            nuevo = Colors.white;
-          }
+      nuevo = Colors.white;
+    } else if (details.demEstado.contains('P')) {
+      nuevo = Color(0xFFF5CB8F);
+    } else if (details.demEstado.contains('R')) {
+      nuevo = Colors.purple;
+    } else if (details.demEstado.contains('T')) {
+      nuevo = Color(0xFFB0E1A0);
+    } else {
+      nuevo = Colors.white;
+    }
 
     return TextButton(
       style: TextButton.styleFrom(
@@ -319,9 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
         primary: Color.fromARGB(255, 87, 87, 87),
       ),
       onPressed: () {
-        
-         _toogleStateButton(details);
-        
+        _toogleStateButton(details);
       },
       child: ListTile(
         title: Text(
@@ -485,6 +482,54 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Styles.btnActionStyle,
           )
         ],
+      ),
+    );
+  }
+
+  Widget information() {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Container(
+        height: 800,
+        child: Column(
+          children: [
+            Container(
+              child: Text('Información de comanda'),
+            ),
+            Divider(),
+            Row(children: [
+              Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(children: [
+                Text('General'),
+                Divider(),
+                Row(children: [Icon(Icons.person), Text('Cliente:'), Text('Nombre del cliente')],),
+                 Row(children: [Icon(Icons.business_outlined), Text('Agencia:'), Text('Nombre de la agencia')],),
+                Row(children: [Icon(Icons.adjust_outlined), Text('Operario:'), Text('Nombre del operario')],),
+                Row(children: [Icon(Icons.push_pin), Text('Salón:'), Text('Número del salon')],),
+                Row(children: [Icon(Icons.query_stats_rounded), Text('Estado:'), Text('En espera')],),
+                Row(children: [Icon(Icons.chat_bubble), Text('Notas:'), Text('Ejemplo de notas')],),
+                Divider(),
+                Row(children: [Icon(Icons.euro_outlined), Text('Pagado:'), /* */ Icon(Icons.check), Text('Si')],),
+                Divider()
+              ],),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(children: [
+                Text('Cliente'),
+                Divider(),
+                Row(children: [Icon(Icons.person), Text('Nombre:'), Text('Nombre del cliente')],),
+                 Row(children: [Icon(Icons.phone), Text('Teléfono:'), Text('Teléfono')],),
+                Row(children: [Icon(Icons.place), Text('Dirección:'), Text('Dirección del cliente')],),
+                Row(children: [Icon(Icons.zoom_in_map_rounded), Text('Zona:'), Text('Zona en la que se encuentra')],),
+                Row(children: [Icon(Icons.chat_bubble), Text('Notas:'), Text('Ejemplo de notas')],),
+              ],),
+            )
+            
+            ],)
+          ],
+        ),
       ),
     );
   }
