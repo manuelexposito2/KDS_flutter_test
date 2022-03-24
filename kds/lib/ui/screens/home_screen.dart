@@ -23,23 +23,14 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-
 class _HomeScreenState extends State<HomeScreen> {
-
-  /*
-  details.demEstado.contains('E');
-    details.demEstado.contains('R');
-    details.demEstado.contains('P');
-    details.demEstado.contains('T');
-  */
-
-  void _toogleStateButton(Details details){
+  void _toogleStateButton(Details details) {
     setState(() {
-      if(details.demEstado.contains('E')){
+      if (details.demEstado.contains('E')) {
         details.demEstado = 'P';
-      }else if(details.demEstado.contains('P')){
+      } else if (details.demEstado.contains('P')) {
         details.demEstado = 'T';
-      }else {
+      } else {
         details.demEstado = 'E';
       }
     });
@@ -118,8 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-
-    
     return Align(
       alignment: Alignment.topLeft,
       child: Wrap(
@@ -130,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
 
   //BOTTOMNAVBAR
@@ -260,4 +250,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+ 
 }

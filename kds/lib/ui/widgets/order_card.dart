@@ -21,12 +21,11 @@ class OrderCard extends StatefulWidget {
 }
 
 class _ComandaCardState extends State<OrderCard> {
-
   late StatusOrderRepository statusOrderRepository;
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
-  
+
   String? idOrder;
   String? idDetail;
   String? status;
@@ -37,16 +36,17 @@ class _ComandaCardState extends State<OrderCard> {
     super.initState();
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
-    statusOrderBloc = StatusOrderBloc(statusOrderRepository)..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
-    statusDetailBloc = StatusDetailBloc(statusDetailRepository)..add(DoStatusDetailEvent(DetailDto(idOrder: idOrder, idDetail: idDetail,status: status)));
+    statusOrderBloc = StatusOrderBloc(statusOrderRepository)
+      ..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
+    statusDetailBloc = StatusDetailBloc(statusDetailRepository)
+      ..add(DoStatusDetailEvent(
+          DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
     return cardComanda(context);
-    
+
     /*MultiBlocListener(
   listeners: [
     BlocListener<StatusOrderBloc, StatusOrderSuccessState>(
@@ -60,7 +60,7 @@ class _ComandaCardState extends State<OrderCard> {
 )*/
   }
 
-  Widget cardComanda(BuildContext context){
+  Widget cardComanda(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
           color: Styles.succesColor,
@@ -127,7 +127,14 @@ class _ComandaCardState extends State<OrderCard> {
                         width: 40,
                         height: 40,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () => showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: information(),
+                                  );
+                                },
+                                barrierDismissible: true),
                             icon: Icon(
                               Icons.info,
                               color: Color.fromARGB(255, 87, 87, 87),
@@ -181,13 +188,12 @@ class _ComandaCardState extends State<OrderCard> {
           Container(
             margin: EdgeInsets.all(1),
             color: Colors.white,
-            child: pruebaItem(context, widget.order!.details),
+            child: cardItem(context, widget.order!.details),
           )
         ],
       ),
     );
   }
-
 
   Widget urgente() {
     return Container(
@@ -239,7 +245,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget pruebaItem(BuildContext context, List<Details> details) {
+  Widget cardItem(BuildContext context, List<Details> details) {
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.start,
@@ -266,5 +272,131 @@ class _ComandaCardState extends State<OrderCard> {
     var date2 = DateTime.now();
     final horatotal = date2.difference(date);
     return horatotal.inMinutes.toString();
+  }
+
+  Widget information() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Container(
+        height: 800,
+        child: Column(
+          children: [
+            Container(
+              child: Text('Información de comanda'),
+            ),
+            Divider(),
+            Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Text('General'),
+                      Divider(),
+                      Row(
+                        children: [
+                          Icon(Icons.person),
+                          Text('Cliente:'),
+                          Text('Nombre del cliente')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.business_outlined),
+                          Text('Agencia:'),
+                          Text('Nombre de la agencia')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.adjust_outlined),
+                          Text('Operario:'),
+                          Text('Nombre del operario')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.push_pin),
+                          Text('Salón:'),
+                          Text('Número del salon')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.query_stats_rounded),
+                          Text('Estado:'),
+                          Text('En espera')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.chat_bubble),
+                          Text('Notas:'),
+                          Text('Ejemplo de notas')
+                        ],
+                      ),
+                      Divider(),
+                      Row(
+                        children: [
+                          Icon(Icons.euro_outlined),
+                          Text('Pagado:'),
+                          /* */ Icon(Icons.check),
+                          Text('Si')
+                        ],
+                      ),
+                      Divider()
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Text('Cliente'),
+                      Divider(),
+                      Row(
+                        children: [
+                          Icon(Icons.person),
+                          Text('Nombre:'),
+                          Text('Nombre del cliente')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.phone),
+                          Text('Teléfono:'),
+                          Text('Teléfono')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.place),
+                          Text('Dirección:'),
+                          Text('Dirección del cliente')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.zoom_in_map_rounded),
+                          Text('Zona:'),
+                          Text('Zona en la que se encuentra')
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.chat_bubble),
+                          Text('Notas:'),
+                          Text('Ejemplo de notas')
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
