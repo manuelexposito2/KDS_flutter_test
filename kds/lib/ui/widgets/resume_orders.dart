@@ -10,31 +10,22 @@ class ResumeOrdersWidget extends StatefulWidget {
       : super(key: key);
 
   //TODO: Hacer una operación STREAM desde HOME y pasarla a ResumeOrdersWidget
-  final List<Details>? lineasComandas;
+  final List<String>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();
 }
 
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
-  //Para probar el stream
-
-  List<String> titulos = [];
-  int resumeLinesLength = 0;
-
+  
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    for (var item in widget.lineasComandas!) {
-      titulos.add(item.demTitulo);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    //widget.lineasComandas = Stream.value("Otro dato");
-
+   
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
 
@@ -64,9 +55,8 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             flex: 20,
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: reordering(titulos).length, //reordering(titulos).length,
+              itemCount: widget.lineasComandas!.length, 
               itemBuilder: (context, index) {
-                String linea = reordering(titulos)[index];
 
                 return TextButton(
                   style: TextButton.styleFrom(
@@ -76,8 +66,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                   onPressed: () {},
                   child: ListTile(
                     title: Text(
-                     // widget.lineasComandas!.elementAt(index).demTitulo,
-                     linea,
+                      widget.lineasComandas!.elementAt(index),
                       style: Styles.textTitle,
                     ),
                   ),
@@ -86,54 +75,9 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             ),
           ),
 
-          /*
-          StreamBuilder(
-            stream: widget.lineasComandas,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                //return TILE CLICKABLE
-                for(var w in words!){
-                  return Text(w);
-                }
-              }
-
-              if (snapshot.hasError) {
-                return Text("Nada por aquí.");
-              } else {
-                return Text("Espera...");
-              }
-            },
-          )
-*/
         ],
       ),
     );
   }
 
-  List<String> reordering(List<String> titulos) {
-    List<List<String>> titulosSplit = [];
-
-    var producto;
-    var cantidad = 0;
-    List<String> result = [];
-    for (var item in titulos) {
-      titulosSplit.add(item.split(' '));
-    }
-
-    var prueba = titulosSplit.groupListsBy((linea) => linea[2]).entries;
-
-    for (var item in prueba) {
-      cantidad = 0;
-      producto = item.key;
-      for (var i in item.value) {
-        cantidad += int.parse(i[0]);
-      }
-
-      result.add("$cantidad X $producto");
-      //debugPrint('$producto : $cantidad');
-
-    }
-    //debugPrint(prueba.toString());
-    return result;
-  }
 }

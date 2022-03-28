@@ -16,6 +16,8 @@ import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
 
+import "package:collection/collection.dart";
+
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
 
@@ -24,18 +26,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  void _toogleStateButton(Details details) {
-    setState(() {
-      if (details.demEstado.contains('E')) {
-        details.demEstado = 'P';
-      } else if (details.demEstado.contains('P')) {
-        details.demEstado = 'T';
-      } else {
-        details.demEstado = 'E';
-      }
-    });
-  }
-
   String? filter = '';
   var version = "v.1.1.9";
   late OrderRepository orderRepository;
@@ -85,18 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
           return const WaitingScreen();
           //Incluir el mensaje requerido y el retry
         } else if (state is OrdersFetchSuccessState) {
-          List<Details>? resumeList = [];
+          List<String>? resumeList = [];
 
           if (state.orders.isNotEmpty) {
             for (var comanda in state.orders) {
               if (comanda.details.isNotEmpty) {
-                
-                //TODO: Filtrar según la petición
-                //comanda.details.where((element) => !element.demEstado.contains(filter.toString()));
-
                 for (var d in comanda.details) {
-                  resumeList.add(d);
+                  //Todas las lineas de venta las metemos en una lista para hacer el resumen
+                  resumeList.add(d.demTitulo);
                 }
+                
               }
             }
           }
@@ -109,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Expanded(
                       flex: 1,
                       child: ResumeOrdersWidget(
-                        lineasComandas: resumeList,
+                        lineasComandas: reordering(resumeList),
                       ))
                   : Container()
             ]),
@@ -267,5 +255,46 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  void _toogleStateButton(Details details) {
+    setState(() {
+      if (details.demEstado.contains('E')) {
+        details.demEstado = 'P';
+      } else if (details.demEstado.contains('P')) {
+        details.demEstado = 'T';
+      } else {
+        details.demEstado = 'E';
+      }
+    });
+  }
+
+  //GESTION DEL RESUMEN DE COMANDAS
+  //Agrupamos los "titulos" por nombre y sumamos las cantidades
+  List<String> reordering(List<String> titulos) {
+    List<List<String>> titulosSplit = [];
+
+    var producto;
+    var cantidad = 0;
+    List<String> result = [];
+    for (var item in titulos) {
+      titulosSplit.add(item.split(' '));
+    }
+
+    var prueba = titulosSplit.groupListsBy((linea) => linea[2]).entries;
+
+    for (var item in prueba) {
+      cantidad = 0;
+      producto = item.key;
+      for (var i in item.value) {
+        cantidad += int.parse(i[0]);
+      }
+
+      result.add("$cantidad X $producto");
+      //debugPrint('$producto : $cantidad');
+
+    }
+    //debugPrint(prueba.toString());
+    return result;
   }
 }
