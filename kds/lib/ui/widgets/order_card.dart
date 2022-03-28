@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
@@ -275,123 +276,231 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget information() {
+    var espaciado = EdgeInsets.only(bottom: 5);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
-        height: 800,
+        height: 450,
         child: Column(
           children: [
             Container(
-              child: Text('Información de comanda'),
+              child: Text(
+                'Información de comanda',
+                style: Styles.textTitleInfo,
+              ),
             ),
             Divider(),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('General'),
-                      Divider(),
-                      Row(
-                        children: [
-                          Icon(Icons.person),
-                          Text('Cliente:'),
-                          Text('Nombre del cliente')
-                        ],
+                      Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: Text(
+                          'General',
+                          style: Styles.textTitleInfo,
+                        ),
                       ),
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.business_outlined),
-                          Text('Agencia:'),
-                          Text('Nombre de la agencia')
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.person),
+                                Text(
+                                  ' Cliente: ',
+                                  style: Styles.textBoldInfo,
+                                ),
+                                Text(
+                                  'Nombre del cliente',
+                                  style: Styles.textRegularInfo,
+                                )
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.business_outlined),
+                                Text(' Agencia: ', style: Styles.textBoldInfo),
+                                Text('Nombre de la agencia',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.adjust_outlined),
+                                Text(' Operario: ', style: Styles.textBoldInfo),
+                                Text('Nombre del operario',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.push_pin),
+                                Text(' Salón: ', style: Styles.textBoldInfo),
+                                Text('Número del salon',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.query_stats_rounded),
+                                Text(' Estado: ', style: Styles.textBoldInfo),
+                                Text('En espera', style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.chat_bubble),
+                                Text(' Notas: ', style: Styles.textBoldInfo),
+                                Text('Ejemplo de notas',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.euro_outlined),
+                                Text(' Pagado: ', style: Styles.textBoldInfo),
+                                /* */ Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 40,
+                                ),
+                                Text('Si', style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Divider()
                         ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.adjust_outlined),
-                          Text('Operario:'),
-                          Text('Nombre del operario')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.push_pin),
-                          Text('Salón:'),
-                          Text('Número del salon')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.query_stats_rounded),
-                          Text('Estado:'),
-                          Text('En espera')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.chat_bubble),
-                          Text('Notas:'),
-                          Text('Ejemplo de notas')
-                        ],
-                      ),
-                      Divider(),
-                      Row(
-                        children: [
-                          Icon(Icons.euro_outlined),
-                          Text('Pagado:'),
-                          /* */ Icon(Icons.check),
-                          Text('Si')
-                        ],
-                      ),
-                      Divider()
+                      )
                     ],
                   ),
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Cliente'),
-                      Divider(),
-                      Row(
-                        children: [
-                          Icon(Icons.person),
-                          Text('Nombre:'),
-                          Text('Nombre del cliente')
-                        ],
+                      Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: Text('Cliente', style: Styles.textTitleInfo),
                       ),
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.phone),
-                          Text('Teléfono:'),
-                          Text('Teléfono')
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Row(
+                              children: [
+                                Icon(Icons.person),
+                                Text(' Nombre: ', style: Styles.textBoldInfo),
+                                Text('Nombre del cliente',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.phone),
+                                Text(' Teléfono: ', style: Styles.textBoldInfo),
+                                Text('Teléfono', style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.place),
+                                Text(' Dirección:', style: Styles.textBoldInfo),
+                                Text('Dirección del cliente',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.zoom_in_map_rounded),
+                                Text(' Zona: ', style: Styles.textBoldInfo),
+                                Text('Zona en la que se encuentra',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.chat_bubble),
+                                Text(' Notas:', style: Styles.textBoldInfo),
+                                Text('Ejemplo de notas',
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
+                          ),
                         ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.place),
-                          Text('Dirección:'),
-                          Text('Dirección del cliente')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.zoom_in_map_rounded),
-                          Text('Zona:'),
-                          Text('Zona en la que se encuentra')
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.chat_bubble),
-                          Text('Notas:'),
-                          Text('Ejemplo de notas')
-                        ],
-                      ),
+                      )
                     ],
                   ),
-                )
+                ),
+                Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: Text(
+                          'Ticket',
+                          style: Styles.textTitleInfo,
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFD9534F),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                            ),
+                            alignment: Alignment.center,
+                            height: 50,
+                            width: 350,
+                            child: Text(
+                              '¡Marcar como URGENTE!',
+                              style: Styles.urgent,
+                            ),
+                          )),
+                      ticket(context)
+                    ],
+                  ),
+                ),
               ],
             )
           ],
@@ -399,4 +508,148 @@ class _ComandaCardState extends State<OrderCard> {
       ),
     );
   }
+
+  Widget ticket(BuildContext context) {
+
+    var date =
+        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini * 1000);
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Color.fromARGB(255, 243, 243, 243),
+          border: Border.all(
+            color: Color.fromARGB(255, 199, 199, 199),
+
+            // red as border color
+          ),
+        ),
+        width: 600,
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Fecha: ',
+                                style: Styles.textTicketInfo,
+                              ),
+                              Text(
+                                date.toString(),
+                                style: Styles.textTicketInfo,
+                              )
+                            ],
+                          ))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      children: List.generate(
+                          300 ~/ 5,
+                          (index) => Expanded(
+                                child: Container(
+                                  color: index % 2 == 0
+                                      ? Colors.transparent
+                                      : Color.fromARGB(255, 0, 0, 0),
+                                  height: 1,
+                                ),
+                              )),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: List.generate(
+                      300 ~/ 5,
+                      (index) => Expanded(
+                            child: Container(
+                              color: index % 2 == 0
+                                  ? Colors.transparent
+                                  : Color.fromARGB(255, 0, 0, 0),
+                              height: 1,
+                            ),
+                          )),
+                ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('Total EUR:', style: Styles.textTicketInfo),
+                    Text('7.00', style: Styles.textTicketInfo)
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  /*
+  Widget urgente() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      color: Styles.alertColor,
+      alignment: Alignment.center,
+      height: 50,
+      //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
+      child: Text(
+        '¡¡¡URGENTE!!!',
+        style: Styles.urgent,
+      ),
+    );
+  }
+  */
 }
