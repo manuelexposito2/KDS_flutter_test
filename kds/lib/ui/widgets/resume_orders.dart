@@ -49,21 +49,20 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               ),
             ),
           ),
-          //TODO: Hacer más estrechas las tiles y marcar la linea entre ellas
+          
           Expanded(
             flex: 20,
             child: ListView.builder(
+              padding: Styles.zeroPadding,
               scrollDirection: Axis.vertical,
               itemCount: widget.lineasComandas!.length,
               itemBuilder: (context, index) {
-                return TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    primary: Color.fromARGB(255, 87, 87, 87),
-                  ),
+                return OutlinedButton(
+                  style: Styles.tileStyle,
                   onPressed: () {},
                   child: ListTile(
-                    //style: ListTileStyle.drawer,
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+                    dense: true,
                     title: Text(
                       widget.lineasComandas!.elementAt(index),
                       style: Styles.textTitle,
