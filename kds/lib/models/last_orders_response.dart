@@ -1,24 +1,21 @@
-
-
 import 'dart:convert';
 import './../utils/string_extension.dart';
 
 class LastOrdersResponse {
-  LastOrdersResponse(
-    {
+  LastOrdersResponse({
     required this.getLastOrders,
   });
   late final List<Order> getLastOrders;
-  
-  
-  LastOrdersResponse.fromJson(Map<String, dynamic> json){
-    getLastOrders = List.from(json['getLastOrders']).map((e)=>Order.fromJson(e)).toList();
+
+  LastOrdersResponse.fromJson(Map<String, dynamic> json) {
+    getLastOrders =
+        List.from(json['getLastOrders']).map((e) => Order.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
-    _data['getLastOrders'] = getLastOrders.map((e)=>e.toJson()).toList();
-    
+    _data['getLastOrders'] = getLastOrders.map((e) => e.toJson()).toList();
+
     return _data;
   }
 }
@@ -70,8 +67,8 @@ class Order {
   late final String camMin;
   late final String numPedidoOnline;
   late final List<Details> details;
-  
-  Order.fromJson(Map<String, dynamic> json){
+
+  Order.fromJson(Map<String, dynamic> json) {
     camId = json['cam_id'];
     camUrgente = json['cam_urgente'];
     camIdCab = json['cam_id_cab'];
@@ -93,7 +90,8 @@ class Order {
     camHora = json['cam_hora'];
     camMin = json['cam_min'];
     numPedidoOnline = json['num_pedido_online'];
-    details = List.from(json['details']).map((e)=>Details.fromJson(e)).toList();
+    details =
+        List.from(json['details']).map((e) => Details.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -119,9 +117,87 @@ class Order {
     _data['cam_hora'] = camHora;
     _data['cam_min'] = camMin;
     _data['num_pedido_online'] = numPedidoOnline;
-    _data['details'] = details.map((e)=>e.toJson()).toList();
+    _data['details'] = details.map((e) => e.toJson()).toList();
     return _data;
   }
+}
+
+class OrderExtended extends Order {
+  OrderExtended({
+    required int camId,
+    required int camUrgente,
+    required int camIdCab,
+    required int camFecini,
+    required int camFecfin,
+    required String camOperario,
+    required String camEstado,
+    required int camMesa,
+    required int camOrden,
+    required String camSalon,
+    required String camNombre,
+    required String camName,
+    required String numPedido,
+    required String camNota,
+    required int camComensales,
+    required int camPedido,
+    required String camEstadoCab,
+    required String camTipoPedido,
+    required String camHora,
+    required String camMin,
+    required String numPedidoOnline,
+    required List<Details> details,
+    required this.camNombre2,
+    required this.camTicket,
+    required this.agcNombre,
+    required this.nombreRepartidor,
+    required this.cliId,
+    required this.cliNombre,
+    required this.cliApellidos,
+    required this.cliTelefono,
+    required this.cliDireccion,
+    required this.cliCp,
+    required this.cliLocalidad,
+    required this.cliProvincia,
+    required this.cliNotas,
+    required this.cliZona,
+  }) : super(
+            camId: camId,
+            camUrgente: camUrgente,
+            camIdCab: camIdCab,
+            camFecini: camFecini,
+            camFecfin: camFecfin,
+            camOperario: camOperario,
+            camEstado: camEstado,
+            camMesa: camMesa,
+            camOrden: camOrden,
+            camSalon: camSalon,
+            camNombre: camNombre,
+            camName: camName,
+            numPedido: numPedido,
+            camNota: camNota,
+            camComensales: camComensales,
+            camPedido: camPedido,
+            camEstadoCab: camEstadoCab,
+            camTipoPedido: camTipoPedido,
+            camHora: camHora,
+            camMin: camMin,
+            numPedidoOnline: numPedidoOnline,
+            details: details);
+
+  late final String camNombre2;
+  late final String camTicket;
+  late final String agcNombre;
+  late final String nombreRepartidor;
+  late final int cliId;
+  late final String cliNombre;
+  late final String cliApellidos;
+  late final String cliTelefono;
+  late final String cliDireccion;
+  late final String cliCp;
+  late final String cliLocalidad;
+  late final String cliProvincia;
+  late final String cliNotas;
+  late final String cliZona;
 }
 
 class Details {
@@ -161,8 +237,8 @@ class Details {
   late final int demSeling;
   late final int demPlato;
   late final int demPedirPeso;
-  
-  Details.fromJson(Map<String, dynamic> json){
+
+  Details.fromJson(Map<String, dynamic> json) {
     demId = json['dem_id'];
     demIdCam = json['dem_id_cam'];
     demEstado = json['dem_estado'];

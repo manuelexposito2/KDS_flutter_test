@@ -27,10 +27,12 @@ class _ComandaCardState extends State<OrderCard> {
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
 
+  
+
   String? idOrder;
   String? idDetail;
   String? status;
-
+  
   @override
   void initState() {
     // TODO: implement initState
