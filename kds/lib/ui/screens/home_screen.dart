@@ -82,9 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
               if (comanda.details.isNotEmpty) {
                 for (var d in comanda.details) {
                   //Todas las lineas de venta las metemos en una lista para hacer el resumen
-                  resumeList.add(d.demTitulo);
+
+                  if (!d.demEstado.contains("T")) {
+                    resumeList.add(d.demTitulo);
+                  }
                 }
-                
               }
             }
           }

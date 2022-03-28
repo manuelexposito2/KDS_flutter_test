@@ -16,7 +16,6 @@ class ResumeOrdersWidget extends StatefulWidget {
 }
 
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
-  
   @override
   void initState() {
     // TODO: implement initState
@@ -25,7 +24,6 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
 
   @override
   Widget build(BuildContext context) {
-   
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
 
@@ -51,13 +49,13 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               ),
             ),
           ),
+          //TODO: Hacer más estrechas las tiles y marcar la linea entre ellas
           Expanded(
             flex: 20,
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: widget.lineasComandas!.length, 
+              itemCount: widget.lineasComandas!.length,
               itemBuilder: (context, index) {
-
                 return TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -65,6 +63,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                   ),
                   onPressed: () {},
                   child: ListTile(
+                    //style: ListTileStyle.drawer,
                     title: Text(
                       widget.lineasComandas!.elementAt(index),
                       style: Styles.textTitle,
@@ -74,10 +73,8 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               },
             ),
           ),
-
         ],
       ),
     );
   }
-
 }
