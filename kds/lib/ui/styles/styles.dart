@@ -12,10 +12,8 @@ class Styles {
   static final Color whiteBtn = Colors.white;
   static final Color blueBtnColor = Color(0xFF337AB7);
 
-  
   static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
-
 
 //TODO: Rehacer estilo para el borde de las cajas de RESUME
   static BoxBorder borderSimple = Border.all(color: black);
@@ -57,9 +55,9 @@ class Styles {
 
 //Botones pantalla pequeña
 
-static final buttonEnProcesomin = ElevatedButton.styleFrom(
-  minimumSize: Size(250, 60) ,
-  maximumSize: Size(250, 60),
+  static final buttonEnProcesomin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60),
+    maximumSize: Size(250, 60),
     primary: yellowBtn,
     padding:
         EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
@@ -67,8 +65,8 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
         borderRadius: BorderRadius.all(Radius.circular(5))),
   );
   static final buttonTerminadasmin = ElevatedButton.styleFrom(
-    minimumSize: Size(250, 60) ,
-  maximumSize: Size(250, 60),
+    minimumSize: Size(250, 60),
+    maximumSize: Size(250, 60),
     primary: greenBtn,
     padding:
         EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
@@ -76,8 +74,8 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
         borderRadius: BorderRadius.all(Radius.circular(5))),
   );
   static final buttonTodasmin = ElevatedButton.styleFrom(
-    minimumSize: Size(250, 60) ,
-  maximumSize: Size(250, 60),
+    minimumSize: Size(250, 60),
+    maximumSize: Size(250, 60),
     primary: whiteBtn,
     padding:
         EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
@@ -107,12 +105,24 @@ static final buttonEnProcesomin = ElevatedButton.styleFrom(
       fontWeight: FontWeight.w700);
 
   static TextStyle get urgent => GoogleFonts.getFont('Roboto',
-      fontSize: 23, color: Colors.white, fontWeight: FontWeight.w700);
+      fontSize: 27, color: Colors.white, fontWeight: FontWeight.w700);
 
   static TextStyle get regularText =>
       GoogleFonts.getFont('Roboto', fontSize: 17, color: Colors.white);
 
-  static TextStyle get textWarning => GoogleFonts.getFont('Roboto',
-      fontSize: 25, color: Colors.black);
-  
+  static TextStyle get textWarning =>
+      GoogleFonts.getFont('Roboto', fontSize: 25, color: Colors.black);
+
+  static TextStyle get textBoldInfo =>
+      GoogleFonts.getFont('Roboto', fontSize: 27, fontWeight: FontWeight.w700);
+
+  static TextStyle get textTitleInfo => 
+      GoogleFonts.getFont('Roboto', fontSize: 34);
+
+  static TextStyle get textRegularInfo => 
+      GoogleFonts.getFont('Roboto', fontSize: 25);
+
+  static TextStyle get textTicketInfo => 
+      GoogleFonts.getFont('Red Hat Mono', fontSize: 18);   
+
 }
