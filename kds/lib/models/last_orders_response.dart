@@ -1,5 +1,3 @@
-import 'dart:convert';
-import './../utils/string_extension.dart';
 
 class LastOrdersResponse {
   LastOrdersResponse({
@@ -33,42 +31,68 @@ class Order {
     required this.camOrden,
     required this.camSalon,
     required this.camNombre,
+    required this.camNombre2,
     required this.camName,
-    required this.numPedido,
     required this.camNota,
     required this.camComensales,
     required this.camPedido,
     required this.camEstadoCab,
+    required this.camTicket,
     required this.camTipoPedido,
     required this.camHora,
     required this.camMin,
-    required this.numPedidoOnline,
+    required this.numPedido,
+    required this.agcNombre,
+    required this.nombreRepartidor,
+    required this.cliId,
+    required this.cliNombre,
+    required this.cliApellidos,
+    required this.cliTelefono,
+    required this.cliDireccion,
+    required this.cliCp,
+    required this.cliLocalidad,
+    required this.cliProvincia,
+    required this.cliNotas,
+    required this.cliZona,
     required this.details,
   });
-  late final int camId;
-  late final int camUrgente;
-  late final int camIdCab;
-  late final int camFecini;
-  late final int camFecfin;
-  late final String camOperario;
-  late final String camEstado;
-  late final int camMesa;
-  late final int camOrden;
-  late final String camSalon;
-  late final String camNombre;
-  late final String camName;
-  late final String numPedido;
-  late final String camNota;
-  late final int camComensales;
-  late final int camPedido;
-  late final String camEstadoCab;
-  late final String camTipoPedido;
-  late final String camHora;
-  late final String camMin;
-  late final String numPedidoOnline;
+  late final int? camId;
+  late final int? camUrgente;
+  late final int? camIdCab;
+  late final int? camFecini;
+  late final int? camFecfin;
+  late final String? camOperario;
+  late final String? camEstado;
+  late final int? camMesa;
+  late final int? camOrden;
+  late final String? camSalon;
+  late final String? camNombre;
+  late final String? camNombre2;
+  late final String? camName;
+  late final String? camNota;
+  late final int? camComensales;
+  late final int? camPedido;
+  late final String? camEstadoCab;
+  late final String? camTicket;
+  late final String? camTipoPedido;
+  late final String? camHora;
+  late final String? camMin;
+  late final String? numPedido;
+  late final String? agcNombre;
+  late final String? nombreRepartidor;
+  late final int? cliId;
+  late final String? cliNombre;
+  late final String? cliApellidos;
+  late final String? cliTelefono;
+  late final String? cliDireccion;
+  late final String? cliCp;
+  late final String? cliLocalidad;
+  late final String? cliProvincia;
+  late final String? cliNotas;
+  late final String? cliZona;
   late final List<Details> details;
-
-  Order.fromJson(Map<String, dynamic> json) {
+  
+  Order.fromJson(Map<String, dynamic> json){
     camId = json['cam_id'];
     camUrgente = json['cam_urgente'];
     camIdCab = json['cam_id_cab'];
@@ -80,18 +104,30 @@ class Order {
     camOrden = json['cam_orden'];
     camSalon = json['cam_salon'];
     camNombre = json['cam_nombre'];
+    camNombre2 = json['cam_nombre2'];
     camName = json['cam_name'];
-    numPedido = json['num_pedido'];
     camNota = json['cam_nota'];
     camComensales = json['cam_comensales'];
     camPedido = json['cam_pedido'];
     camEstadoCab = json['cam_estado_cab'];
+    camTicket = json['cam_ticket'];
     camTipoPedido = json['cam_tipo_pedido'];
     camHora = json['cam_hora'];
     camMin = json['cam_min'];
-    numPedidoOnline = json['num_pedido_online'];
-    details =
-        List.from(json['details']).map((e) => Details.fromJson(e)).toList();
+    numPedido = json['num_pedido'];
+    agcNombre = json['agc_nombre'];
+    nombreRepartidor = json['nombre_repartidor'];
+    cliId = json['cli_id'];
+    cliNombre = json['cli_nombre'];
+    cliApellidos = json['cli_apellidos'];
+    cliTelefono = json['cli_telefono'];
+    cliDireccion = json['cli_direccion'];
+    cliCp = json['cli_cp'];
+    cliLocalidad = json['cli_localidad'];
+    cliProvincia = json['cli_provincia'];
+    cliNotas = json['cli_notas'];
+    cliZona = json['cli_zona'];
+    details = List.from(json['details']).map((e)=>Details.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -107,98 +143,34 @@ class Order {
     _data['cam_orden'] = camOrden;
     _data['cam_salon'] = camSalon;
     _data['cam_nombre'] = camNombre;
+    _data['cam_nombre2'] = camNombre2;
     _data['cam_name'] = camName;
-    _data['num_pedido'] = numPedido;
     _data['cam_nota'] = camNota;
     _data['cam_comensales'] = camComensales;
     _data['cam_pedido'] = camPedido;
     _data['cam_estado_cab'] = camEstadoCab;
+    _data['cam_ticket'] = camTicket;
     _data['cam_tipo_pedido'] = camTipoPedido;
     _data['cam_hora'] = camHora;
     _data['cam_min'] = camMin;
-    _data['num_pedido_online'] = numPedidoOnline;
-    _data['details'] = details.map((e) => e.toJson()).toList();
+    _data['num_pedido'] = numPedido;
+    _data['agc_nombre'] = agcNombre;
+    _data['nombre_repartidor'] = nombreRepartidor;
+    _data['cli_id'] = cliId;
+    _data['cli_nombre'] = cliNombre;
+    _data['cli_apellidos'] = cliApellidos;
+    _data['cli_telefono'] = cliTelefono;
+    _data['cli_direccion'] = cliDireccion;
+    _data['cli_cp'] = cliCp;
+    _data['cli_localidad'] = cliLocalidad;
+    _data['cli_provincia'] = cliProvincia;
+    _data['cli_notas'] = cliNotas;
+    _data['cli_zona'] = cliZona;
+    _data['details'] = details.map((e)=>e.toJson()).toList();
     return _data;
   }
 }
 
-class OrderExtended extends Order {
-  OrderExtended({
-    required int camId,
-    required int camUrgente,
-    required int camIdCab,
-    required int camFecini,
-    required int camFecfin,
-    required String camOperario,
-    required String camEstado,
-    required int camMesa,
-    required int camOrden,
-    required String camSalon,
-    required String camNombre,
-    required String camName,
-    required String numPedido,
-    required String camNota,
-    required int camComensales,
-    required int camPedido,
-    required String camEstadoCab,
-    required String camTipoPedido,
-    required String camHora,
-    required String camMin,
-    required String numPedidoOnline,
-    required List<Details> details,
-    required this.camNombre2,
-    required this.camTicket,
-    required this.agcNombre,
-    required this.nombreRepartidor,
-    required this.cliId,
-    required this.cliNombre,
-    required this.cliApellidos,
-    required this.cliTelefono,
-    required this.cliDireccion,
-    required this.cliCp,
-    required this.cliLocalidad,
-    required this.cliProvincia,
-    required this.cliNotas,
-    required this.cliZona,
-  }) : super(
-            camId: camId,
-            camUrgente: camUrgente,
-            camIdCab: camIdCab,
-            camFecini: camFecini,
-            camFecfin: camFecfin,
-            camOperario: camOperario,
-            camEstado: camEstado,
-            camMesa: camMesa,
-            camOrden: camOrden,
-            camSalon: camSalon,
-            camNombre: camNombre,
-            camName: camName,
-            numPedido: numPedido,
-            camNota: camNota,
-            camComensales: camComensales,
-            camPedido: camPedido,
-            camEstadoCab: camEstadoCab,
-            camTipoPedido: camTipoPedido,
-            camHora: camHora,
-            camMin: camMin,
-            numPedidoOnline: numPedidoOnline,
-            details: details);
-
-  late final String camNombre2;
-  late final String camTicket;
-  late final String agcNombre;
-  late final String nombreRepartidor;
-  late final int cliId;
-  late final String cliNombre;
-  late final String cliApellidos;
-  late final String cliTelefono;
-  late final String cliDireccion;
-  late final String cliCp;
-  late final String cliLocalidad;
-  late final String cliProvincia;
-  late final String cliNotas;
-  late final String cliZona;
-}
 
 class Details {
   Details({

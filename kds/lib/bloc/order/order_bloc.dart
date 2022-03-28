@@ -1,4 +1,7 @@
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +17,7 @@ class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
 
   OrderBloc(this.orderRepository) : super(OrdersInitial()) {
     on<FetchOrdersWithFilterEvent>(_getOrdersFetched);
+    on<FetchOrderByIdEvent>(_getOneOrder);
   }
 
   _getOrdersFetched(FetchOrdersWithFilterEvent event, Emitter<OrdersState> emit) async {
@@ -26,6 +30,16 @@ class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
       emit(OrdersFetchErrorState(e.toString()));
     }
 
+  }
 
+
+
+  _getOneOrder(FetchOrderByIdEvent event, Emitter<OrdersState> emit) async {
+    try{
+      final order = await orderRepository.getOrderById(event.id);
+      emit(OrderFetchByIdState(event.id, order));
+    } on Exception catch(e){
+      emit(OrdersFetchErrorState(e.toString()));
+    }
   }
 }

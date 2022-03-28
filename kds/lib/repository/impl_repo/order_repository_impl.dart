@@ -33,7 +33,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<OrderExtended> getOrderById(String id) async {
+  Future<Order> getOrderById(String id) async {
     String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
 
     final request = await http.get(Uri.parse(url), headers: headers);
@@ -41,7 +41,6 @@ class OrderRepositoryImpl implements OrderRepository {
     if (request.statusCode == 200) {
       return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
           .getLastOrders
-          .map((e) => e as OrderExtended)
           .where((element) => element.camId == int.parse(id))
           .first;
 

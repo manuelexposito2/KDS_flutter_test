@@ -10,6 +10,6 @@ abstract class OrderRepository{
 Future<List<Order>> getOrders(String filter);
 
 
-Future<OrderExtended> getOrderById(String id);
+Future<Order> getOrderById(String id);
 
 }

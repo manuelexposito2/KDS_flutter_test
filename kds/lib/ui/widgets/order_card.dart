@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
@@ -27,7 +30,7 @@ class _ComandaCardState extends State<OrderCard> {
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
 
-  
+  late OrderRepository orderRepository;
 
   String? idOrder;
   String? idDetail;
@@ -38,6 +41,7 @@ class _ComandaCardState extends State<OrderCard> {
     // TODO: implement initState
     super.initState();
 
+    orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
 
@@ -46,6 +50,8 @@ class _ComandaCardState extends State<OrderCard> {
     statusDetailBloc = StatusDetailBloc(statusDetailRepository)
       ..add(DoStatusDetailEvent(
           DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
+
+    
   }
 
   @override
@@ -116,7 +122,7 @@ class _ComandaCardState extends State<OrderCard> {
                       color: Colors.white,
                     ),
                     Text(
-                      widget.order!.camOperario,
+                      widget.order!.camOperario!,
                       style: Styles.regularText,
                     )
                   ],
@@ -148,10 +154,15 @@ class _ComandaCardState extends State<OrderCard> {
                             onPressed: () => showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
+                                  //TODO: Terminar el bloc
+                                  //TODO: Separar los blocs de fetch list y fetch ONE
+                                  return BlocProvider(create: (context) => OrderBloc(orderRepository)..add(FetchOrderByIdEvent(widget.order!.camId!.toString())),
+                                  child: AlertDialog(content: information(),));
+                                  /*
                                   return AlertDialog(
                                     content: information(),
                                   );
-                                },
+                                }*/},
                                 barrierDismissible: true),
                             icon: Icon(
                               Icons.info,
@@ -289,7 +300,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   String total() {
     var date =
-        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini * 1000);
+        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
     var date2 = DateTime.now();
     final horatotal = date2.difference(date);
     return horatotal.inMinutes.toString();
@@ -532,7 +543,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget ticket(BuildContext context) {
 
     var date =
-        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini * 1000);
+        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
