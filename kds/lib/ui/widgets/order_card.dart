@@ -35,8 +35,10 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
+
     statusOrderBloc = StatusOrderBloc(statusOrderRepository)
       ..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
     statusDetailBloc = StatusDetailBloc(statusDetailRepository)
@@ -46,19 +48,31 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    return cardComanda(context);
+    return //cardComanda(context);
 
-    /*MultiBlocListener(
-  listeners: [
-    BlocListener<StatusOrderBloc, StatusOrderSuccessState>(
-      listener: (context, state) {},
-    ),
-    BlocListener<BlocB, BlocBState>(
-      listener: (context, state) {},
-    ),
-  ],
-  child: ChildA(),
-)*/
+        MultiBlocProvider(providers: [
+      BlocProvider<StatusOrderBloc>(
+        create: (context) => statusOrderBloc,
+      ),
+      BlocProvider<StatusDetailBloc>(
+        create: (context) => statusDetailBloc,
+      ),
+    ], child: cardComanda(context));
+  }
+
+
+  Widget blocConsumerComanda(){
+    return BlocConsumer<StatusOrderBloc, StatusOrderState>(
+      listener: (context, state) {
+        // TODO: implement listener
+        if(state is StatusOrderSuccessState) {
+
+        }
+      },
+      builder: (context, state) {
+        return Container();
+      },
+    );
   }
 
   Widget cardComanda(BuildContext context) {
@@ -84,7 +98,8 @@ class _ComandaCardState extends State<OrderCard> {
                       style: Styles.regularText,
                     ),
                     Text(
-                      '1/5',
+                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                      '${widget.order!.details.where((element) => element.demEstado.contains('T') || element.demEstado.contains('P')).toList().length}/${widget.order!.details.toList().length}',
                       style: Styles.regularText,
                     )
                   ],
@@ -189,7 +204,7 @@ class _ComandaCardState extends State<OrderCard> {
           Container(
             margin: EdgeInsets.all(1),
             color: Colors.white,
-            child: cardItem(context, widget.order!.details),
+            child: cardItem(context, widget.order!, widget.order!.details),
           )
         ],
       ),
@@ -210,7 +225,16 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _itemPedido(BuildContext context, Details details) {
+  Widget cardItem(BuildContext context, Order order, List<Details> details) {
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [for (var d in details) _itemPedido(context, order, d)],
+    );
+  }
+
+  Widget _itemPedido(BuildContext context, Order order, Details details) {
     details.demEstado.contains('E');
     details.demEstado.contains('R');
     details.demEstado.contains('P');
@@ -234,8 +258,13 @@ class _ComandaCardState extends State<OrderCard> {
         backgroundColor: nuevo,
         primary: Color.fromARGB(255, 87, 87, 87),
       ),
-      onPressed: () {
-        _toogleStateButton(details);
+      onPressed: () async {
+        
+        /*
+        statusDetailRepository.statusDetail(DetailDto(
+            idOrder: order.camId.toString(),
+            idDetail: details.demId.toString(),
+            status: _toogleStateButton(details)));*/
       },
       child: ListTile(
         title: Text(
@@ -246,25 +275,14 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget cardItem(BuildContext context, List<Details> details) {
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: [for (var d in details) _itemPedido(context, d)],
-    );
-  }
-
-  void _toogleStateButton(Details details) {
-    setState(() {
-      if (details.demEstado.contains('E')) {
-        details.demEstado = 'P';
-      } else if (details.demEstado.contains('P')) {
-        details.demEstado = 'T';
-      } else {
-        details.demEstado = 'E';
-      }
-    });
+  String _toogleStateButton(Details details) {
+    if (details.demEstado.contains('E')) {
+      return 'P';
+    } else if (details.demEstado.contains('P')) {
+      return 'T';
+    } else {
+      return 'E';
+    }
   }
 
   String total() {
