@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
+import "package:collection/collection.dart";
 
 class ResumeOrdersWidget extends StatefulWidget {
   ResumeOrdersWidget({Key? key, required this.lineasComandas})
@@ -16,6 +17,19 @@ class ResumeOrdersWidget extends StatefulWidget {
 
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   //Para probar el stream
+
+  List<String> titulos = [];
+  int resumeLinesLength = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    for (var item in widget.lineasComandas!) {
+      titulos.add(item.demTitulo);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +64,9 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             flex: 20,
             child: ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: widget.lineasComandas!.length,
+              itemCount: reordering(titulos).length, //reordering(titulos).length,
               itemBuilder: (context, index) {
-
-                //TODO:
-                //Método que transforme el título separandolo por la X y sumando por nombre.
-
-                var titulo = widget.lineasComandas!
-                    .elementAt(index)
-                    .demTitulo
-                    .toString();
+                String linea = reordering(titulos)[index];
 
                 return TextButton(
                   style: TextButton.styleFrom(
@@ -69,7 +76,8 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                   onPressed: () {},
                   child: ListTile(
                     title: Text(
-                      titulo,
+                     // widget.lineasComandas!.elementAt(index).demTitulo,
+                     linea,
                       style: Styles.textTitle,
                     ),
                   ),
@@ -100,5 +108,32 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
         ],
       ),
     );
+  }
+
+  List<String> reordering(List<String> titulos) {
+    List<List<String>> titulosSplit = [];
+
+    var producto;
+    var cantidad = 0;
+    List<String> result = [];
+    for (var item in titulos) {
+      titulosSplit.add(item.split(' '));
+    }
+
+    var prueba = titulosSplit.groupListsBy((linea) => linea[2]).entries;
+
+    for (var item in prueba) {
+      cantidad = 0;
+      producto = item.key;
+      for (var i in item.value) {
+        cantidad += int.parse(i[0]);
+      }
+
+      result.add("$cantidad X $producto");
+      //debugPrint('$producto : $cantidad');
+
+    }
+    //debugPrint(prueba.toString());
+    return result;
   }
 }
