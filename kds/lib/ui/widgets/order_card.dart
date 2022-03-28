@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
@@ -496,18 +497,144 @@ class _ComandaCardState extends State<OrderCard> {
                               style: Styles.urgent,
                             ),
                           )),
-                      Container(
-                        child: Text('Dibujo del ticket'),
-                      )
+                      ticket(context)
                     ],
                   ),
-                )
+                ),
               ],
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget ticket(BuildContext context) {
+
+    var date =
+        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini * 1000);
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Color.fromARGB(255, 243, 243, 243),
+          border: Border.all(
+            color: Color.fromARGB(255, 199, 199, 199),
+
+            // red as border color
+          ),
+        ),
+        width: 600,
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Fecha: ',
+                                style: Styles.textTicketInfo,
+                              ),
+                              Text(
+                                date.toString(),
+                                style: Styles.textTicketInfo,
+                              )
+                            ],
+                          ))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      children: List.generate(
+                          300 ~/ 5,
+                          (index) => Expanded(
+                                child: Container(
+                                  color: index % 2 == 0
+                                      ? Colors.transparent
+                                      : Color.fromARGB(255, 0, 0, 0),
+                                  height: 1,
+                                ),
+                              )),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: List.generate(
+                      300 ~/ 5,
+                      (index) => Expanded(
+                            child: Container(
+                              color: index % 2 == 0
+                                  ? Colors.transparent
+                                  : Color.fromARGB(255, 0, 0, 0),
+                              height: 1,
+                            ),
+                          )),
+                ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('Total EUR:', style: Styles.textTicketInfo),
+                    Text('7.00', style: Styles.textTicketInfo)
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
   }
 
   /*

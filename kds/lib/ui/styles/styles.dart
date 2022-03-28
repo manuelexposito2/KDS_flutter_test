@@ -122,4 +122,7 @@ class Styles {
   static TextStyle get textRegularInfo => 
       GoogleFonts.getFont('Roboto', fontSize: 25);
 
+  static TextStyle get textTicketInfo => 
+      GoogleFonts.getFont('Red Hat Mono', fontSize: 18);   
+
 }
