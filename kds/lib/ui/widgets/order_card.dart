@@ -60,6 +60,7 @@ class _ComandaCardState extends State<OrderCard> {
   child: ChildA(),
 )*/
   }
+  
 
   Widget cardComanda(BuildContext context) {
     return Container(
@@ -197,6 +198,9 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget urgente() {
+
+    //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
+    //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
       width: MediaQuery.of(context).size.width,
       color: Styles.alertColor,
@@ -211,14 +215,10 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _itemPedido(BuildContext context, Details details) {
-    details.demEstado.contains('E');
-    details.demEstado.contains('R');
-    details.demEstado.contains('P');
-    details.demEstado.contains('T');
     Color nuevo = Colors.white;
 
     if (details.demEstado.contains('E')) {
-      nuevo = Colors.white;
+      nuevo;
     } else if (details.demEstado.contains('P')) {
       nuevo = Color(0xFFF5CB8F);
     } else if (details.demEstado.contains('R')) {
@@ -237,6 +237,7 @@ class _ComandaCardState extends State<OrderCard> {
       onPressed: () {
         _toogleStateButton(details);
       },
+      
       child: ListTile(
         title: Text(
           details.demTitulo,
