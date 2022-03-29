@@ -9,7 +9,7 @@ import 'package:kds/utils/constants.dart';
 class StatusOrderRepositoryImpl extends StatusOrderRepository{
 
   @override
-  Future<void> statusOrder(OrderDto orderDto) async{
+  Future<OrderDto> statusOrder(OrderDto orderDto) async{
     String url = 'http://$apiBaseUrl:$puertoKDS/modifyOrderKDS';
     Map<String, String> headers = {
       "callback": "getLastOrders",
@@ -24,6 +24,7 @@ class StatusOrderRepositoryImpl extends StatusOrderRepository{
 
     if(response.statusCode == 200){
       
+      return orderDto;
     }else{
       throw Exception('Fail to load');
     }

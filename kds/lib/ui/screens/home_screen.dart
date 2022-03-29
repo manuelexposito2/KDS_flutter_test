@@ -118,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //TODO: Hacer scrolleable la lista de comandas
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
       alignment: Alignment.topLeft,

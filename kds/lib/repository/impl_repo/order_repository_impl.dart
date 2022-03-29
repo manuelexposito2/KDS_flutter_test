@@ -37,7 +37,7 @@ class OrderRepositoryImpl implements OrderRepository {
     String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
 
     final request = await http.get(Uri.parse(url), headers: headers);
-    debugPrint(_jsonpToJsonTicket(request));
+    
 
     if (request.statusCode == 200) {
       return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJsonTicket(request)))
@@ -53,8 +53,6 @@ class OrderRepositoryImpl implements OrderRepository {
     var callback = "getLastOrders";
     var dataBody = request.body.strip("(").strip(")");
     var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
-    //json.
-    //var regexSpacing = RegExp(r'\r?\n|\r/g');
 
     return json;
   }
@@ -63,7 +61,7 @@ class OrderRepositoryImpl implements OrderRepository {
     var callback = "getLastOrders";
     var dataBody = request.body.strip("(").strip(")");
     var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
-    //json.
+    
     
     //Elimina todos los enters
     var patron = RegExp(r"\s+");
