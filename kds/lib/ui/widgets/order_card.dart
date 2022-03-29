@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:kds/bloc/order/order_bloc.dart';
+
+import 'package:kds/bloc/order_by_id/order_by_id_bloc.dart';
 import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
@@ -29,19 +30,24 @@ class _ComandaCardState extends State<OrderCard> {
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
+  late OrderByIdBloc orderByIdBloc;
 
   late OrderRepository orderRepository;
+  //Esta comanda es la misma que la principal pero existe para darle más datos
+  late final Future <Order>? orderExtended;
 
   String? idOrder;
   String? idDetail;
   String? status;
-  
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
     orderRepository = OrderRepositoryImpl();
+   
+    orderExtended = orderRepository.getOrderById(widget.order!.camId.toString());
+
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
 
@@ -50,13 +56,11 @@ class _ComandaCardState extends State<OrderCard> {
     statusDetailBloc = StatusDetailBloc(statusDetailRepository)
       ..add(DoStatusDetailEvent(
           DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
-
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    return //cardComanda(context);
+    return 
 
         MultiBlocProvider(providers: [
       BlocProvider<StatusOrderBloc>(
@@ -65,168 +69,199 @@ class _ComandaCardState extends State<OrderCard> {
       BlocProvider<StatusDetailBloc>(
         create: (context) => statusDetailBloc,
       ),
-    ], child: cardComanda(context));
+    ], child: blocBuilderCardComanda(context));
   }
 
-
-  Widget blocConsumerComanda(){
-    return BlocConsumer<StatusOrderBloc, StatusOrderState>(
-      listener: (context, state) {
-        // TODO: implement listener
-        if(state is StatusOrderSuccessState) {
-
-        }
-      },
-      builder: (context, state) {
-        return Container();
-      },
-    );
-  }
-  
-
-  Widget cardComanda(BuildContext context) {
+  Widget blocBuilderCardComanda(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
           color: Styles.succesColor,
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      child: Wrap(
-        // mainAxisSize: MainAxisSize.max,
+      child: Column(
         children: [
-          Column(
-            children: [
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      total() + ' min.',
-                      style: Styles.regularText,
-                    ),
-                    Text(
-                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                      '${widget.order!.details.where((element) => element.demEstado.contains('T') || element.demEstado.contains('P')).toList().length}/${widget.order!.details.toList().length}',
-                      style: Styles.regularText,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.person,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      widget.order!.camOperario!,
-                      style: Styles.regularText,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.push_pin,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          widget.order!.camMesa.toString(),
-                          style: Styles.regularText,
-                        )
-                      ],
-                    ),
-                    Container(
-                        alignment: Alignment.center,
-                        color: Colors.white,
-                        width: 40,
-                        height: 40,
-                        child: IconButton(
-                            onPressed: () => showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  //TODO: Terminar el bloc
-                                  //TODO: Separar los blocs de fetch list y fetch ONE
-                                  return BlocProvider(create: (context) => OrderBloc(orderRepository)..add(FetchOrderByIdEvent(widget.order!.camId!.toString())),
-                                  child: AlertDialog(content: information(),));
-                                  /*
-                                  return AlertDialog(
-                                    content: information(),
-                                  );
-                                }*/},
-                                barrierDismissible: true),
-                            icon: Icon(
-                              Icons.info,
-                              color: Color.fromARGB(255, 87, 87, 87),
-                            )))
-                  ],
-                ),
-              )
-            ],
+          BlocConsumer<StatusOrderBloc, StatusOrderState>(
+            builder: ((context, state) {
+              if (state is StatusOrderInitial) {
+                return Text("Recibiendo datos...");
+              } else if (state is StatusOrderErrorState) {
+                return const Text("Hubo un error");
+              } else if (state is StatusOrderSuccessState) {
+                //TODO: RETURN ORDER CON MÁS DATOS
+                return comandaHeader(context, widget.order!);
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
+            listener: ((context, state) {}),
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 1),
-            color: Colors.grey.shade400,
-            height: 55,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: 195,
-                  height: 50,
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Color.fromARGB(255, 87, 87, 87),
-                        textStyle: TextStyle(fontSize: 18)),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.play_arrow,
-                      color: Color(0xFF337AB7),
-                      size: 30,
-                    ),
-                    label: const Text(
-                      'Preparar',
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 95,
-                  height: 50,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Color.fromARGB(255, 87, 87, 87)),
-                    child: Icon(Icons.print),
-                    onPressed: () {},
-                  ),
-                )
-              ],
-            ),
-          ),
-          //urgente(),
-          Container(
-            margin: EdgeInsets.all(1),
-            color: Colors.white,
-            child: cardItem(context, widget.order!, widget.order!.details),
-          )
+          BlocConsumer<StatusDetailBloc, StatusDetailState>(
+              builder: ((context, state) {
+                if (state is StatusDetailInitial) {
+                  return const Text("Recibiendo datos...");
+                } else if (state is StatusDetailErrorState) {
+                  return const Text("Hubo un error");
+                } else if (state is StatusDetailSuccessState) {
+                  //TODO: RETURN ORDER CON MÁS DATOS
+                  return comandaLineas(context, widget.order!);
+                } else {
+                  return const Center(
+                  child: CircularProgressIndicator(),
+                );
+                }
+              }),
+              listener: ((context, state) {}))
         ],
       ),
     );
   }
 
-  Widget urgente() {
+  Widget comandaHeader(BuildContext context, Order order) {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                total() + ' min.',
+                style: Styles.regularText,
+              ),
+              Text(
+                //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                '${widget.order!.details.where((element) => element.demEstado.contains('T') || element.demEstado.contains('P')).toList().length}/${widget.order!.details.toList().length}',
+                style: Styles.regularText,
+              )
+            ],
+          ),
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              Text(
+                widget.order!.camOperario!,
+                style: Styles.regularText,
+              )
+            ],
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.push_pin,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    widget.order!.camMesa.toString(),
+                    style: Styles.regularText,
+                  )
+                ],
+              ),
+              Container(
+                  alignment: Alignment.center,
+                  color: Colors.white,
+                  width: 40,
+                  height: 40,
+                  child: IconButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: futureInfo(context),
+                            );
+                          },
+                          barrierDismissible: true),
+                      icon: Icon(
+                        Icons.info,
+                        color: Color.fromARGB(255, 87, 87, 87),
+                      ))),
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 1),
+          color: Colors.grey.shade400,
+          height: 55,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(
+                width: 195,
+                height: 50,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      primary: Color.fromARGB(255, 87, 87, 87),
+                      textStyle: TextStyle(fontSize: 18)),
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.play_arrow,
+                    color: Color(0xFF337AB7),
+                    size: 30,
+                  ),
+                  label: const Text(
+                    'Preparar',
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 95,
+                height: 50,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      primary: Color.fromARGB(255, 87, 87, 87)),
+                  child: Icon(Icons.print),
+                  onPressed: () {},
+                ),
+              )
+            ],
+          ),
+        ),
+      
+      ],
+    );
+  }
 
+  Widget futureInfo(BuildContext context) {
+    return FutureBuilder<Order>(
+      future: orderExtended,
+      builder: (context, snapshot) {
+    if (snapshot.hasData) {
+      return information(context, snapshot.data!);
+    } else if (snapshot.hasError) {
+      return Text('${snapshot.error}');
+    }
+    return const CircularProgressIndicator();
+  },);
+
+  }
+
+
+  Widget comandaLineas(BuildContext context, Order order) {
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [for (var d in order.details) _itemPedido(context, order, d)],
+    );
+  }
+
+  Widget urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
@@ -239,16 +274,6 @@ class _ComandaCardState extends State<OrderCard> {
         '¡¡¡URGENTE!!!',
         style: Styles.urgent,
       ),
-    );
-  }
-
-
-  Widget cardItem(BuildContext context, Order order, List<Details> details) {
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.start,
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: [for (var d in details) _itemPedido(context, order, d)],
     );
   }
 
@@ -278,14 +303,12 @@ class _ComandaCardState extends State<OrderCard> {
         primary: Color.fromARGB(255, 87, 87, 87),
       ),
       onPressed: () async {
-        
         /*
         statusDetailRepository.statusDetail(DetailDto(
             idOrder: order.camId.toString(),
             idDetail: details.demId.toString(),
             status: _toogleStateButton(details)));*/
       },
-      
       child: ListTile(
         title: Text(
           details.demTitulo,
@@ -313,53 +336,49 @@ class _ComandaCardState extends State<OrderCard> {
     return horatotal.inMinutes.toString();
   }
 
-  camEstado(){
-    if(widget.order!.camEstado == 'E'){
+  camEstado() {
+    if (widget.order!.camEstado == 'E') {
       return Text('En espera', style: Styles.textRegularInfo);
-    }else  if(widget.order!.camEstado == 'P'){
+    } else if (widget.order!.camEstado == 'P') {
       return Text('En proceso', style: Styles.textRegularInfo);
-    }else if(widget.order!.camEstado == 'R'){
+    } else if (widget.order!.camEstado == 'R') {
       return Text('En recogida', style: Styles.textRegularInfo);
-    }else if(widget.order!.camEstado == 'T'){
+    } else if (widget.order!.camEstado == 'T') {
       return Text('Terminado', style: Styles.textRegularInfo);
     }
   }
 
-  esPagado(){
-    if(widget.order!.camEstadoCab == 'C'){
+  esPagado() {
+    if (widget.order!.camEstadoCab == 'C') {
       return Row(
-                              children: [
-                                Icon(Icons.euro_outlined),
-                                Text(' Pagado: ', style: Styles.textBoldInfo),
-                                /* */ Icon(
-                                  Icons.check,
-                                  color: Colors.green,
-                                  size: 40,
-                                ),
-                                
-                                Text('SI'
-                                  , style: Styles.textRegularInfo)
-                              ],
-                            );
-    }else if(widget.order!.camEstadoCab == 'P'){
+        children: [
+          Icon(Icons.euro_outlined),
+          Text(' Pagado: ', style: Styles.textBoldInfo),
+          /* */ Icon(
+            Icons.check,
+            color: Colors.green,
+            size: 40,
+          ),
+          Text('SI', style: Styles.textRegularInfo)
+        ],
+      );
+    } else if (widget.order!.camEstadoCab == 'P') {
       return Row(
-                              children: [
-                                Icon(Icons.euro_outlined),
-                                Text(' Pagado: ', style: Styles.textBoldInfo),
-                                /* */ Icon(
-                                  Icons.cancel_sharp,
-                                  color: Colors.red,
-                                  size: 40,
-                                ),
-                                
-                                Text('NO'
-                                  , style: Styles.textRegularInfo)
-                              ],
-                            );
+        children: [
+          Icon(Icons.euro_outlined),
+          Text(' Pagado: ', style: Styles.textBoldInfo),
+          /* */ Icon(
+            Icons.cancel_sharp,
+            color: Colors.red,
+            size: 40,
+          ),
+          Text('NO', style: Styles.textRegularInfo)
+        ],
+      );
     }
   }
 
-  Widget information() {
+  Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 5);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -415,8 +434,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.business_outlined),
                                 Text(' Agencia: ', style: Styles.textBoldInfo),
-                                Text(" ",
-                                    style: Styles.textRegularInfo)
+                                Text(" ", style: Styles.textRegularInfo)
                               ],
                             ),
                           ),
@@ -426,7 +444,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.adjust_outlined),
                                 Text(' Operario: ', style: Styles.textBoldInfo),
-                                Text(widget.order!.camOperario.toString(),
+                                Text(order.camOperario!,
                                     style: Styles.textRegularInfo)
                               ],
                             ),
@@ -464,10 +482,7 @@ class _ComandaCardState extends State<OrderCard> {
                             ),
                           ),
                           Divider(),
-                          Padding(
-                            padding: espaciado,
-                            child: esPagado()
-                          ),
+                          Padding(padding: espaciado, child: esPagado()),
                           Divider()
                         ],
                       )
@@ -493,8 +508,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.person),
                                 Text(' Nombre: ', style: Styles.textBoldInfo),
-                                Text('',
-                                    style: Styles.textRegularInfo)
+                                Text('', style: Styles.textRegularInfo)
                               ],
                             ),
                           ),
@@ -514,8 +528,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.place),
                                 Text(' Dirección:', style: Styles.textBoldInfo),
-                                Text('',
-                                    style: Styles.textRegularInfo)
+                                Text('', style: Styles.textRegularInfo)
                               ],
                             ),
                           ),
@@ -525,8 +538,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.zoom_in_map_rounded),
                                 Text(' Zona: ', style: Styles.textBoldInfo),
-                                Text('',
-                                    style: Styles.textRegularInfo)
+                                Text('', style: Styles.textRegularInfo)
                               ],
                             ),
                           ),
@@ -536,8 +548,7 @@ class _ComandaCardState extends State<OrderCard> {
                               children: [
                                 Icon(Icons.chat_bubble),
                                 Text(' Notas:', style: Styles.textBoldInfo),
-                                Text('',
-                                    style: Styles.textRegularInfo)
+                                Text('', style: Styles.textRegularInfo)
                               ],
                             ),
                           ),
@@ -586,7 +597,8 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget ticket(BuildContext context) {
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
-    String result = df.format(DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini * 1000));
+    String result = df.format(
+        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
     var date =
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
     return Container(
@@ -712,5 +724,4 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ));
   }
-
 }

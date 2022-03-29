@@ -42,11 +42,4 @@ class OrdersFetchEmptyState extends OrdersState {
   List<Object> get props => [message];
 }
 
-class OrderFetchByIdState extends OrdersState {
-  final String id;
-  final Order order;
-  const OrderFetchByIdState (this.id, this.order);
 
-  @override
-  List<Object> get props => [id];
-}

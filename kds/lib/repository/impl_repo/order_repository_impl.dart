@@ -37,22 +37,31 @@ class OrderRepositoryImpl implements OrderRepository {
     String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
 
     final request = await http.get(Uri.parse(url), headers: headers);
-
+    debugPrint(_jsonpToJson(request));
+    
     if (request.statusCode == 200) {
       return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
           .getLastOrders
           .where((element) => element.camId == int.parse(id))
           .first;
 
-      
+    
     } else {
       throw Exception(request.statusCode);
     }
+    
   }
 
   _jsonpToJson(http.Response request) {
     var callback = "getLastOrders";
     var dataBody = request.body.strip("(").strip(")");
-    return "{${dataBody.replaceAll(callback, '"${callback}":')}}";
+    var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
+    //json.
+    //var regexSpacing = RegExp(r'\r?\n|\r/g');
+
+    
+
+    return json;
+    
   }
 }
