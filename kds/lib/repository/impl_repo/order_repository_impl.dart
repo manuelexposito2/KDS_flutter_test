@@ -14,7 +14,7 @@ class OrderRepositoryImpl implements OrderRepository {
   Map<String, String> headers = {
     "callback": "getLastOrders",
     "Access-Control-Allow-Origin": "*",
-    "Content-Type": "text/plain"
+    "Content-Type": "text/html"
   };
 
   @override
@@ -37,19 +37,16 @@ class OrderRepositoryImpl implements OrderRepository {
     String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
 
     final request = await http.get(Uri.parse(url), headers: headers);
-    debugPrint(_jsonpToJson(request));
-    
+    debugPrint(_jsonpToJsonTicket(request));
+
     if (request.statusCode == 200) {
-      return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
+      return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJsonTicket(request)))
           .getLastOrders
           .where((element) => element.camId == int.parse(id))
           .first;
-
-    
     } else {
       throw Exception(request.statusCode);
     }
-    
   }
 
   _jsonpToJson(http.Response request) {
@@ -59,9 +56,22 @@ class OrderRepositoryImpl implements OrderRepository {
     //json.
     //var regexSpacing = RegExp(r'\r?\n|\r/g');
 
-    
-
     return json;
+  }
+
+  _jsonpToJsonTicket(http.Response request) {
+    var callback = "getLastOrders";
+    var dataBody = request.body.strip("(").strip(")");
+    var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
+    //json.
     
+    //Elimina todos los enters
+    var patron = RegExp(r"\s+");
+    var res = json.replaceAll(patron, ' ');
+
+    var enter = ',\r\n';
+    //Reemplaza todas las comas por una coma y un enter 
+    var esta = res.replaceAll(',', enter);
+    return esta.replaceAll('ï»¿', "");
   }
 }

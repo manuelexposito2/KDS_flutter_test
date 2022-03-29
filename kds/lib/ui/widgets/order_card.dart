@@ -133,7 +133,7 @@ class _ComandaCardState extends State<OrderCard> {
               ),
               Text(
                 //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                '${widget.order!.details.where((element) => element.demEstado.contains('T') || element.demEstado.contains('P')).toList().length}/${widget.order!.details.toList().length}',
+                '${widget.order!.details.where((element) => element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${widget.order!.details.toList().length}',
                 style: Styles.regularText,
               )
             ],
@@ -278,20 +278,20 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
-    details.demEstado.contains('E');
-    details.demEstado.contains('R');
-    details.demEstado.contains('P');
-    details.demEstado.contains('T');
+    details.demEstado!.contains('E');
+    details.demEstado!.contains('R');
+    details.demEstado!.contains('P');
+    details.demEstado!.contains('T');
 
     Color nuevo = Colors.white;
 
-    if (details.demEstado.contains('E')) {
+    if (details.demEstado!.contains('E')) {
       nuevo;
-    } else if (details.demEstado.contains('P')) {
+    } else if (details.demEstado!.contains('P')) {
       nuevo = Color(0xFFF5CB8F);
-    } else if (details.demEstado.contains('R')) {
+    } else if (details.demEstado!.contains('R')) {
       nuevo = Colors.purple;
-    } else if (details.demEstado.contains('T')) {
+    } else if (details.demEstado!.contains('T')) {
       nuevo = Color(0xFFB0E1A0);
     } else {
       nuevo = Colors.white;
@@ -311,7 +311,7 @@ class _ComandaCardState extends State<OrderCard> {
       },
       child: ListTile(
         title: Text(
-          details.demTitulo,
+          details.demTitulo!,
           style: Styles.textTitle,
         ),
       ),
@@ -319,9 +319,9 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   String _toogleStateButton(Details details) {
-    if (details.demEstado.contains('E')) {
+    if (details.demEstado!.contains('E')) {
       return 'P';
-    } else if (details.demEstado.contains('P')) {
+    } else if (details.demEstado!.contains('P')) {
       return 'T';
     } else {
       return 'E';
