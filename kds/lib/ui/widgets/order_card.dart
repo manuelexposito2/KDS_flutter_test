@@ -380,222 +380,220 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 5);
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        height: 450,
-        child: Column(
-          children: [
-            Container(
-              child: Text(
-                'Información de comanda',
-                style: Styles.textTitleInfo,
-              ),
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              'Información de comanda',
+              style: Styles.textTitleInfo,
             ),
-            Divider(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          'General',
-                          style: Styles.textTitleInfo,
+          ),
+          Divider(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 400,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text(
+                        'General',
+                        style: Styles.textTitleInfo,
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.person),
+                              Text(
+                                ' Cliente: ',
+                                style: Styles.textBoldInfo,
+                              ),
+                              Text(
+                                '',
+                                style: Styles.textRegularInfo,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.person),
-                                Text(
-                                  ' Cliente: ',
-                                  style: Styles.textBoldInfo,
-                                ),
-                                Text(
-                                  '',
-                                  style: Styles.textRegularInfo,
-                                )
-                              ],
-                            ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.business_outlined),
+                              Text(' Agencia: ', style: Styles.textBoldInfo),
+                              Text(" ", style: Styles.textRegularInfo)
+                            ],
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.business_outlined),
-                                Text(' Agencia: ', style: Styles.textBoldInfo),
-                                Text(" ", style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.adjust_outlined),
-                                Text(' Operario: ', style: Styles.textBoldInfo),
-                                Text(order.camOperario!,
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.push_pin),
-                                Text(' Salón: ', style: Styles.textBoldInfo),
-                                Text(widget.order!.camSalon.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.query_stats_rounded),
-                                Text(' Estado: ', style: Styles.textBoldInfo),
-                                camEstado(),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble),
-                                Text(' Notas: ', style: Styles.textBoldInfo),
-                                Text(widget.order!.camNota.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                          Padding(padding: espaciado, child: esPagado()),
-                          Divider()
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text('Cliente', style: Styles.textTitleInfo),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 5),
-                            child: Row(
-                              children: [
-                                Icon(Icons.person),
-                                Text(' Nombre: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.phone),
-                                Text(' Teléfono: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.place),
-                                Text(' Dirección:', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.zoom_in_map_rounded),
-                                Text(' Zona: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble),
-                                Text(' Notas:', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          'Ticket',
-                          style: Styles.textTitleInfo,
                         ),
-                      ),
-                      TextButton(
-                          onPressed: () {},
-                          child: Container(
-                            width: 600,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFD9534F),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            alignment: Alignment.center,
-                            height: 50,
-                            child: Text(
-                              '¡Marcar como URGENTE!',
-                              style: Styles.urgent,
-                            ),
-                          )),
-                      ticket(context)
-                    ],
-                  ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.adjust_outlined),
+                              Text(' Operario: ', style: Styles.textBoldInfo),
+                              Text(order.camOperario!,
+                                  style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.push_pin),
+                              Text(' Salón: ', style: Styles.textBoldInfo),
+                              Text(widget.order!.camSalon.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.query_stats_rounded),
+                              Text(' Estado: ', style: Styles.textBoldInfo),
+                              camEstado(),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.chat_bubble),
+                              Text(' Notas: ', style: Styles.textBoldInfo),
+                              Text(widget.order!.camNota.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Divider(),
+                        Padding(padding: espaciado, child: esPagado()),
+                        Divider()
+                      ],
+                    )
+                  ],
                 ),
-              ],
-            )
-          ],
-        ),
+              ),
+              Container(
+                width: 400,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text('Cliente', style: Styles.textTitleInfo),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.person),
+                              Text(' Nombre: ', style: Styles.textBoldInfo),
+                              Text('', style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.phone),
+                              Text(' Teléfono: ', style: Styles.textBoldInfo),
+                              Text('', style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.place),
+                              Text(' Dirección:', style: Styles.textBoldInfo),
+                              Text('', style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.zoom_in_map_rounded),
+                              Text(' Zona: ', style: Styles.textBoldInfo),
+                              Text('', style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.chat_bubble),
+                              Text(' Notas:', style: Styles.textBoldInfo),
+                              Text('', style: Styles.textRegularInfo)
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text(
+                        'Ticket',
+                        style: Styles.textTitleInfo,
+                      ),
+                    ),
+                    TextButton(
+                        onPressed: () {},
+                        child: Container(
+                          width: 600,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFD9534F),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5)),
+                          ),
+                          alignment: Alignment.center,
+                          height: 50,
+                          child: Text(
+                            '¡Marcar como URGENTE!',
+                            style: Styles.urgent,
+                          ),
+                        )),
+                    ticket(context, order)
+                    
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
 
-  Widget ticket(BuildContext context) {
+  Widget ticket(BuildContext context, Order order) {
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
@@ -614,7 +612,8 @@ class _ComandaCardState extends State<OrderCard> {
         width: 600,
         child: Padding(
           padding: EdgeInsets.all(15),
-          child: Column(
+          child: Text(order.camTicket!, style: Styles.textTicketInfo,),
+          /*child: Column(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -722,6 +721,7 @@ class _ComandaCardState extends State<OrderCard> {
               )
             ],
           ),
+        */
         ));
   }
 }
