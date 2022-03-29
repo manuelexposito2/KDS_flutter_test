@@ -192,23 +192,23 @@ class Details {
     required this.demPlato,
     required this.demPedirPeso,
   });
-  late final int demId;
-  late final int demIdCam;
-  late final String demEstado;
-  late final int demFecini;
-  late final int demFecfin;
-  late final String demArti;
-  late final String demTitulo;
-  late final String demSubpro;
-  late final String demSubext;
-  late final String demSubopc;
-  late final String demModi;
-  late final String demMensa;
-  late final int demOrden;
-  late final String demName;
-  late final int demSeling;
-  late final int demPlato;
-  late final int demPedirPeso;
+  late final int? demId;
+  late final int? demIdCam;
+  late final String? demEstado;
+  late final int? demFecini;
+  late final int? demFecfin;
+  late final String? demArti;
+  late final String? demTitulo;
+  late final String? demSubpro;
+  late final String? demSubext;
+  late final String? demSubopc;
+  late final String? demModi;
+  late final String? demMensa;
+  late final int? demOrden;
+  late final String? demName;
+  late final int? demSeling;
+  late final int? demPlato;
+  late final int? demPedirPeso;
 
   Details.fromJson(Map<String, dynamic> json) {
     demId = json['dem_id'];

@@ -83,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 for (var d in comanda.details) {
                   //Todas las lineas de venta las metemos en una lista para hacer el resumen
 
-                  if (!d.demEstado.contains("T")) {
-                    resumeList.add(d.demTitulo);
+                  if (!d.demEstado!.contains("T")) {
+                    resumeList.add(d.demTitulo!);
                   }
                 }
               }
@@ -261,9 +261,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _toogleStateButton(Details details) {
     setState(() {
-      if (details.demEstado.contains('E')) {
+      if (details.demEstado!.contains('E')) {
         details.demEstado = 'P';
-      } else if (details.demEstado.contains('P')) {
+      } else if (details.demEstado!.contains('P')) {
         details.demEstado = 'T';
       } else {
         details.demEstado = 'E';
