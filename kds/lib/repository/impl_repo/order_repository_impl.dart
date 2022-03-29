@@ -65,9 +65,12 @@ class OrderRepositoryImpl implements OrderRepository {
     var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
     //json.
     
+    //Elimina todos los enters
     var patron = RegExp(r"\s+");
     var res = json.replaceAll(patron, ' ');
+
     var enter = ',\r\n';
+    //Reemplaza todas las comas por una coma y un enter 
     var esta = res.replaceAll(',', enter);
     return esta.replaceAll('ï»¿', "");
   }
