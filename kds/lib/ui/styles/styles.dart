@@ -15,8 +15,13 @@ class Styles {
   static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
 
-//TODO: Rehacer estilo para el borde de las cajas de RESUME
+
   static BoxBorder borderSimple = Border.all(color: black);
+  
+  static ButtonStyle tileStyle = ButtonStyle(
+    shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0))),
+  );
 
 //SIZES
 
@@ -26,7 +31,7 @@ class Styles {
   static double btnPaddingH = 70.0;
 
   static double navbarHeight = 70.0;
-
+  static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -116,13 +121,12 @@ class Styles {
   static TextStyle get textBoldInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 27, fontWeight: FontWeight.w700);
 
-  static TextStyle get textTitleInfo => 
+  static TextStyle get textTitleInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 34);
 
-  static TextStyle get textRegularInfo => 
+  static TextStyle get textRegularInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 25);
 
-  static TextStyle get textTicketInfo => 
-      GoogleFonts.getFont('Red Hat Mono', fontSize: 18);   
-
+  static TextStyle get textTicketInfo =>
+      GoogleFonts.getFont('Red Hat Mono', fontSize: 18);
 }

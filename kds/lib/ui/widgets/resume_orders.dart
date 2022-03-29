@@ -3,31 +3,27 @@
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
+import "package:collection/collection.dart";
 
 class ResumeOrdersWidget extends StatefulWidget {
-  ResumeOrdersWidget({Key? key, Stream<String>? lineasComandas})
+  ResumeOrdersWidget({Key? key, required this.lineasComandas})
       : super(key: key);
 
   //TODO: Hacer una operación STREAM desde HOME y pasarla a ResumeOrdersWidget
-  Stream<String>? lineasComandas;
+  final List<String>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();
 }
 
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
-  //Para probar el stream
-
-  List<String> lista = ["Producto 1"];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    //widget.lineasComandas = Stream.value("Otro dato");
-    List<String>? words;
-
-    widget.lineasComandas = Stream.fromIterable(lista);
-    //widget.lineasComandas.
-    //widget.lineasComandas?.listen((event) { words!.add(event); });
-
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
 
@@ -53,46 +49,31 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               ),
             ),
           ),
-
+          
           Expanded(
             flex: 20,
             child: ListView.builder(
+              padding: Styles.zeroPadding,
               scrollDirection: Axis.vertical,
-              
-              itemCount: lista.length,
+              itemCount: widget.lineasComandas!.length,
               itemBuilder: (context, index) {
-              
-              return Text(widget.lineasComandas!.elementAt(index).toString());
-              //return Text(lista[index], textAlign: TextAlign.center,);
-
-            },),
+                return OutlinedButton(
+                  style: Styles.tileStyle,
+                  onPressed: () {},
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+                    dense: true,
+                    title: Text(
+                      widget.lineasComandas!.elementAt(index),
+                      style: Styles.textTitle,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-
-          /*
-          StreamBuilder(
-            stream: widget.lineasComandas,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                //return TILE CLICKABLE
-                for(var w in words!){
-                  return Text(w);
-                }
-              }
-
-              if (snapshot.hasError) {
-                return Text("Nada por aquí.");
-              } else {
-                return Text("Espera...");
-              }
-            },
-          )
-*/
-       
         ],
       ),
     );
   }
-
-
-
 }
