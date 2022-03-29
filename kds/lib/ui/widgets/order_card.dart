@@ -106,7 +106,7 @@ class _ComandaCardState extends State<OrderCard> {
                   return const Text("Hubo un error");
                 } else if (state is StatusDetailSuccessState) {
                   //TODO: RETURN ORDER CON MÁS DATOS
-                  return comandaLineas(context, widget.order!);
+                  return Container(margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),child: comandaLineas(context, widget.order!),);
                 } else {
                   return const Center(
                   child: CircularProgressIndicator(),
