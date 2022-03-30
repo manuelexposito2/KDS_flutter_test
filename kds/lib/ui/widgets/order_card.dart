@@ -293,14 +293,41 @@ class _ComandaCardState extends State<OrderCard> {
                   },
                   icon: const Icon(
                     Icons.replay_outlined,
-                    color: Color(0xFF337AB7),
+                    color: Color.fromARGB(255, 61, 61, 61),
                     size: 30,
                   ),
                   label: const Text(
                     'Recuperar',
                   ),
                 );
-    }else{
+    }else if(order.camEstado == 'P'){
+      return TextButton.icon(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      primary: Color.fromARGB(255, 87, 87, 87),
+                      textStyle: TextStyle(fontSize: 18)),
+                  onPressed: () {
+                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
+                    OrderDto newStatus = OrderDto(
+                        idOrder: order.camId.toString(),
+                        status: _toogleStateButton(order.camEstado!));
+
+                    BlocProvider.of<StatusOrderBloc>(context)
+                        .add(DoStatusOrderEvent(newStatus));
+                        debugPrint(newStatus.idOrder);
+                        debugPrint(newStatus.status);
+                  },
+                  icon: const Icon(
+                    Icons.check_circle,
+                    color: Color.fromARGB(255, 19, 165, 19),
+                    size: 30,
+                  ),
+                  label: const Text(
+                    'Terminar',
+                  ),
+                );
+    }
+    else{
       return TextButton.icon(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
