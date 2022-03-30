@@ -57,8 +57,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    
-    
     return MultiBlocProvider(providers: [
       BlocProvider(
         create: (context) => StatusOrderBloc(statusOrderRepository),
@@ -67,8 +65,6 @@ class _ComandaCardState extends State<OrderCard> {
         create: (context) => StatusDetailBloc(statusDetailRepository),
       ),
     ], child: blocBuilderCardComanda(context));
-
-   
   }
 
   setColorWithStatus(String status) {
@@ -414,7 +410,7 @@ class _ComandaCardState extends State<OrderCard> {
         children: [
           Icon(Icons.euro_outlined),
           Text(' Pagado: ', style: Styles.textBoldInfo),
-          /* */ Icon(
+          const Icon(
             Icons.check,
             color: Colors.green,
             size: 40,

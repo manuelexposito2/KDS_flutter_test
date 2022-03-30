@@ -106,13 +106,15 @@ class _OrdersListState extends State<OrdersList> {
 
   //TODO: Hacer scrolleable la lista de comandas
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Wrap(
-        direction: Axis.horizontal,
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: [for (var o in orders) OrderCard(order: o)],
+    return SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Wrap(
+          direction: Axis.horizontal,
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          children: [for (var o in orders) OrderCard(order: o)],
+        ),
       ),
     );
   }
