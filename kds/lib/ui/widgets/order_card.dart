@@ -392,7 +392,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget information(BuildContext context, Order order) {
-    var espaciado = EdgeInsets.only(bottom: 5);
+    var espaciado = EdgeInsets.only(bottom: 20);
     return Container(
       height: MediaQuery.of(context).size.height / 2,
       child: Column(
@@ -514,7 +514,7 @@ class _ComandaCardState extends State<OrderCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
+                          padding: espaciado,
                           child: Row(
                             children: [
                               Icon(Icons.person),
@@ -632,11 +632,13 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket(BuildContext context, Order order) {
+    /*
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
     var date =
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
+    */
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
