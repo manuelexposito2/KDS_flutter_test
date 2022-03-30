@@ -14,11 +14,11 @@ class StatusOrderBloc extends Bloc<StatusOrderEvent, StatusOrderState> {
     on<DoStatusOrderEvent>(_doOrderEvent);
   }
 
-  void _doOrderEvent(DoStatusOrderEvent event, Emitter<StatusOrderState> emit)async {
+  _doOrderEvent(DoStatusOrderEvent event, Emitter<StatusOrderState> emit)async {
     emit(StatusOrderLoadingState());
     try{
       final statusOrderResponse = await statusOrderRepository.statusOrder(event.orderDto);
-      emit(StatusOrderSuccessState());
+      emit(StatusOrderSuccessState(statusOrderResponse));
       return;
     }on Exception catch (e){
       emit(StatusOrderErrorState(e.toString()));

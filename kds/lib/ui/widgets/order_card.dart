@@ -34,8 +34,10 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   //Esta comanda es la misma que la principal pero existe para darle más datos
-  late final Future <Order>? orderExtended;
+  late final Future<Order>? orderExtended;
 
+  Color? colorOrderStatus;
+  Color? color;
   String? idOrder;
   String? idDetail;
   String? status;
@@ -45,39 +47,72 @@ class _ComandaCardState extends State<OrderCard> {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-   
-    orderExtended = orderRepository.getOrderById(widget.order!.camId.toString());
+
+    orderExtended =
+        orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
-
+    /*
     statusOrderBloc = StatusOrderBloc(statusOrderRepository)
       ..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
     statusDetailBloc = StatusDetailBloc(statusDetailRepository)
       ..add(DoStatusDetailEvent(
           DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
+    */
   }
 
   @override
   Widget build(BuildContext context) {
-    return 
-
-        MultiBlocProvider(providers: [
-          
-          //TODO: REHACER LOS BLOC
-      BlocProvider<StatusOrderBloc>(
-        create: (context) => statusOrderBloc,
+    //setColorWithStatus(widget.order!.camEstado!);
+    return MultiBlocProvider(providers: [
+      BlocProvider(
+        create: (context) => StatusOrderBloc(statusOrderRepository),
       ),
-      BlocProvider<StatusDetailBloc>(
-        create: (context) => statusDetailBloc,
+      BlocProvider(
+        create: (context) => StatusDetailBloc(statusDetailRepository),
       ),
     ], child: blocBuilderCardComanda(context));
+
+    /* Container(
+      decoration: BoxDecoration(
+          color: colorOrderStatus,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
+      margin: EdgeInsets.all(10),
+      width: 300,
+      child: Column(
+        children: [
+          comandaHeader(context, widget.order!),
+          comandaLineas(context, widget.order!)
+        ],
+      ),
+    ); */
+  }
+
+  setColorWithStatus(String status) {
+    switch (status) {
+      case "E":
+        return Styles.baseColor;
+
+      case "P":
+        return Styles.mediumColor;
+
+      case "T":
+        return Styles.succesColor;
+
+      default:
+        return Styles.baseColor;
+    }
   }
 
   Widget blocBuilderCardComanda(BuildContext context) {
+    setState(() {
+      colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
+    });
+
     return Container(
       decoration: BoxDecoration(
-          color: Styles.succesColor,
+          color: colorOrderStatus,
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
@@ -86,36 +121,41 @@ class _ComandaCardState extends State<OrderCard> {
           BlocConsumer<StatusOrderBloc, StatusOrderState>(
             builder: ((context, state) {
               if (state is StatusOrderInitial) {
-                return Text("Recibiendo datos...");
+                return comandaHeader(context, widget.order!);
               } else if (state is StatusOrderErrorState) {
                 return const Text("Hubo un error");
-              } else if (state is StatusOrderSuccessState) {
-                //TODO: RETURN ORDER CON MÁS DATOS
-                return comandaHeader(context, widget.order!);
-              } else {
+              } else if (state is StatusOrderLoadingState) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
+              } else {
+                return comandaHeader(context, widget.order!);
               }
             }),
-            listener: ((context, state) {}),
+            listener: ((context, state) {
+              if (state is StatusOrderSuccessState) {
+                
+                  colorOrderStatus =
+                      setColorWithStatus(widget.order!.camEstado!);
+                
+                
+              }
+            }),
           ),
           BlocConsumer<StatusDetailBloc, StatusDetailState>(
               builder: ((context, state) {
-                if (state is StatusDetailInitial) {
-                  return const Text("Recibiendo datos...");
-                } else if (state is StatusDetailErrorState) {
-                  return const Text("Hubo un error");
-                } else if (state is StatusDetailSuccessState) {
-                  //TODO: RETURN ORDER CON MÁS DATOS
-                  return comandaLineas(context, widget.order!);
-                } else {
-                  return const Center(
-                  child: CircularProgressIndicator(),
-                );
-                }
-              }),
-              listener: ((context, state) {}))
+            if (state is StatusDetailInitial) {
+              return comandaLineas(context, widget.order!);
+            } else if (state is StatusDetailErrorState) {
+              return const Text("Hubo un error");
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }), listener: ((context, state) {
+            setState(() {});
+          }))
         ],
       ),
     );
@@ -209,7 +249,17 @@ class _ComandaCardState extends State<OrderCard> {
                       backgroundColor: Colors.white,
                       primary: Color.fromARGB(255, 87, 87, 87),
                       textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {},
+                  onPressed: () {
+                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
+                    OrderDto newStatus = OrderDto(
+                        idOrder: order.camId.toString(),
+                        status: _toogleStateButton(order.camEstado!));
+
+                    BlocProvider.of<StatusOrderBloc>(context)
+                        .add(DoStatusOrderEvent(newStatus));
+                        debugPrint(newStatus.idOrder);
+                        debugPrint(newStatus.status);
+                  },
                   icon: const Icon(
                     Icons.play_arrow,
                     color: Color(0xFF337AB7),
@@ -234,7 +284,6 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-      
       ],
     );
   }
@@ -243,16 +292,15 @@ class _ComandaCardState extends State<OrderCard> {
     return FutureBuilder<Order>(
       future: orderExtended,
       builder: (context, snapshot) {
-    if (snapshot.hasData) {
-      return information(context, snapshot.data!);
-    } else if (snapshot.hasError) {
-      return Text('${snapshot.error}');
-    }
-    return const CircularProgressIndicator();
-  },);
-
+        if (snapshot.hasData) {
+          return information(context, snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
   }
-
 
   Widget comandaLineas(BuildContext context, Order order) {
     return Wrap(
@@ -320,10 +368,20 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+/*
   String _toogleStateButton(Details details) {
     if (details.demEstado!.contains('E')) {
       return 'P';
     } else if (details.demEstado!.contains('P')) {
+      return 'T';
+    } else {
+      return 'E';
+    }
+  }*/
+  String _toogleStateButton(String status) {
+    if (status.contains('E')) {
+      return 'P';
+    } else if (status.contains('P')) {
       return 'T';
     } else {
       return 'E';
@@ -586,7 +644,6 @@ class _ComandaCardState extends State<OrderCard> {
                             ),
                           )),
                       ticket(context, order)
-                      
                     ],
                   ),
                 ),
@@ -617,7 +674,10 @@ class _ComandaCardState extends State<OrderCard> {
         width: 600,
         child: Padding(
           padding: EdgeInsets.all(15),
-          child: Text(order.camTicket!, style: Styles.textTicketInfo,),
+          child: Text(
+            order.camTicket!,
+            style: Styles.textTicketInfo,
+          ),
           /*child: Column(
             children: [
               Column(

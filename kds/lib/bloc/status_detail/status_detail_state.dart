@@ -12,7 +12,12 @@ class StatusDetailInitial extends StatusDetailState {}
 class StatusDetailLoadingState extends StatusDetailState {}
 
 class StatusDetailSuccessState extends StatusDetailState {
-  
+  final DetailDto detailDto;
+
+  const StatusDetailSuccessState(this.detailDto);
+
+  @override
+  List<Object> get props => [detailDto];
 }
 
 class StatusDetailErrorState extends StatusDetailState {

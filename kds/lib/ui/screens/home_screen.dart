@@ -247,12 +247,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushReplacement<void, void>(
+             /* Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => HomeScreen()
                 ),
-              );
+              );*/
             },
             child: Icon(Icons.refresh),
             style: Styles.btnActionStyle,
