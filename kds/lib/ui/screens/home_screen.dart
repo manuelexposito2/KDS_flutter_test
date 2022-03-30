@@ -3,7 +3,7 @@ import 'package:kds/ui/widgets/orders_list.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({ Key? key }) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       children: [
         OrdersList(),
-       // Positioned(bottom: 10, left: 10,child: TimerWidget()),
+        //Positioned(bottom: 10, left: 10, child: TimerWidget()),
       ],
     );
   }

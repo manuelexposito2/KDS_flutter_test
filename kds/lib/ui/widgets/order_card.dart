@@ -92,13 +92,7 @@ class _ComandaCardState extends State<OrderCard> {
       width: 300,
       child: BlocConsumer<StatusOrderBloc, StatusOrderState>(
         builder: ((context, state) {
-          if (state is StatusOrderInitial) {
-            return _contentCard(context, widget.order!);
-          } else if (state is StatusOrderErrorState) {
-            return const Text("Hubo un error");
-          } else if (state is StatusOrderLoadingState) {
-            return _contentCard(context, widget.order!);
-          } else if (state is StatusOrderSuccessState) {
+          if (state is StatusOrderSuccessState) {
             colorOrderStatus = setColorWithStatus(state.orderDto.status!);
             return _contentCard(context, widget.order!);
           } else {
@@ -304,7 +298,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  //TODO: COLOCAR DEBAJO DEL HEADER
+ 
   Widget _urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
@@ -322,6 +316,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   String _toogleStateButton(String status) {
+   
     if (status.contains('E')) {
       return 'P';
     } else if (status.contains('P')) {

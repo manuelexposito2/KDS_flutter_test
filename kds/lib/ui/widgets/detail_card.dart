@@ -42,13 +42,7 @@ class _DetailCardState extends State<DetailCard> {
       BuildContext context, Order order, Details details) {
     return BlocConsumer<StatusDetailBloc, StatusDetailState>(
         builder: ((context, state) {
-      if (state is StatusDetailInitial) {
-        return _itemPedido(context, order, details);
-      } else if (state is StatusDetailErrorState) {
-        return const Text("Hubo un error");
-      } else if (state is StatusDetailLoadingState) {
-        return _itemPedido(context, order, details);
-      } else if (state is StatusDetailSuccessState) {
+      if (state is StatusDetailSuccessState) {
         colorDetailStatus = setColorWithStatus(state.detailDto.status!);
         return _itemPedido(context, order, details);
       } else {
