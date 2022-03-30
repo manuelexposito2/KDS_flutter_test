@@ -105,6 +105,14 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  Widget _showUrgente(BuildContext context, Order order) {
+    if (order.camUrgente == 1) {
+      return urgente();
+    } else {
+      return Container();
+    }
+  }
+
   Widget blocBuilderCardComanda(BuildContext context) {
     setState(() {
       colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
@@ -145,7 +153,15 @@ class _ComandaCardState extends State<OrderCard> {
           BlocConsumer<StatusDetailBloc, StatusDetailState>(
               builder: ((context, state) {
             if (state is StatusDetailInitial) {
-              return comandaLineas(context, widget.order!);
+              return Container(
+                    margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
+                    child: Column(
+                      children: [
+                        _showUrgente(context, widget.order!),
+                        comandaLineas(context, widget.order!)
+                      ],
+                    ),
+                  );
             } else if (state is StatusDetailErrorState) {
               return const Text("Hubo un error");
             } else {
@@ -318,7 +334,7 @@ class _ComandaCardState extends State<OrderCard> {
       width: MediaQuery.of(context).size.width,
       color: Styles.alertColor,
       alignment: Alignment.center,
-      height: 50,
+      height: 65,
       //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
       child: Text(
         '¡¡¡URGENTE!!!',
@@ -439,19 +455,16 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget information(BuildContext context, Order order) {
-    var espaciado = EdgeInsets.only(bottom: 5);
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        height: MediaQuery.of(context).size.height / 2,
-        child: Column(
-          children: [
-            Container(
-              child: Text(
-                'Información de comanda',
-                style: Styles.textTitleInfo,
-              ),
-            ),
+    var espaciado = EdgeInsets.only(bottom: 20);
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      child: Column(
+        children: [
+          Container(
+            child: Text(
+              'Información de comanda',
+              style: Styles.textTitleInfo,
+            ),),
             Divider(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -549,74 +562,94 @@ class _ComandaCardState extends State<OrderCard> {
                     ],
                   ),
                 ),
-                Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text('Cliente', style: Styles.textTitleInfo),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 5),
-                            child: Row(
-                              children: [
-                                Icon(Icons.person),
-                                Text(' Nombre: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
+              
+              Container(
+                width: 400,
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text('Cliente', style: Styles.textTitleInfo),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.person),
+                              Text(' Nombre: ', style: Styles.textBoldInfo),
+                              Text(order.cliNombre.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.phone),
-                                Text(' Teléfono: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.phone),
+                              Text(' Teléfono: ', style: Styles.textBoldInfo),
+                              Text(order.cliTelefono.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.place),
-                                Text(' Dirección:', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.place),
+                              Text(' Dirección:', style: Styles.textBoldInfo),
+                              Text(order.cliDireccion.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.zoom_in_map_rounded),
-                                Text(' Zona: ', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.zoom_in_map_rounded),
+                              Text(' Zona: ', style: Styles.textBoldInfo),
+                              Text(order.cliZona.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble),
-                                Text(' Notas:', style: Styles.textBoldInfo),
-                                Text('', style: Styles.textRegularInfo)
-                              ],
-                            ),
+                        ),
+                        Padding(
+                          padding: espaciado,
+                          child: Row(
+                            children: [
+                              Icon(Icons.chat_bubble),
+                              Text(' Notas:', style: Styles.textBoldInfo),
+                              Text(order.cliNotas.toString(),
+                                  style: Styles.textRegularInfo)
+                            ],
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
+              ),
+              Container(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Text(
+                        'Ticket',
+                        style: Styles.textTitleInfo,
+                      ),
+                    ),
+                    ticket_button(context, order),
+                    ticket(context, order)
+                  ],
+                ),),
                 Container(
                   child: Column(
                     children: [
@@ -651,16 +684,54 @@ class _ComandaCardState extends State<OrderCard> {
             )
           ],
         ),
-      ),
-    );
+      );
+
+  }
+
+  Widget ticket_button(BuildContext context, Order order) {
+    if (order.camUrgente == 0) {
+      return TextButton(
+          onPressed: () {},
+          child: Container(
+            width: 600,
+            decoration: BoxDecoration(
+              color: Color(0xFFD9534F),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            alignment: Alignment.center,
+            height: 50,
+            child: Text(
+              '¡Marcar como URGENTE!',
+              style: Styles.urgent,
+            ),
+          ));
+    } else {
+      return TextButton(
+          onPressed: () {},
+          child: Container(
+            width: 600,
+            decoration: BoxDecoration(
+              color: Color(0xFF5BC0DE),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            alignment: Alignment.center,
+            height: 50,
+            child: Text(
+              '¡Marcar como NORMAL',
+              style: Styles.urgent,
+            ),
+          ));
+    }
   }
 
   Widget ticket(BuildContext context, Order order) {
+    /*
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
     var date =
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
+    */
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -677,7 +748,7 @@ class _ComandaCardState extends State<OrderCard> {
           child: Text(
             order.camTicket!,
             style: Styles.textTicketInfo,
-          ),
+          )));
           /*child: Column(
             children: [
               Column(
@@ -786,7 +857,8 @@ class _ComandaCardState extends State<OrderCard> {
               )
             ],
           ),
-        */
         ));
+  */
+  
   }
 }
