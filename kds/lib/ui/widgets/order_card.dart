@@ -253,7 +253,67 @@ class _ComandaCardState extends State<OrderCard> {
               SizedBox(
                 width: 195,
                 height: 50,
-                child: TextButton.icon(
+                child: _buttonstate(context, order)
+              ),
+              SizedBox(
+                width: 95,
+                height: 50,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      primary: Color.fromARGB(255, 87, 87, 87)),
+                  child: Icon(Icons.print),
+                  onPressed: () {},
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /*
+  String _toogleStateButton(String status) {
+    if (status.contains('E')) {
+      return 'P';
+    } else if (status.contains('P')) {
+      return 'T';
+    } else {
+      return 'E';
+    }
+  }
+  */
+
+  Widget _buttonstate(BuildContext context, Order order){
+    if(order.camEstado == 'T'){
+      return TextButton.icon(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      primary: Color.fromARGB(255, 87, 87, 87),
+                      textStyle: TextStyle(fontSize: 18)),
+                  onPressed: () {
+                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
+                    OrderDto newStatus = OrderDto(
+                        idOrder: order.camId.toString(),
+                        status: _toogleStateButton(order.camEstado!));
+
+                    BlocProvider.of<StatusOrderBloc>(context)
+                        .add(DoStatusOrderEvent(newStatus));
+                        debugPrint(newStatus.idOrder);
+                        debugPrint(newStatus.status);
+                  },
+                  icon: const Icon(
+                    Icons.replay_outlined,
+                    color: Color(0xFF337AB7),
+                    size: 30,
+                  ),
+                  label: const Text(
+                    'Recuperar',
+                  ),
+                );
+    }else{
+      return TextButton.icon(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
                       primary: Color.fromARGB(255, 87, 87, 87),
@@ -277,26 +337,9 @@ class _ComandaCardState extends State<OrderCard> {
                   label: const Text(
                     'Preparar',
                   ),
-                ),
-              ),
-              SizedBox(
-                width: 95,
-                height: 50,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87)),
-                  child: Icon(Icons.print),
-                  onPressed: () {},
-                ),
-              )
-            ],
-          ),
-        ),
-      ],
-    );
+                );
+    }
   }
-
   Widget futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
