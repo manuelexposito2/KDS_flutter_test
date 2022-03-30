@@ -650,36 +650,7 @@ class _ComandaCardState extends State<OrderCard> {
                     ticket(context, order)
                   ],
                 ),),
-                Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          'Ticket',
-                          style: Styles.textTitleInfo,
-                        ),
-                      ),
-                      TextButton(
-                          onPressed: () {},
-                          child: Container(
-                            width: 600,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFD9534F),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            alignment: Alignment.center,
-                            height: 50,
-                            child: Text(
-                              '¡Marcar como URGENTE!',
-                              style: Styles.urgent,
-                            ),
-                          )),
-                      ticket(context, order)
-                    ],
-                  ),
-                ),
+                
               ],
             )
           ],
