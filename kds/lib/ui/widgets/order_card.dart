@@ -522,7 +522,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.person),
                               Text(' Nombre: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliNombre.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -532,7 +532,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.phone),
                               Text(' Teléfono: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliTelefono.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -542,7 +542,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.place),
                               Text(' Dirección:', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliDireccion.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -552,7 +552,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.zoom_in_map_rounded),
                               Text(' Zona: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliZona.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -562,7 +562,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.chat_bubble),
                               Text(' Notas:', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliNotas.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
