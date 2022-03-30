@@ -15,6 +15,7 @@ import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/ui/widgets/detail_card.dart';
 
 class OrderCard extends StatefulWidget {
   OrderCard({Key? key, required this.order}) : super(key: key);
@@ -27,7 +28,7 @@ class OrderCard extends StatefulWidget {
 
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
-  late StatusDetailRepository statusDetailRepository;
+
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
   late OrderByIdBloc orderByIdBloc;
@@ -38,9 +39,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   Color? colorOrderStatus;
   Color? color;
-  String? idOrder;
-  String? idDetail;
-  String? status;
 
   @override
   void initState() {
@@ -52,19 +50,13 @@ class _ComandaCardState extends State<OrderCard> {
         orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
-    statusDetailRepository = StatusDetailRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [
-      BlocProvider(
+    return BlocProvider(
         create: (context) => StatusOrderBloc(statusOrderRepository),
-      ),
-      BlocProvider(
-        create: (context) => StatusDetailBloc(statusDetailRepository),
-      ),
-    ], child: blocBuilderCardComanda(context));
+        child: blocBuilderCardComanda(context));
   }
 
   setColorWithStatus(String status) {
@@ -85,7 +77,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget _showUrgente(BuildContext context, Order order) {
     if (order.camUrgente == 1) {
-      return urgente();
+      return _urgente();
     } else {
       return Container();
     }
@@ -98,70 +90,52 @@ class _ComandaCardState extends State<OrderCard> {
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      child: Column(
-        children: [
-          BlocConsumer<StatusOrderBloc, StatusOrderState>(
-            builder: ((context, state) {
-              if (state is StatusOrderInitial) {
-                return comandaHeader(context, widget.order!);
-              } else if (state is StatusOrderErrorState) {
-                return const Text("Hubo un error");
-              } else if (state is StatusOrderLoadingState) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state is StatusOrderSuccessState) {
-                colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-                return comandaHeader(context, widget.order!);
-              } else {
-                return comandaHeader(context, widget.order!);
-              }
-            }),
-            buildWhen: ((context, state) {
-              return state is StatusOrderInitial ||
-                  state is StatusOrderSuccessState ||
-                  state is StatusOrderLoadingState;
-            }),
-            listenWhen: ((context, state) {
-              return state is StatusOrderErrorState ||
-                  state is StatusOrderSuccessState;
-            }),
-            listener: ((context, state) {
-              if (state is StatusOrderSuccessState) {
-                setState(() {
-                  colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-                });
-              }
-            }),
-          ),
-          BlocConsumer<StatusDetailBloc, StatusDetailState>(
-              builder: ((context, state) {
-            if (state is StatusDetailInitial) {
-              return Container(
-                margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
-                child: Column(
-                  children: [
-                    _showUrgente(context, widget.order!),
-                    comandaLineas(context, widget.order!)
-                  ],
-                ),
-              );
-            } else if (state is StatusDetailErrorState) {
-              return const Text("Hubo un error");
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }), listener: ((context, state) {
-            setState(() {});
-          }))
-        ],
+      child: BlocConsumer<StatusOrderBloc, StatusOrderState>(
+        builder: ((context, state) {
+          if (state is StatusOrderInitial) {
+            return _contentCard(context, widget.order!);
+          } else if (state is StatusOrderErrorState) {
+            return const Text("Hubo un error");
+          } else if (state is StatusOrderLoadingState) {
+            return _contentCard(context, widget.order!);
+          } else if (state is StatusOrderSuccessState) {
+            colorOrderStatus = setColorWithStatus(state.orderDto.status!);
+            return _contentCard(context, widget.order!);
+          } else {
+            return _contentCard(context, widget.order!);
+          }
+        }),
+        buildWhen: ((context, state) {
+          return state is StatusOrderInitial ||
+              state is StatusOrderSuccessState ||
+              state is StatusOrderLoadingState;
+        }),
+        listenWhen: ((context, state) {
+          return state is StatusOrderErrorState ||
+              state is StatusOrderSuccessState;
+        }),
+        listener: ((context, state) {
+          if (state is StatusOrderSuccessState) {
+            setState(() {
+              colorOrderStatus = setColorWithStatus(state.orderDto.status!);
+            });
+          }
+        }),
       ),
     );
   }
 
-  Widget comandaHeader(BuildContext context, Order order) {
+  Widget _contentCard(BuildContext context, Order order) {
+    return Column(
+      children: [
+        _comandaHeader(context, order),
+        _showUrgente(context, order),
+        _comandaLineas(context, order)
+      ],
+    );
+  }
+
+  Widget _comandaHeader(BuildContext context, Order order) {
     return Column(
       children: [
         Container(
@@ -223,7 +197,7 @@ class _ComandaCardState extends State<OrderCard> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              content: futureInfo(context),
+                              content: _futureInfo(context),
                             );
                           },
                           barrierDismissible: true),
@@ -305,7 +279,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget futureInfo(BuildContext context) {
+  Widget _futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
       builder: (context, snapshot) {
@@ -319,16 +293,19 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget comandaLineas(BuildContext context, Order order) {
+  Widget _comandaLineas(BuildContext context, Order order) {
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.start,
-      children: [for (var d in order.details) _itemPedido(context, order, d)],
+      children: [
+        for (var d in order.details) DetailCard(details: d, order: order)
+      ],
     );
   }
 
-  Widget urgente() {
+  //TODO: COLOCAR DEBAJO DEL HEADER
+  Widget _urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
@@ -340,36 +317,6 @@ class _ComandaCardState extends State<OrderCard> {
       child: Text(
         '¡¡¡URGENTE!!!',
         style: Styles.urgent,
-      ),
-    );
-  }
-
-  Widget _itemPedido(BuildContext context, Order order, Details details) {
-    Color nuevo = Colors.white;
-
-    if (details.demEstado!.contains('E')) {
-      nuevo;
-    } else if (details.demEstado!.contains('P')) {
-      nuevo = Color(0xFFF5CB8F);
-    } else if (details.demEstado!.contains('R')) {
-      nuevo = Colors.purple;
-    } else if (details.demEstado!.contains('T')) {
-      nuevo = Color(0xFFB0E1A0);
-    } else {
-      nuevo;
-    }
-
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: nuevo,
-        primary: Color.fromARGB(255, 87, 87, 87),
-      ),
-      onPressed: () async {},
-      child: ListTile(
-        title: Text(
-          details.demTitulo!,
-          style: Styles.textTitle,
-        ),
       ),
     );
   }

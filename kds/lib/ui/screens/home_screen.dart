@@ -14,8 +14,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        //Positioned(bottom: 10, left: 10,child: TimerWidget()),
-        OrdersList()
+        OrdersList(),
+       // Positioned(bottom: 10, left: 10,child: TimerWidget()),
       ],
     );
   }
