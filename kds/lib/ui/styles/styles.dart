@@ -15,9 +15,8 @@ class Styles {
   static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
 
-
   static BoxBorder borderSimple = Border.all(color: black);
-  
+
   static ButtonStyle tileStyle = ButtonStyle(
     shape: MaterialStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0))),
@@ -129,4 +128,10 @@ class Styles {
 
   static TextStyle get textTicketInfo =>
       GoogleFonts.getFont('Red Hat Mono', fontSize: 18);
+
+  static TextStyle get textButtonOperario =>
+      GoogleFonts.getFont('Roboto', fontSize: 40, color: Colors.white);
+
+  static TextStyle get textButtonCancelar =>
+      GoogleFonts.getFont('Roboto', fontSize: 35, color: Colors.white);
 }
