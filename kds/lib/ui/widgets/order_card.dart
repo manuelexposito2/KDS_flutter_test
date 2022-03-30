@@ -34,7 +34,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   //Esta comanda es la misma que la principal pero existe para darle más datos
-  late final Future <Order>? orderExtended;
+  late final Future<Order>? orderExtended;
 
   String? idOrder;
   String? idDetail;
@@ -45,8 +45,9 @@ class _ComandaCardState extends State<OrderCard> {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-   
-    orderExtended = orderRepository.getOrderById(widget.order!.camId.toString());
+
+    orderExtended =
+        orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
@@ -60,9 +61,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-
-        MultiBlocProvider(providers: [
+    return MultiBlocProvider(providers: [
       BlocProvider<StatusOrderBloc>(
         create: (context) => statusOrderBloc,
       ),
@@ -71,6 +70,16 @@ class _ComandaCardState extends State<OrderCard> {
       ),
     ], child: blocBuilderCardComanda(context));
   }
+
+  Widget _showUrgente(BuildContext context, Order order){
+    if(order.camUrgente == 1){
+      return urgente();
+    }else{
+      return Container();
+    }
+  }
+
+
 
   Widget blocBuilderCardComanda(BuildContext context) {
     return Container(
@@ -106,11 +115,19 @@ class _ComandaCardState extends State<OrderCard> {
                   return const Text("Hubo un error");
                 } else if (state is StatusDetailSuccessState) {
                   //TODO: RETURN ORDER CON MÁS DATOS
-                  return comandaLineas(context, widget.order!);
+                  return Container(
+                    margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
+                    child: Column(
+                      children: [
+                        _showUrgente(context, widget.order!),
+                        comandaLineas(context, widget.order!)
+                        ],
+                    ),
+                  );
                 } else {
                   return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                    child: CircularProgressIndicator(),
+                  );
                 }
               }),
               listener: ((context, state) {}))
@@ -232,7 +249,6 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-      
       ],
     );
   }
@@ -241,16 +257,15 @@ class _ComandaCardState extends State<OrderCard> {
     return FutureBuilder<Order>(
       future: orderExtended,
       builder: (context, snapshot) {
-    if (snapshot.hasData) {
-      return information(context, snapshot.data!);
-    } else if (snapshot.hasError) {
-      return Text('${snapshot.error}');
-    }
-    return const CircularProgressIndicator();
-  },);
-
+        if (snapshot.hasData) {
+          return information(context, snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
   }
-
 
   Widget comandaLineas(BuildContext context, Order order) {
     return Wrap(
@@ -261,6 +276,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+
   Widget urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
@@ -268,7 +284,7 @@ class _ComandaCardState extends State<OrderCard> {
       width: MediaQuery.of(context).size.width,
       color: Styles.alertColor,
       alignment: Alignment.center,
-      height: 50,
+      height: 65,
       //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
       child: Text(
         '¡¡¡URGENTE!!!',
@@ -506,7 +522,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.person),
                               Text(' Nombre: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliNombre.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -516,7 +532,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.phone),
                               Text(' Teléfono: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliTelefono.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -526,7 +542,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.place),
                               Text(' Dirección:', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliDireccion.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -536,7 +552,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.zoom_in_map_rounded),
                               Text(' Zona: ', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliZona.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -546,7 +562,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.chat_bubble),
                               Text(' Notas:', style: Styles.textBoldInfo),
-                              Text('', style: Styles.textRegularInfo)
+                              Text(order.cliNotas.toString(), style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -571,8 +587,7 @@ class _ComandaCardState extends State<OrderCard> {
                           width: 600,
                           decoration: BoxDecoration(
                             color: Color(0xFFD9534F),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5)),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
                           ),
                           alignment: Alignment.center,
                           height: 50,
@@ -582,7 +597,6 @@ class _ComandaCardState extends State<OrderCard> {
                           ),
                         )),
                     ticket(context, order)
-                    
                   ],
                 ),
               ),
@@ -594,6 +608,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket(BuildContext context, Order order) {
+
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
@@ -612,116 +627,11 @@ class _ComandaCardState extends State<OrderCard> {
         width: 600,
         child: Padding(
           padding: EdgeInsets.all(15),
-          child: Text(order.camTicket!, style: Styles.textTicketInfo,),
-          /*child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Fecha: ',
-                                style: Styles.textTicketInfo,
-                              ),
-                              Text(
-                                result,
-                                style: Styles.textTicketInfo,
-                              )
-                            ],
-                          ))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      children: List.generate(
-                          300 ~/ 5,
-                          (index) => Expanded(
-                                child: Container(
-                                  color: index % 2 == 0
-                                      ? Colors.transparent
-                                      : Color.fromARGB(255, 0, 0, 0),
-                                  height: 1,
-                                ),
-                              )),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  children: List.generate(
-                      300 ~/ 5,
-                      (index) => Expanded(
-                            child: Container(
-                              color: index % 2 == 0
-                                  ? Colors.transparent
-                                  : Color.fromARGB(255, 0, 0, 0),
-                              height: 1,
-                            ),
-                          )),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('Total EUR:', style: Styles.textTicketInfo),
-                    Text('7.00', style: Styles.textTicketInfo)
-                  ],
-                ),
-              )
-            ],
+          child: Text(
+            
+            order.camTicket!,
+            style: Styles.textTicketInfo,
           ),
-        */
         ));
   }
 }
