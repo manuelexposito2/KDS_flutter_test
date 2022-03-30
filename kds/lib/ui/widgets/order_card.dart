@@ -82,8 +82,6 @@ class _ComandaCardState extends State<OrderCard> {
 
 
   Widget blocBuilderCardComanda(BuildContext context) {
-
-    
     return Container(
       decoration: BoxDecoration(
           color: Styles.succesColor,
@@ -610,6 +608,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket(BuildContext context, Order order) {
+
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
@@ -629,118 +628,10 @@ class _ComandaCardState extends State<OrderCard> {
         child: Padding(
           padding: EdgeInsets.all(15),
           child: Text(
+            
             order.camTicket!,
             style: Styles.textTicketInfo,
           ),
-          /*child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Fecha: ',
-                                style: Styles.textTicketInfo,
-                              ),
-                              Text(
-                                result,
-                                style: Styles.textTicketInfo,
-                              )
-                            ],
-                          ))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      children: List.generate(
-                          300 ~/ 5,
-                          (index) => Expanded(
-                                child: Container(
-                                  color: index % 2 == 0
-                                      ? Colors.transparent
-                                      : Color.fromARGB(255, 0, 0, 0),
-                                  height: 1,
-                                ),
-                              )),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  children: List.generate(
-                      300 ~/ 5,
-                      (index) => Expanded(
-                            child: Container(
-                              color: index % 2 == 0
-                                  ? Colors.transparent
-                                  : Color.fromARGB(255, 0, 0, 0),
-                              height: 1,
-                            ),
-                          )),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('Total EUR:', style: Styles.textTicketInfo),
-                    Text('7.00', style: Styles.textTicketInfo)
-                  ],
-                ),
-              )
-            ],
-          ),
-        */
         ));
   }
 }
