@@ -57,7 +57,8 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    //setColorWithStatus(widget.order!.camEstado!);
+    
+    
     return MultiBlocProvider(providers: [
       BlocProvider(
         create: (context) => StatusOrderBloc(statusOrderRepository),
@@ -67,19 +68,7 @@ class _ComandaCardState extends State<OrderCard> {
       ),
     ], child: blocBuilderCardComanda(context));
 
-    /* Container(
-      decoration: BoxDecoration(
-          color: colorOrderStatus,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      margin: EdgeInsets.all(10),
-      width: 300,
-      child: Column(
-        children: [
-          comandaHeader(context, widget.order!),
-          comandaLineas(context, widget.order!)
-        ],
-      ),
-    ); */
+   
   }
 
   setColorWithStatus(String status) {
@@ -257,10 +246,7 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                width: 195,
-                height: 50,
-                child: _buttonstate(context, order)
-              ),
+                  width: 195, height: 50, child: _buttonstate(context, order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -279,88 +265,50 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buttonstate(BuildContext context, Order order){
-    if(order.camEstado == 'T'){
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
+  Widget _buttonstate(BuildContext context, Order order) {
+    Text label = const Text('Preparar');
+    Icon icon = const Icon(
+      Icons.play_arrow,
+      color: Color(0xFF337AB7),
+      size: 30,
+    );
 
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                        debugPrint(newStatus.idOrder);
-                        debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.replay_outlined,
-                    color: Color.fromARGB(255, 61, 61, 61),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Recuperar',
-                  ),
-                );
-    }else if(order.camEstado == 'P'){
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
-
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                        debugPrint(newStatus.idOrder);
-                        debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.check_circle,
-                    color: Color.fromARGB(255, 19, 165, 19),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Terminar',
-                  ),
-                );
+    if (order.camEstado == 'T') {
+      label = const Text('Recuperar');
+      icon = const Icon(
+        Icons.replay_outlined,
+        color: Color.fromARGB(255, 61, 61, 61),
+        size: 30,
+      );
+    } else if (order.camEstado == 'P') {
+      label = const Text('Terminar');
+      icon = const Icon(
+        Icons.check_circle,
+        color: Color.fromARGB(255, 19, 165, 19),
+        size: 30,
+      );
     }
-    else{
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                   
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
 
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                    debugPrint(newStatus.idOrder);
-                    debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.play_arrow,
-                    color: Color(0xFF337AB7),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Preparar',
-                  ),
-                );
-    }
+    return TextButton.icon(
+      style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          primary: Color.fromARGB(255, 87, 87, 87),
+          textStyle: TextStyle(fontSize: 18)),
+      onPressed: () {
+        OrderDto newStatus = OrderDto(
+            idOrder: order.camId.toString(),
+            status: _toogleStateButton(order.camEstado!));
+
+        BlocProvider.of<StatusOrderBloc>(context)
+            .add(DoStatusOrderEvent(newStatus));
+        debugPrint(newStatus.idOrder);
+        debugPrint(newStatus.status);
+      },
+      icon: icon,
+      label: label,
+    );
   }
+
   Widget futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
@@ -401,7 +349,6 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
-
     Color nuevo = Colors.white;
 
     if (details.demEstado!.contains('E')) {
@@ -421,9 +368,7 @@ class _ComandaCardState extends State<OrderCard> {
         backgroundColor: nuevo,
         primary: Color.fromARGB(255, 87, 87, 87),
       ),
-      onPressed: () async {
-      
-      },
+      onPressed: () async {},
       child: ListTile(
         title: Text(
           details.demTitulo!,
@@ -432,7 +377,6 @@ class _ComandaCardState extends State<OrderCard> {
       ),
     );
   }
-
 
   String _toogleStateButton(String status) {
     if (status.contains('E')) {
