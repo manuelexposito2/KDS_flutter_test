@@ -53,13 +53,7 @@ class _ComandaCardState extends State<OrderCard> {
 
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
-    /*
-    statusOrderBloc = StatusOrderBloc(statusOrderRepository)
-      ..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
-    statusDetailBloc = StatusDetailBloc(statusDetailRepository)
-      ..add(DoStatusDetailEvent(
-          DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
-    */
+
   }
 
   @override
@@ -143,8 +137,7 @@ class _ComandaCardState extends State<OrderCard> {
             listener: ((context, state) {
               if (state is StatusOrderSuccessState) {
                 
-                  colorOrderStatus =
-                      setColorWithStatus(widget.order!.camEstado!);
+                  colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
                 
                 
               }

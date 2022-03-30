@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:http/http.dart' as http;
@@ -12,18 +13,17 @@ class StatusOrderRepositoryImpl extends StatusOrderRepository{
   Future<OrderDto> statusOrder(OrderDto orderDto) async{
     String url = 'http://$apiBaseUrl:$puertoKDS/modifyOrderKDS';
     Map<String, String> headers = {
-      "callback": "getLastOrders",
       "Access-Control-Allow-Origin": "*",
-      "Content-Type": "text/plain"
+      "Content-Type": "application/x-www-form-urlencoded"
     };
-
+    
     final response = 
     await http.post(Uri.parse(url), 
     headers: headers, 
-    body: jsonEncode(orderDto.toJson()));
-
+    body: orderDto.toJson());
+    
     if(response.statusCode == 200){
-      
+     
       return orderDto;
     }else{
       throw Exception('Fail to load');
