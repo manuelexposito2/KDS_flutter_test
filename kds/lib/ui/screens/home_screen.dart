@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    
     super.dispose();
   }
 
@@ -246,7 +246,14 @@ class _HomeScreenState extends State<HomeScreen> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => HomeScreen()
+                ),
+              );
+            },
             child: Icon(Icons.refresh),
             style: Styles.btnActionStyle,
           ),
