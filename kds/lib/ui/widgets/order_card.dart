@@ -273,18 +273,6 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  /*
-  String _toogleStateButton(String status) {
-    if (status.contains('E')) {
-      return 'P';
-    } else if (status.contains('P')) {
-      return 'T';
-    } else {
-      return 'E';
-    }
-  }
-  */
-
   Widget _buttonstate(BuildContext context, Order order){
     if(order.camEstado == 'T'){
       return TextButton.icon(
