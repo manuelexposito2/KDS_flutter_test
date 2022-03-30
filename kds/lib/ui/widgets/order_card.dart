@@ -71,15 +71,13 @@ class _ComandaCardState extends State<OrderCard> {
     ], child: blocBuilderCardComanda(context));
   }
 
-  Widget _showUrgente(BuildContext context, Order order){
-    if(order.camUrgente == 1){
+  Widget _showUrgente(BuildContext context, Order order) {
+    if (order.camUrgente == 1) {
       return urgente();
-    }else{
+    } else {
       return Container();
     }
   }
-
-
 
   Widget blocBuilderCardComanda(BuildContext context) {
     return Container(
@@ -121,7 +119,7 @@ class _ComandaCardState extends State<OrderCard> {
                       children: [
                         _showUrgente(context, widget.order!),
                         comandaLineas(context, widget.order!)
-                        ],
+                      ],
                     ),
                   );
                 } else {
@@ -275,7 +273,6 @@ class _ComandaCardState extends State<OrderCard> {
       children: [for (var d in order.details) _itemPedido(context, order, d)],
     );
   }
-
 
   Widget urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
@@ -522,7 +519,8 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.person),
                               Text(' Nombre: ', style: Styles.textBoldInfo),
-                              Text(order.cliNombre.toString(), style: Styles.textRegularInfo)
+                              Text(order.cliNombre.toString(),
+                                  style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -532,7 +530,8 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.phone),
                               Text(' Teléfono: ', style: Styles.textBoldInfo),
-                              Text(order.cliTelefono.toString(), style: Styles.textRegularInfo)
+                              Text(order.cliTelefono.toString(),
+                                  style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -542,7 +541,8 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.place),
                               Text(' Dirección:', style: Styles.textBoldInfo),
-                              Text(order.cliDireccion.toString(), style: Styles.textRegularInfo)
+                              Text(order.cliDireccion.toString(),
+                                  style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -552,7 +552,8 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.zoom_in_map_rounded),
                               Text(' Zona: ', style: Styles.textBoldInfo),
-                              Text(order.cliZona.toString(), style: Styles.textRegularInfo)
+                              Text(order.cliZona.toString(),
+                                  style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -562,7 +563,8 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.chat_bubble),
                               Text(' Notas:', style: Styles.textBoldInfo),
-                              Text(order.cliNotas.toString(), style: Styles.textRegularInfo)
+                              Text(order.cliNotas.toString(),
+                                  style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
@@ -581,21 +583,7 @@ class _ComandaCardState extends State<OrderCard> {
                         style: Styles.textTitleInfo,
                       ),
                     ),
-                    TextButton(
-                        onPressed: () {},
-                        child: Container(
-                          width: 600,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFD9534F),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                          ),
-                          alignment: Alignment.center,
-                          height: 50,
-                          child: Text(
-                            '¡Marcar como URGENTE!',
-                            style: Styles.urgent,
-                          ),
-                        )),
+                    ticket_button(context, order),
                     ticket(context, order)
                   ],
                 ),
@@ -607,8 +595,43 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget ticket(BuildContext context, Order order) {
+  Widget ticket_button(BuildContext context, Order order) {
+    if (order.camUrgente == 0) {
+      return TextButton(
+          onPressed: () {},
+          child: Container(
+            width: 600,
+            decoration: BoxDecoration(
+              color: Color(0xFFD9534F),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            alignment: Alignment.center,
+            height: 50,
+            child: Text(
+              '¡Marcar como URGENTE!',
+              style: Styles.urgent,
+            ),
+          ));
+    } else {
+      return TextButton(
+          onPressed: () {},
+          child: Container(
+            width: 600,
+            decoration: BoxDecoration(
+              color: Color(0xFF5BC0DE),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            alignment: Alignment.center,
+            height: 50,
+            child: Text(
+              '¡Marcar como NORMAL',
+              style: Styles.urgent,
+            ),
+          ));
+    }
+  }
 
+  Widget ticket(BuildContext context, Order order) {
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
         DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
@@ -628,7 +651,6 @@ class _ComandaCardState extends State<OrderCard> {
         child: Padding(
           padding: EdgeInsets.all(15),
           child: Text(
-            
             order.camTicket!,
             style: Styles.textTicketInfo,
           ),
