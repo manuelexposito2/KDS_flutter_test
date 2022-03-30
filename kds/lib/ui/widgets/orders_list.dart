@@ -12,6 +12,7 @@ import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/widgets/resume_orders.dart';
+import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
 
@@ -112,11 +113,13 @@ class _OrdersListState extends State<OrdersList> {
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
       alignment: Alignment.topLeft,
-      child: Wrap(
-        direction: Axis.horizontal,
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        children: [for (var o in orders) OrderCard(order: o)],
+      child: SingleChildScrollView(
+        child: Wrap(
+          direction: Axis.horizontal,
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          children: [for (var o in orders) OrderCard(order: o)],
+        ),
       ),
     );
   }
@@ -128,7 +131,7 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [Container(), _buttonsFilter(context), _buttonsOptions()],
+          children: [TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
         ));
   }
 

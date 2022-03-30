@@ -15,6 +15,7 @@ import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/ui/widgets/detail_card.dart';
 
 class OrderCard extends StatefulWidget {
   OrderCard({Key? key, required this.order}) : super(key: key);
@@ -27,7 +28,7 @@ class OrderCard extends StatefulWidget {
 
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
-  late StatusDetailRepository statusDetailRepository;
+
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
   late OrderByIdBloc orderByIdBloc;
@@ -38,9 +39,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   Color? colorOrderStatus;
   Color? color;
-  String? idOrder;
-  String? idDetail;
-  String? status;
 
   @override
   void initState() {
@@ -52,34 +50,13 @@ class _ComandaCardState extends State<OrderCard> {
         orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
-    statusDetailRepository = StatusDetailRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    //setColorWithStatus(widget.order!.camEstado!);
-    return MultiBlocProvider(providers: [
-      BlocProvider(
+    return BlocProvider(
         create: (context) => StatusOrderBloc(statusOrderRepository),
-      ),
-      BlocProvider(
-        create: (context) => StatusDetailBloc(statusDetailRepository),
-      ),
-    ], child: blocBuilderCardComanda(context));
-
-    /* Container(
-      decoration: BoxDecoration(
-          color: colorOrderStatus,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      margin: EdgeInsets.all(10),
-      width: 300,
-      child: Column(
-        children: [
-          comandaHeader(context, widget.order!),
-          comandaLineas(context, widget.order!)
-        ],
-      ),
-    ); */
+        child: blocBuilderCardComanda(context));
   }
 
   setColorWithStatus(String status) {
@@ -100,7 +77,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget _showUrgente(BuildContext context, Order order) {
     if (order.camUrgente == 1) {
-      return urgente();
+      return _urgente();
     } else {
       return Container();
     }
@@ -113,70 +90,46 @@ class _ComandaCardState extends State<OrderCard> {
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
-      child: Column(
-        children: [
-          BlocConsumer<StatusOrderBloc, StatusOrderState>(
-            builder: ((context, state) {
-              if (state is StatusOrderInitial) {
-                return comandaHeader(context, widget.order!);
-              } else if (state is StatusOrderErrorState) {
-                return const Text("Hubo un error");
-              } else if (state is StatusOrderLoadingState) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state is StatusOrderSuccessState) {
-                colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-                return comandaHeader(context, widget.order!);
-              } else {
-                return comandaHeader(context, widget.order!);
-              }
-            }),
-            buildWhen: ((context, state) {
-              return state is StatusOrderInitial ||
-                  state is StatusOrderSuccessState ||
-                  state is StatusOrderLoadingState;
-            }),
-            listenWhen: ((context, state) {
-              return state is StatusOrderErrorState ||
-                  state is StatusOrderSuccessState;
-            }),
-            listener: ((context, state) {
-              if (state is StatusOrderSuccessState) {
-                setState(() {
-                  colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-                });
-              }
-            }),
-          ),
-          BlocConsumer<StatusDetailBloc, StatusDetailState>(
-              builder: ((context, state) {
-            if (state is StatusDetailInitial) {
-              return Container(
-                margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
-                child: Column(
-                  children: [
-                    _showUrgente(context, widget.order!),
-                    comandaLineas(context, widget.order!)
-                  ],
-                ),
-              );
-            } else if (state is StatusDetailErrorState) {
-              return const Text("Hubo un error");
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }), listener: ((context, state) {
-            setState(() {});
-          }))
-        ],
+      child: BlocConsumer<StatusOrderBloc, StatusOrderState>(
+        builder: ((context, state) {
+          if (state is StatusOrderSuccessState) {
+            colorOrderStatus = setColorWithStatus(state.orderDto.status!);
+            return _contentCard(context, widget.order!);
+          } else {
+            return _contentCard(context, widget.order!);
+          }
+        }),
+        buildWhen: ((context, state) {
+          return state is StatusOrderInitial ||
+              state is StatusOrderSuccessState ||
+              state is StatusOrderLoadingState;
+        }),
+        listenWhen: ((context, state) {
+          return state is StatusOrderErrorState ||
+              state is StatusOrderSuccessState;
+        }),
+        listener: ((context, state) {
+          if (state is StatusOrderSuccessState) {
+            setState(() {
+              colorOrderStatus = setColorWithStatus(state.orderDto.status!);
+            });
+          }
+        }),
       ),
     );
   }
 
-  Widget comandaHeader(BuildContext context, Order order) {
+  Widget _contentCard(BuildContext context, Order order) {
+    return Column(
+      children: [
+        _comandaHeader(context, order),
+        _showUrgente(context, order),
+        _comandaLineas(context, order)
+      ],
+    );
+  }
+
+  Widget _comandaHeader(BuildContext context, Order order) {
     return Column(
       children: [
         Container(
@@ -238,7 +191,7 @@ class _ComandaCardState extends State<OrderCard> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              content: futureInfo(context),
+                              content: _futureInfo(context),
                             );
                           },
                           barrierDismissible: true),
@@ -257,10 +210,7 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                width: 195,
-                height: 50,
-                child: _buttonstate(context, order)
-              ),
+                  width: 195, height: 50, child: _buttonstate(context, order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -279,89 +229,51 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buttonstate(BuildContext context, Order order){
-    if(order.camEstado == 'T'){
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
+  Widget _buttonstate(BuildContext context, Order order) {
+    Text label = const Text('Preparar');
+    Icon icon = const Icon(
+      Icons.play_arrow,
+      color: Color(0xFF337AB7),
+      size: 30,
+    );
 
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                        debugPrint(newStatus.idOrder);
-                        debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.replay_outlined,
-                    color: Color.fromARGB(255, 61, 61, 61),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Recuperar',
-                  ),
-                );
-    }else if(order.camEstado == 'P'){
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
-
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                        debugPrint(newStatus.idOrder);
-                        debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.check_circle,
-                    color: Color.fromARGB(255, 19, 165, 19),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Terminar',
-                  ),
-                );
+    if (order.camEstado == 'T') {
+      label = const Text('Recuperar');
+      icon = const Icon(
+        Icons.replay_outlined,
+        color: Color.fromARGB(255, 61, 61, 61),
+        size: 30,
+      );
+    } else if (order.camEstado == 'P') {
+      label = const Text('Terminar');
+      icon = const Icon(
+        Icons.check_circle,
+        color: Color.fromARGB(255, 19, 165, 19),
+        size: 30,
+      );
     }
-    else{
-      return TextButton.icon(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87),
-                      textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {
-                   
-                    OrderDto newStatus = OrderDto(
-                        idOrder: order.camId.toString(),
-                        status: _toogleStateButton(order.camEstado!));
 
-                    BlocProvider.of<StatusOrderBloc>(context)
-                        .add(DoStatusOrderEvent(newStatus));
-                    debugPrint(newStatus.idOrder);
-                    debugPrint(newStatus.status);
-                  },
-                  icon: const Icon(
-                    Icons.play_arrow,
-                    color: Color(0xFF337AB7),
-                    size: 30,
-                  ),
-                  label: const Text(
-                    'Preparar',
-                  ),
-                );
-    }
+    return TextButton.icon(
+      style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          primary: Color.fromARGB(255, 87, 87, 87),
+          textStyle: TextStyle(fontSize: 18)),
+      onPressed: () {
+        OrderDto newStatus = OrderDto(
+            idOrder: order.camId.toString(),
+            status: _toogleStateButton(order.camEstado!));
+
+        BlocProvider.of<StatusOrderBloc>(context)
+            .add(DoStatusOrderEvent(newStatus));
+        debugPrint(newStatus.idOrder);
+        debugPrint(newStatus.status);
+      },
+      icon: icon,
+      label: label,
+    );
   }
-  Widget futureInfo(BuildContext context) {
+
+  Widget _futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
       builder: (context, snapshot) {
@@ -375,16 +287,19 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget comandaLineas(BuildContext context, Order order) {
+  Widget _comandaLineas(BuildContext context, Order order) {
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.start,
-      children: [for (var d in order.details) _itemPedido(context, order, d)],
+      children: [
+        for (var d in order.details) DetailCard(details: d, order: order)
+      ],
     );
   }
 
-  Widget urgente() {
+ 
+  Widget _urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
@@ -400,41 +315,8 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _itemPedido(BuildContext context, Order order, Details details) {
-
-    Color nuevo = Colors.white;
-
-    if (details.demEstado!.contains('E')) {
-      nuevo;
-    } else if (details.demEstado!.contains('P')) {
-      nuevo = Color(0xFFF5CB8F);
-    } else if (details.demEstado!.contains('R')) {
-      nuevo = Colors.purple;
-    } else if (details.demEstado!.contains('T')) {
-      nuevo = Color(0xFFB0E1A0);
-    } else {
-      nuevo;
-    }
-
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: nuevo,
-        primary: Color.fromARGB(255, 87, 87, 87),
-      ),
-      onPressed: () async {
-      
-      },
-      child: ListTile(
-        title: Text(
-          details.demTitulo!,
-          style: Styles.textTitle,
-        ),
-      ),
-    );
-  }
-
-
   String _toogleStateButton(String status) {
+   
     if (status.contains('E')) {
       return 'P';
     } else if (status.contains('P')) {
@@ -470,7 +352,7 @@ class _ComandaCardState extends State<OrderCard> {
         children: [
           Icon(Icons.euro_outlined),
           Text(' Pagado: ', style: Styles.textBoldInfo),
-          /* */ Icon(
+          const Icon(
             Icons.check,
             color: Colors.green,
             size: 40,
