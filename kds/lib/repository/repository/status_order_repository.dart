@@ -1,5 +1,6 @@
+import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
 
 abstract class StatusOrderRepository{
-  Future<void> statusOrder(OrderDto orderDto);
+  Future<OrderDto> statusOrder(OrderDto orderDto);
 }

@@ -36,6 +36,8 @@ class _ComandaCardState extends State<OrderCard> {
   //Esta comanda es la misma que la principal pero existe para darle más datos
   late final Future<Order>? orderExtended;
 
+  Color? colorOrderStatus;
+  Color? color;
   String? idOrder;
   String? idDetail;
   String? status;
@@ -51,24 +53,56 @@ class _ComandaCardState extends State<OrderCard> {
 
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
-
+    /*
     statusOrderBloc = StatusOrderBloc(statusOrderRepository)
       ..add(DoStatusOrderEvent(OrderDto(idOrder: idOrder, status: status)));
     statusDetailBloc = StatusDetailBloc(statusDetailRepository)
       ..add(DoStatusDetailEvent(
           DetailDto(idOrder: idOrder, idDetail: idDetail, status: status)));
+    */
   }
 
   @override
   Widget build(BuildContext context) {
+    //setColorWithStatus(widget.order!.camEstado!);
     return MultiBlocProvider(providers: [
-      BlocProvider<StatusOrderBloc>(
-        create: (context) => statusOrderBloc,
+      BlocProvider(
+        create: (context) => StatusOrderBloc(statusOrderRepository),
       ),
-      BlocProvider<StatusDetailBloc>(
-        create: (context) => statusDetailBloc,
+      BlocProvider(
+        create: (context) => StatusDetailBloc(statusDetailRepository),
       ),
     ], child: blocBuilderCardComanda(context));
+
+    /* Container(
+      decoration: BoxDecoration(
+          color: colorOrderStatus,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
+      margin: EdgeInsets.all(10),
+      width: 300,
+      child: Column(
+        children: [
+          comandaHeader(context, widget.order!),
+          comandaLineas(context, widget.order!)
+        ],
+      ),
+    ); */
+  }
+
+  setColorWithStatus(String status) {
+    switch (status) {
+      case "E":
+        return Styles.baseColor;
+
+      case "P":
+        return Styles.mediumColor;
+
+      case "T":
+        return Styles.succesColor;
+
+      default:
+        return Styles.baseColor;
+    }
   }
 
   Widget _showUrgente(BuildContext context, Order order) {
@@ -80,9 +114,13 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget blocBuilderCardComanda(BuildContext context) {
+    setState(() {
+      colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
+    });
+
     return Container(
       decoration: BoxDecoration(
-          color: Styles.succesColor,
+          color: colorOrderStatus,
           borderRadius: BorderRadius.all(Radius.circular(5))),
       margin: EdgeInsets.all(10),
       width: 300,
@@ -91,29 +129,31 @@ class _ComandaCardState extends State<OrderCard> {
           BlocConsumer<StatusOrderBloc, StatusOrderState>(
             builder: ((context, state) {
               if (state is StatusOrderInitial) {
-                return Text("Recibiendo datos...");
+                return comandaHeader(context, widget.order!);
               } else if (state is StatusOrderErrorState) {
                 return const Text("Hubo un error");
-              } else if (state is StatusOrderSuccessState) {
-                //TODO: RETURN ORDER CON MÁS DATOS
-                return comandaHeader(context, widget.order!);
-              } else {
+              } else if (state is StatusOrderLoadingState) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
+              } else {
+                return comandaHeader(context, widget.order!);
               }
             }),
-            listener: ((context, state) {}),
+            listener: ((context, state) {
+              if (state is StatusOrderSuccessState) {
+                
+                  colorOrderStatus =
+                      setColorWithStatus(widget.order!.camEstado!);
+                
+                
+              }
+            }),
           ),
           BlocConsumer<StatusDetailBloc, StatusDetailState>(
               builder: ((context, state) {
-                if (state is StatusDetailInitial) {
-                  return const Text("Recibiendo datos...");
-                } else if (state is StatusDetailErrorState) {
-                  return const Text("Hubo un error");
-                } else if (state is StatusDetailSuccessState) {
-                  //TODO: RETURN ORDER CON MÁS DATOS
-                  return Container(
+            if (state is StatusDetailInitial) {
+              return Container(
                     margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
                     child: Column(
                       children: [
@@ -122,13 +162,16 @@ class _ComandaCardState extends State<OrderCard> {
                       ],
                     ),
                   );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              }),
-              listener: ((context, state) {}))
+            } else if (state is StatusDetailErrorState) {
+              return const Text("Hubo un error");
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }), listener: ((context, state) {
+            setState(() {});
+          }))
         ],
       ),
     );
@@ -222,7 +265,17 @@ class _ComandaCardState extends State<OrderCard> {
                       backgroundColor: Colors.white,
                       primary: Color.fromARGB(255, 87, 87, 87),
                       textStyle: TextStyle(fontSize: 18)),
-                  onPressed: () {},
+                  onPressed: () {
+                    //statusOrderBloc.add(DoStatusOrderEvent(OrderDto(idOrder: order.camId.toString(), status: _toogleStateButton(order.camEstado!))));
+                    OrderDto newStatus = OrderDto(
+                        idOrder: order.camId.toString(),
+                        status: _toogleStateButton(order.camEstado!));
+
+                    BlocProvider.of<StatusOrderBloc>(context)
+                        .add(DoStatusOrderEvent(newStatus));
+                        debugPrint(newStatus.idOrder);
+                        debugPrint(newStatus.status);
+                  },
                   icon: const Icon(
                     Icons.play_arrow,
                     color: Color(0xFF337AB7),
@@ -331,10 +384,20 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+/*
   String _toogleStateButton(Details details) {
     if (details.demEstado!.contains('E')) {
       return 'P';
     } else if (details.demEstado!.contains('P')) {
+      return 'T';
+    } else {
+      return 'E';
+    }
+  }*/
+  String _toogleStateButton(String status) {
+    if (status.contains('E')) {
+      return 'P';
+    } else if (status.contains('P')) {
       return 'T';
     } else {
       return 'E';
@@ -401,105 +464,105 @@ class _ComandaCardState extends State<OrderCard> {
             child: Text(
               'Información de comanda',
               style: Styles.textTitleInfo,
-            ),
-          ),
-          Divider(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 400,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 30),
-                      child: Text(
-                        'General',
-                        style: Styles.textTitleInfo,
+            ),),
+            Divider(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 400,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 30),
+                        child: Text(
+                          'General',
+                          style: Styles.textTitleInfo,
+                        ),
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.person),
-                              Text(
-                                ' Cliente: ',
-                                style: Styles.textBoldInfo,
-                              ),
-                              Text(
-                                '',
-                                style: Styles.textRegularInfo,
-                              )
-                            ],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.person),
+                                Text(
+                                  ' Cliente: ',
+                                  style: Styles.textBoldInfo,
+                                ),
+                                Text(
+                                  '',
+                                  style: Styles.textRegularInfo,
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.business_outlined),
-                              Text(' Agencia: ', style: Styles.textBoldInfo),
-                              Text(" ", style: Styles.textRegularInfo)
-                            ],
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.business_outlined),
+                                Text(' Agencia: ', style: Styles.textBoldInfo),
+                                Text(" ", style: Styles.textRegularInfo)
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.adjust_outlined),
-                              Text(' Operario: ', style: Styles.textBoldInfo),
-                              Text(order.camOperario!,
-                                  style: Styles.textRegularInfo)
-                            ],
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.adjust_outlined),
+                                Text(' Operario: ', style: Styles.textBoldInfo),
+                                Text(order.camOperario!,
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.push_pin),
-                              Text(' Salón: ', style: Styles.textBoldInfo),
-                              Text(widget.order!.camSalon.toString(),
-                                  style: Styles.textRegularInfo)
-                            ],
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.push_pin),
+                                Text(' Salón: ', style: Styles.textBoldInfo),
+                                Text(widget.order!.camSalon.toString(),
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.query_stats_rounded),
-                              Text(' Estado: ', style: Styles.textBoldInfo),
-                              camEstado(),
-                            ],
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.query_stats_rounded),
+                                Text(' Estado: ', style: Styles.textBoldInfo),
+                                camEstado(),
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: espaciado,
-                          child: Row(
-                            children: [
-                              Icon(Icons.chat_bubble),
-                              Text(' Notas: ', style: Styles.textBoldInfo),
-                              Text(widget.order!.camNota.toString(),
-                                  style: Styles.textRegularInfo)
-                            ],
+                          Padding(
+                            padding: espaciado,
+                            child: Row(
+                              children: [
+                                Icon(Icons.chat_bubble),
+                                Text(' Notas: ', style: Styles.textBoldInfo),
+                                Text(widget.order!.camNota.toString(),
+                                    style: Styles.textRegularInfo)
+                              ],
+                            ),
                           ),
-                        ),
-                        Divider(),
-                        Padding(padding: espaciado, child: esPagado()),
-                        Divider()
-                      ],
-                    )
-                  ],
+                          Divider(),
+                          Padding(padding: espaciado, child: esPagado()),
+                          Divider()
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
+              
               Container(
                 width: 400,
                 margin: EdgeInsets.symmetric(horizontal: 20),
@@ -586,13 +649,14 @@ class _ComandaCardState extends State<OrderCard> {
                     ticket_button(context, order),
                     ticket(context, order)
                   ],
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+                ),),
+                
+              ],
+            )
+          ],
+        ),
+      );
+
   }
 
   Widget ticket_button(BuildContext context, Order order) {
@@ -655,7 +719,117 @@ class _ComandaCardState extends State<OrderCard> {
           child: Text(
             order.camTicket!,
             style: Styles.textTicketInfo,
+          )));
+          /*child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Fecha: ',
+                                style: Styles.textTicketInfo,
+                              ),
+                              Text(
+                                result,
+                                style: Styles.textTicketInfo,
+                              )
+                            ],
+                          ))
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      children: List.generate(
+                          300 ~/ 5,
+                          (index) => Expanded(
+                                child: Container(
+                                  color: index % 2 == 0
+                                      ? Colors.transparent
+                                      : Color.fromARGB(255, 0, 0, 0),
+                                  height: 1,
+                                ),
+                              )),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 170),
+                        child: Text('Articulo', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Ud', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Precio', style: Styles.textTicketInfo),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text('Importe', style: Styles.textTicketInfo),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: List.generate(
+                      300 ~/ 5,
+                      (index) => Expanded(
+                            child: Container(
+                              color: index % 2 == 0
+                                  ? Colors.transparent
+                                  : Color.fromARGB(255, 0, 0, 0),
+                              height: 1,
+                            ),
+                          )),
+                ),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('Total EUR:', style: Styles.textTicketInfo),
+                    Text('7.00', style: Styles.textTicketInfo)
+                  ],
+                ),
+              )
+            ],
           ),
         ));
+  */
+  
   }
 }

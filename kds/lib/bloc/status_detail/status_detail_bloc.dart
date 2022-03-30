@@ -14,11 +14,11 @@ class StatusDetailBloc extends Bloc<StatusDetailEvent, StatusDetailState> {
     on<DoStatusDetailEvent>(_doDetailEvent);
   }
 
-  void _doDetailEvent(DoStatusDetailEvent event, Emitter<StatusDetailState> emit)async {
+  _doDetailEvent(DoStatusDetailEvent event, Emitter<StatusDetailState> emit)async {
     emit(StatusDetailLoadingState());
     try{
       final statusDetailResponse = await statusDetailRepository.statusDetail(event.detailDto);
-      emit(StatusDetailSuccessState());
+      emit(StatusDetailSuccessState(statusDetailResponse));
       return;
     }on Exception catch (e){
       emit(StatusDetailErrorState(e.toString()));

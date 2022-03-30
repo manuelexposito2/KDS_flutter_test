@@ -9,7 +9,7 @@ import 'package:kds/utils/constants.dart';
 class StatusDetailRepositoryImpl extends StatusDetailRepository{
 
   @override
-  Future<void> statusDetail(DetailDto detailDto) async{
+  Future<DetailDto> statusDetail(DetailDto detailDto) async{
     String url = 'http://$apiBaseUrl:$puertoKDS/modifyDetailKDS';
     Map<String, String> headers = {
       "callback": "getLastOrders",
@@ -20,7 +20,7 @@ class StatusDetailRepositoryImpl extends StatusDetailRepository{
     final response = await http.post(Uri.parse(url), headers: headers, body: jsonEncode(detailDto.toJson()));
 
     if(response.statusCode == 200){
-      
+      return detailDto;
     }else{
       throw Exception('Fail to load');
     }
