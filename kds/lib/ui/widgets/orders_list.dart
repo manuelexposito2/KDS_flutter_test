@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
@@ -21,6 +23,8 @@ class OrdersList extends StatefulWidget {
 }
 
 class _OrdersListState extends State<OrdersList> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   String? filter = '';
 
@@ -193,7 +197,260 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text(
+                  'Opciones',
+                  style: Styles.textTitleInfo,
+                  textAlign: TextAlign.center,
+                ),
+                content: Container(
+                  height: 300,
+                  child: Column(
+                    children: [
+                      TextButton(
+                          onPressed: () => showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (m) => AlertDialog(
+                                    title: Text(
+                                      'Iniciar turno',
+                                      style: Styles.textTitleInfo,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    content: Container(
+                                      width: 760,
+                                      height: 270,
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 20),
+                                                child: Text(
+                                                  'Introduzca su coódigo de operario:',
+                                                  style: Styles.textRegularInfo,
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 750,
+                                                height: 70,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            Colors.blueAccent)),
+                                                child: TextFormField(
+                                                  controller: operarioController,
+                                                  style: const TextStyle(
+                                                      fontSize: 35),
+                                                  decoration: const InputDecoration(
+                                                      enabledBorder:
+                                                          UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors
+                                                                      .white))),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 30),
+                                            child: TextButton(
+                                                onPressed: () {},
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  width: 750,
+                                                  height: 70,
+                                                  color: Colors.green,
+                                                  child: Text(
+                                                    'Continuar',
+                                                    textAlign: TextAlign.center,
+                                                    style: Styles
+                                                        .textButtonCancelar,
+                                                  ),
+                                                )),
+                                          ),
+                                        ],
+                                      ),)
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(m).pop();
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            width: 300,
+                                            height: 70,
+                                            color: Colors.red,
+                                            child: Text(
+                                              'Cancelar',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.textButtonCancelar,
+                                            ),
+                                          )),
+                                    ],
+                                  )),
+                          child: Container(
+                              alignment: Alignment.center,
+                              width: 760,
+                              height: 120,
+                              color: const Color.fromARGB(255, 108, 189, 110),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                  Text(
+                                    'Iniciar turno operario',
+                                    textAlign: TextAlign.center,
+                                    style: Styles.textButtonOperario,
+                                  ),
+                                ],
+                              ))),
+                      TextButton(
+                          onPressed: () => showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (m) => AlertDialog(
+                                    title: Text(
+                                      'Finalizar turno',
+                                      style: Styles.textTitleInfo,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    content: Container(
+                                      width: 760,
+                                      height: 270,
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 20),
+                                                child: Text(
+                                                  'Introduzca su coódigo de operario:',
+                                                  style: Styles.textRegularInfo,
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 750,
+                                                height: 70,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color:
+                                                            Colors.blueAccent)),
+                                                child: TextFormField(
+                                                  controller: operarioController,
+                                                  style: const TextStyle(
+                                                      fontSize: 35),
+                                                  decoration: const InputDecoration(
+                                                      enabledBorder:
+                                                          UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors
+                                                                      .white))),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 30),
+                                            child: TextButton(
+                                                onPressed: () {},
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  width: 750,
+                                                  height: 70,
+                                                  color: Colors.green,
+                                                  child: Text(
+                                                    'Continuar',
+                                                    textAlign: TextAlign.center,
+                                                    style: Styles
+                                                        .textButtonCancelar,
+                                                  ),
+                                                )),
+                                          ),
+                                        ],
+                                      ),)
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(m).pop();
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            width: 300,
+                                            height: 70,
+                                            color: Colors.red,
+                                            child: Text(
+                                              'Cancelar',
+                                              textAlign: TextAlign.center,
+                                              style: Styles.textButtonCancelar,
+                                            ),
+                                          )),
+                                    ],
+                                  )),
+                          child: Container(
+                              alignment: Alignment.center,
+                              width: 760,
+                              height: 120,
+                              color: Color.fromARGB(255, 241, 93, 82),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                  Text(
+                                    'Finalizar turno operario',
+                                    textAlign: TextAlign.center,
+                                    style: Styles.textButtonOperario,
+                                  ),
+                                ],
+                              ))),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 300,
+                        height: 70,
+                        color: Colors.red,
+                        child: Text(
+                          'Cancelar',
+                          textAlign: TextAlign.center,
+                          style: Styles.textButtonCancelar,
+                        ),
+                      )),
+                ],
+              ),
+            ),
             child: Icon(Icons.person),
             style: Styles.btnActionStyle,
           ),
