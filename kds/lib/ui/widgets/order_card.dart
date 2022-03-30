@@ -34,7 +34,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   //Esta comanda es la misma que la principal pero existe para darle más datos
-  late final Future <Order>? orderExtended;
+  late final Future<Order>? orderExtended;
 
   String? idOrder;
   String? idDetail;
@@ -45,8 +45,9 @@ class _ComandaCardState extends State<OrderCard> {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-   
-    orderExtended = orderRepository.getOrderById(widget.order!.camId.toString());
+
+    orderExtended =
+        orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
     statusDetailRepository = StatusDetailRepositoryImpl();
@@ -60,9 +61,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-
-        MultiBlocProvider(providers: [
+    return MultiBlocProvider(providers: [
       BlocProvider<StatusOrderBloc>(
         create: (context) => statusOrderBloc,
       ),
@@ -72,7 +71,19 @@ class _ComandaCardState extends State<OrderCard> {
     ], child: blocBuilderCardComanda(context));
   }
 
+  Widget _showUrgente(BuildContext context, Order order){
+    if(order.camUrgente == 1){
+      return urgente();
+    }else{
+      return Container();
+    }
+  }
+
+
+
   Widget blocBuilderCardComanda(BuildContext context) {
+
+    
     return Container(
       decoration: BoxDecoration(
           color: Styles.succesColor,
@@ -106,11 +117,19 @@ class _ComandaCardState extends State<OrderCard> {
                   return const Text("Hubo un error");
                 } else if (state is StatusDetailSuccessState) {
                   //TODO: RETURN ORDER CON MÁS DATOS
-                  return Container(margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),child: comandaLineas(context, widget.order!),);
+                  return Container(
+                    margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
+                    child: Column(
+                      children: [
+                        _showUrgente(context, widget.order!),
+                        comandaLineas(context, widget.order!)
+                        ],
+                    ),
+                  );
                 } else {
                   return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                    child: CircularProgressIndicator(),
+                  );
                 }
               }),
               listener: ((context, state) {}))
@@ -232,7 +251,6 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-      
       ],
     );
   }
@@ -241,16 +259,15 @@ class _ComandaCardState extends State<OrderCard> {
     return FutureBuilder<Order>(
       future: orderExtended,
       builder: (context, snapshot) {
-    if (snapshot.hasData) {
-      return information(context, snapshot.data!);
-    } else if (snapshot.hasError) {
-      return Text('${snapshot.error}');
-    }
-    return const CircularProgressIndicator();
-  },);
-
+        if (snapshot.hasData) {
+          return information(context, snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
   }
-
 
   Widget comandaLineas(BuildContext context, Order order) {
     return Wrap(
@@ -261,6 +278,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+
   Widget urgente() {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
@@ -268,7 +286,7 @@ class _ComandaCardState extends State<OrderCard> {
       width: MediaQuery.of(context).size.width,
       color: Styles.alertColor,
       alignment: Alignment.center,
-      height: 50,
+      height: 65,
       //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
       child: Text(
         '¡¡¡URGENTE!!!',
@@ -571,8 +589,7 @@ class _ComandaCardState extends State<OrderCard> {
                           width: 600,
                           decoration: BoxDecoration(
                             color: Color(0xFFD9534F),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5)),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
                           ),
                           alignment: Alignment.center,
                           height: 50,
@@ -582,7 +599,6 @@ class _ComandaCardState extends State<OrderCard> {
                           ),
                         )),
                     ticket(context, order)
-                    
                   ],
                 ),
               ),
@@ -612,7 +628,10 @@ class _ComandaCardState extends State<OrderCard> {
         width: 600,
         child: Padding(
           padding: EdgeInsets.all(15),
-          child: Text(order.camTicket!, style: Styles.textTicketInfo,),
+          child: Text(
+            order.camTicket!,
+            style: Styles.textTicketInfo,
+          ),
           /*child: Column(
             children: [
               Column(
