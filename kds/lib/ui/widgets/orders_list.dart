@@ -38,6 +38,7 @@ class _OrdersListState extends State<OrdersList> {
     orderRepository = OrderRepositoryImpl();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -48,7 +49,15 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   Widget _createOrder(BuildContext context) {
-    return BlocBuilder<OrderBloc, OrdersState>(
+    return BlocConsumer<OrderBloc, OrdersState>(
+      listenWhen: (previous, current) {
+        return previous is OrdersFetchSuccessState || current is OrdersFetchSuccessState;
+      },
+      listener: (context, state) {
+        if (state is OrdersFetchSuccessState){
+          context.read<OrderBloc>().add(FetchOrdersWithFilterEvent(filter!));
+        }
+      },
       builder: (context, state) {
         if (state is OrdersInitial) {
           return const Center(
@@ -131,7 +140,7 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
+          children: [/*TimerWidget()*/Container(), _buttonsFilter(context), _buttonsOptions()],
         ));
   }
 

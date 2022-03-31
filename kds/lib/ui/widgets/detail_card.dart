@@ -26,6 +26,7 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
   }
@@ -74,6 +75,7 @@ class _DetailCardState extends State<DetailCard> {
           primary: Color.fromARGB(255, 87, 87, 87),
         ),
         onPressed: () {
+          
           DetailDto newStatus = DetailDto(
               idOrder: order.camId.toString(),
               idDetail: details.demId.toString(),
