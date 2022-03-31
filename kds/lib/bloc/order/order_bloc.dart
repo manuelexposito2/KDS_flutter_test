@@ -19,6 +19,13 @@ class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
     on<FetchOrdersWithFilterEvent>(_getOrdersFetched);
     
   }
+  
+  @override
+  void onTransition(Transition<OrdersEvent, OrdersState> transition){
+    super.onTransition(transition);
+    
+  }
+
 
   _getOrdersFetched(FetchOrdersWithFilterEvent event, Emitter<OrdersState> emit) async {
 

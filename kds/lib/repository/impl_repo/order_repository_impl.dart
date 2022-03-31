@@ -40,7 +40,7 @@ class OrderRepositoryImpl implements OrderRepository {
     
 
     if (request.statusCode == 200) {
-      return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJsonTicket(request)))
+      return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
           .getLastOrders
           .where((element) => element.camId == int.parse(id))
           .first;
@@ -54,22 +54,12 @@ class OrderRepositoryImpl implements OrderRepository {
     var dataBody = request.body.strip("(").strip(")");
     var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
 
+    if(json.contains('ï»¿')) {
+
+     return json.replaceAll('ï»¿', "");
+    }
+
     return json;
   }
 
-  _jsonpToJsonTicket(http.Response request) {
-    var callback = "getLastOrders";
-    var dataBody = request.body.strip("(").strip(")");
-    var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
-    
-    
-    //Elimina todos los enters
-    var patron = RegExp(r"\s+");
-    var res = json.replaceAll(patron, ' ');
-
-    var enter = ',\r\n';
-    //Reemplaza todas las comas por una coma y un enter 
-    var esta = res.replaceAll(',', enter);
-    return esta.replaceAll('ï»¿', "");
-  }
 }

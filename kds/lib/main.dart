@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kds/ui/screens/home_screen.dart';
 
+import 'package:kds/ui/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
-  //flutter run -d chrome --web-port=82
+
+
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +20,6 @@ class MyApp extends StatelessWidget {
     ]);
 
     return MaterialApp(
-      
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
