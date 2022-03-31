@@ -131,7 +131,7 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
+          children: [/*TimerWidget()*/Container(), _buttonsFilter(context), _buttonsOptions()],
         ));
   }
 
