@@ -42,28 +42,9 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    
-    streamSocket.addResponse("EL TEXTO!!");
-    
-   /*  socket = io(
-        'http://$apiBaseUrl:$puertoKDS',
-        OptionBuilder()
-            .setTransports(['websocket']) // for Flutter or Dart VM
-            //.disableAutoConnect() // disable auto-connection
-            //.setExtraHeaders({'foo': 'bar'}) // optional
-            //.enableAutoConnect()
-            .build());
-    socket.connect();
-    socket.onConnect((_) {
-      debugPrint('connect');
-      setState(() {
-        mensaje = socket.connected.toString();
-      });
-      socket.emit('msg', mensaje);
-    });
-    socket.on('event', (data) => debugPrint(data));
-    socket.onDisconnect((_) => debugPrint('disconnect'));
-    socket.on('fromServer', (_) => debugPrint(_)); */
+    streamSocket.connectAndListen();
+    //streamSocket.addResponse("EL TEXTO!!");
+    //streamSocket.getResponse.listen((event) { })
   }
 
   @override
