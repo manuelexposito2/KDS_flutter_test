@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/status/detail_dto.dart';
+import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 
 part 'status_detail_event.dart';
@@ -8,7 +10,6 @@ part 'status_detail_state.dart';
 
 class StatusDetailBloc extends Bloc<StatusDetailEvent, StatusDetailState> {
   final StatusDetailRepository statusDetailRepository;
-
 
   StatusDetailBloc(this.statusDetailRepository) : super(StatusDetailInitial()) {
     on<DoStatusDetailEvent>(_doDetailEvent);

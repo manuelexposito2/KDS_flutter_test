@@ -31,6 +31,7 @@ class OrderBloc extends Bloc<OrdersEvent, OrdersState> {
 
     try{
       final orders = await orderRepository.getOrders(event.filter);
+      
       emit(OrdersFetchSuccessState(event.filter, orders));
     } on Exception catch(e){
       debugPrint(e.toString());
