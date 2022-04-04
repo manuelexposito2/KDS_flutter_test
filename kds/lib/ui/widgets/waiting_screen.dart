@@ -14,7 +14,7 @@ class WaitingScreen extends StatelessWidget {
         alignment: Alignment.center,
         margin: EdgeInsets.only(top: 80),
         width: 600,
-        height: 100,
+        //height: 100,
         color: Colors.white,
         child: const Text( 
           'Esperando comandas..',

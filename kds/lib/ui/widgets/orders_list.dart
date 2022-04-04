@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/repository/repository.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/stream_socket.dart';
 import 'package:kds/ui/styles/styles.dart';
@@ -19,7 +20,8 @@ import 'package:kds/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrdersList extends StatefulWidget {
-  const OrdersList({Key? key}) : super(key: key);
+  OrdersList({Key? key, this.socket}) : super(key: key);
+  Socket? socket;
 
   @override
   State<OrdersList> createState() => _OrdersListState();
@@ -30,35 +32,52 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   String? filter = '';
-
+  late StreamSocket _streamSocket;
   bool showResumen = false;
-  //late Socket socket;
+  Order? newOrder;
   String? mensaje;
-  StreamSocket streamSocket = StreamSocket();
-
+  Repository repository = Repository();
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    streamSocket.connectAndListen();
-    //streamSocket.addResponse("EL TEXTO!!");
-    //streamSocket.getResponse.listen((event) { })
+    _streamSocket = StreamSocket();
+
+    repository
+        .fetchOrders(filter!)
+        .forEach((element) => _streamSocket.addResponse);
   }
 
   @override
   Widget build(BuildContext context) {
+    
+ 
     return Scaffold(
       body: Row(children: [
         Expanded(
             flex: 3,
-            child:  StreamBuilder(
-                    stream: streamSocket.getResponse,
-                    builder: ((BuildContext context, AsyncSnapshot<String> snapshot) {
-                      return Text(snapshot.data ?? "no hay mensaje", style: TextStyle(fontSize: 100),);
-                  })) 
-            /* _createOrdersView(context, state.orders) */),
+            child: StreamBuilder(
+                //initialData: repository.getOrders(filter!),
+                stream: repository.fetchOrders(filter!),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return LoadingScreen(message: "Cargando...");
+                  }
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      !snapshot.hasData) {
+                    return WaitingScreen();
+                  }
+
+                  if (snapshot.hasData &&
+                      snapshot.connectionState == ConnectionState.done) {
+                    return _createOrdersView(
+                        context, snapshot.data as List<Order>);
+                  } else {
+                    return ErrorScreen();
+                  }
+                }) /* _createOrdersView(context, state.orders) */),
         showResumen
             ? Expanded(
                 flex: 1,
