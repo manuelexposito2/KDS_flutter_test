@@ -32,7 +32,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   //Esta comanda es la misma que la principal pero existe para darle más datos
-  late final Future<Order>? orderExtended;
+  Future<Order>? orderExtended;
 
   Color? colorOrderStatus;
   Color? color;
@@ -43,8 +43,6 @@ class _ComandaCardState extends State<OrderCard> {
     super.initState();
     orderRepository = OrderRepositoryImpl();
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
-    orderExtended =
-        orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
@@ -195,6 +193,10 @@ class _ComandaCardState extends State<OrderCard> {
                       onPressed: () => showDialog(
                           context: context,
                           builder: (BuildContext context) {
+
+                            orderExtended = orderRepository
+                                .getOrderById(widget.order!.camId.toString());
+                                
                             return AlertDialog(
                               content: _futureInfo(context),
                             );

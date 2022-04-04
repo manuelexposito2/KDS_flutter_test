@@ -20,8 +20,8 @@ class LoadingScreen extends StatelessWidget {
         width: 600,
         height: 100,
         color: Colors.white,
-        child: const Text(
-          'Cargando..',
+        child: Text(
+          message,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 60),
         ),

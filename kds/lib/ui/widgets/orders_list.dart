@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -32,28 +33,39 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   String? filter = '';
-  late StreamSocket _streamSocket;
+  //late StreamSocket _streamSocket;
   bool showResumen = false;
   Order? newOrder;
   String? mensaje;
   Repository repository = Repository();
+  List<Order>? ordersList;
+  final _socketController = StreamController<List<Order?>>();
+
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    _streamSocket = StreamSocket();
+    //_streamSocket = StreamSocket();
 
-    repository
-        .fetchOrders(filter!)
-        .forEach((element) => _streamSocket.addResponse);
+    repository.fetchOrders(filter!).forEach(
+      (element) {
+        _socketController.sink.add(element);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    
- 
+    //repository.fetchOrders(filter!).
+
+    widget.socket!.on('newOrder', (data) {
+      setState(() {
+        ordersList!.add(Order.fromJson(data));
+      });
+    });
+
     return Scaffold(
       body: Row(children: [
         Expanded(
@@ -62,7 +74,8 @@ class _OrdersListState extends State<OrdersList> {
                 //initialData: repository.getOrders(filter!),
                 stream: repository.fetchOrders(filter!),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.connectionState == ConnectionState.waiting  &&
+                      !snapshot.hasData) {
                     return LoadingScreen(message: "Cargando...");
                   }
                   if (snapshot.connectionState == ConnectionState.done &&
@@ -70,12 +83,13 @@ class _OrdersListState extends State<OrdersList> {
                     return WaitingScreen();
                   }
 
-                  if (snapshot.hasData &&
-                      snapshot.connectionState == ConnectionState.done) {
-                    return _createOrdersView(
-                        context, snapshot.data as List<Order>);
-                  } else {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasError) {
                     return ErrorScreen();
+                  }
+                  else {
+                    ordersList = snapshot.data as List<Order>;
+                    return _createOrdersView(context, ordersList!);
                   }
                 }) /* _createOrdersView(context, state.orders) */),
         showResumen
