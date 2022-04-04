@@ -622,8 +622,14 @@ class _ComandaCardState extends State<OrderCard> {
     } else {
       return TextButton(
           onPressed: () {
-            widget.socket!.emit(WebSocketEvents.setUrgent,
-                UrgenteDto(idOrder: order.camId.toString(), urgent: "0"));
+            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '0');
+
+
+        urgenteRepository.urgente
+             (newUrgent).then((value) {
+          widget.socket!.emit(WebSocketEvents.setUrgent,
+              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+        });
           },
           child: Container(
             width: 600,
