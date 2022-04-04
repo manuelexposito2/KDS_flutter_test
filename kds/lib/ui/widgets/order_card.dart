@@ -379,7 +379,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 20);
     return Container(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height / 1.5,
       child: Column(
         children: [
           Container(
