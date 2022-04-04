@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,16 +7,14 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/repository.dart';
 import 'package:kds/repository/repository/order_repository.dart';
-import 'package:kds/repository/stream_socket.dart';
 import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/order_card.dart';
-import 'package:kds/ui/widgets/resume_orders.dart';
-import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
+import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrdersList extends StatefulWidget {
@@ -58,9 +55,9 @@ class _OrdersListState extends State<OrdersList> {
 
   @override
   Widget build(BuildContext context) {
-    //repository.fetchOrders(filter!).
+    
 
-    widget.socket!.on('newOrder', (data) {
+    widget.socket!.on(WebSocketEvents.newOrder, (data) {
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
@@ -70,9 +67,8 @@ class _OrdersListState extends State<OrdersList> {
       body: Row(children: [
         Expanded(
             flex: 3,
-            child: StreamBuilder(
-                //initialData: repository.getOrders(filter!),
-                stream: repository.fetchOrders(filter!),
+            child: FutureBuilder(
+                future: repository.getOrders(filter!),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting  &&
                       !snapshot.hasData) {
@@ -191,7 +187,7 @@ class _OrdersListState extends State<OrdersList> {
           direction: Axis.horizontal,
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.start,
-          children: [for (var o in orders) OrderCard(order: o)],
+          children: [for (var o in orders) OrderCard(order: o, socket: widget.socket,)],
         ),
       ),
     );
@@ -225,8 +221,7 @@ class _OrdersListState extends State<OrdersList> {
             setState(() {
               filter = enProceso;
             });
-            BlocProvider.of<OrderBloc>(context)
-                .add(FetchOrdersWithFilterEvent(filter!));
+           
           },
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
@@ -237,8 +232,7 @@ class _OrdersListState extends State<OrdersList> {
                 filter = terminadas;
               });
 
-              BlocProvider.of<OrderBloc>(context)
-                  .add(FetchOrdersWithFilterEvent(filter!));
+             
             },
             child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
             style: Styles.buttonTerminadas),
@@ -248,8 +242,7 @@ class _OrdersListState extends State<OrdersList> {
                 filter = todas;
               });
 
-              BlocProvider.of<OrderBloc>(context)
-                  .add(FetchOrdersWithFilterEvent(filter!));
+           
             },
             child: Text(
               "Todas",
@@ -317,7 +310,7 @@ class _OrdersListState extends State<OrdersList> {
                                                             .symmetric(
                                                         vertical: 20),
                                                     child: Text(
-                                                      'Introduzca su coódigo de operario:',
+                                                      'Introduzca su código de operario:',
                                                       style: Styles
                                                           .textRegularInfo,
                                                     ),
@@ -553,7 +546,7 @@ class _OrdersListState extends State<OrdersList> {
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
-                    builder: (BuildContext context) => OrdersList()),
+                    builder: (BuildContext context) => OrdersList(socket: widget.socket,)),
               );
             },
             child: Icon(Icons.refresh),

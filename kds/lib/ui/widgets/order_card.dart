@@ -9,14 +9,18 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/repository.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
+import 'package:kds/utils/websocket_events.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
-  OrderCard({Key? key, required this.order}) : super(key: key);
+  OrderCard({Key? key, required this.order, this.socket}) : super(key: key);
 
+  Socket? socket;
   final Order? order;
 
   @override
@@ -31,24 +35,37 @@ class _ComandaCardState extends State<OrderCard> {
   late OrderByIdBloc orderByIdBloc;
 
   late OrderRepository orderRepository;
+
   //Esta comanda es la misma que la principal pero existe para darle más datos
   Future<Order>? orderExtended;
 
   Color? colorOrderStatus;
   Color? color;
-
+  OrderDto? status;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
 
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+      
+      //status = data as OrderDto;
+      print(data);
+
+/* 
+      setState(() {
+        colorOrderStatus =
+            setColorWithStatus(data.status!);
+      }); */
+    }));
+
+    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return Container(
       decoration: BoxDecoration(
           color: colorOrderStatus,
@@ -57,9 +74,7 @@ class _ComandaCardState extends State<OrderCard> {
       width: 300,
       child: _contentCard(context, widget.order!),
     );
-  } /* BlocProvider(
-        create: (context) => StatusOrderBloc(statusOrderRepository),
-        child: blocBuilderCardComanda(context)); */
+  }
 
   setColorWithStatus(String status) {
     switch (status) {
@@ -193,10 +208,9 @@ class _ComandaCardState extends State<OrderCard> {
                       onPressed: () => showDialog(
                           context: context,
                           builder: (BuildContext context) {
-
                             orderExtended = orderRepository
                                 .getOrderById(widget.order!.camId.toString());
-                                
+
                             return AlertDialog(
                               content: _futureInfo(context),
                             );
@@ -217,7 +231,7 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                  width: 195, height: 50, child: _buttonstate(context, order)),
+                  width: 195, height: 50, child: _buttonstate(order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -236,7 +250,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buttonstate(BuildContext context, Order order) {
+  Widget _buttonstate(Order order) {
     Text label = const Text('Preparar');
     Icon icon = const Icon(
       Icons.play_arrow,
@@ -270,8 +284,11 @@ class _ComandaCardState extends State<OrderCard> {
             idOrder: order.camId.toString(),
             status: _toogleStateButton(order.camEstado!));
 
-        BlocProvider.of<StatusOrderBloc>(context)
-            .add(DoStatusOrderEvent(newStatus));
+        statusOrderRepository.statusOrder(newStatus).then((value) {
+          widget.socket!.emit(WebSocketEvents.modifyOrder,
+              OrderDto(idOrder: value.idOrder, status: value.status));
+        });
+
         debugPrint(newStatus.idOrder);
         debugPrint(newStatus.status);
       },

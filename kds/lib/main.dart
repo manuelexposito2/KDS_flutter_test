@@ -18,7 +18,7 @@ void main() {
     runApp(MyApp(socket: socket,));
     print("Connected");
   });
-  //socket.on('newOrder', (data) => print("$data"));
+  
   socket.onDisconnect((_) => print('disconnect'));
 }
 
