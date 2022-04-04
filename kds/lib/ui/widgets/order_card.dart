@@ -42,6 +42,14 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -53,7 +61,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+    /*  widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       
       //status = data as OrderDto;
       print(data);
@@ -62,9 +70,9 @@ class _ComandaCardState extends State<OrderCard> {
       setState(() {
         colorOrderStatus =
             setColorWithStatus(data.status!);
-      }); */
-    }));
-
+      }); 
+    }));*/
+ */
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return Container(
       decoration: BoxDecoration(
@@ -230,8 +238,7 @@ class _ComandaCardState extends State<OrderCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(
-                  width: 195, height: 50, child: _buttonstate(order)),
+              SizedBox(width: 195, height: 50, child: _buttonstate(order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -604,10 +611,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget ticket_button(BuildContext context, Order order) {
     if (order.camUrgente == 0) {
       return TextButton(
-          onPressed: () {
-
-            
-          },
+          onPressed: () {},
           child: Container(
             width: 600,
             decoration: BoxDecoration(

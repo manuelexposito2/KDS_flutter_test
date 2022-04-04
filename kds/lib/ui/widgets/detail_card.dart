@@ -26,45 +26,22 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    
+
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => StatusDetailBloc(statusDetailRepository),
-      child: _blocItemPedidoBuilder(context, widget.order, widget.details),
-    );
+
+    
+
+
+    colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
+    return _itemPedido(context, widget.order,
+        widget.details); 
   }
 
-  Widget _blocItemPedidoBuilder(
-      BuildContext context, Order order, Details details) {
-    return BlocConsumer<StatusDetailBloc, StatusDetailState>(
-        builder: ((context, state) {
-      if (state is StatusDetailSuccessState) {
-        colorDetailStatus = setColorWithStatus(state.detailDto.status!);
-        return _itemPedido(context, order, details);
-      } else {
-        return _itemPedido(context, order, details);
-      }
-    }), buildWhen: ((context, state) {
-      return state is StatusDetailInitial ||
-          state is StatusDetailSuccessState ||
-          state is StatusDetailLoadingState;
-    }), listenWhen: ((context, state) {
-      return state is StatusDetailSuccessState ||
-          state is StatusDetailInitial ||
-          state is StatusDetailErrorState;
-    }), listener: ((context, state) {
-      if (state is StatusDetailSuccessState) {
-        setState(() {
-          colorDetailStatus = setColorWithStatus(state.detailDto.status!);
-        });
-      }
-    }));
-  }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
     return Container(
@@ -75,7 +52,6 @@ class _DetailCardState extends State<DetailCard> {
           primary: Color.fromARGB(255, 87, 87, 87),
         ),
         onPressed: () {
-          
           DetailDto newStatus = DetailDto(
               idOrder: order.camId.toString(),
               idDetail: details.demId.toString(),

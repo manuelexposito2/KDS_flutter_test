@@ -42,6 +42,13 @@ class _OrdersListState extends State<OrdersList> {
   Order? selectedOrder;
 
   //final _socketController = StreamController<List<Order?>>();
+  
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   void initState() {
@@ -53,7 +60,6 @@ class _OrdersListState extends State<OrdersList> {
 
   @override
   Widget build(BuildContext context) {
-
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
       setState(() {
@@ -61,14 +67,19 @@ class _OrdersListState extends State<OrdersList> {
       });
     });
 
-
     //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
 
+      if (newStatus.status == "P") {
+        setState(() {
+          ordersList!.where(
+              (element) => element.camId.toString() == newStatus.idOrder);
+        });
+      }
+
       if (newStatus.status == "T") {
-        
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
@@ -99,7 +110,7 @@ class _OrdersListState extends State<OrdersList> {
                     ordersList = snapshot.data as List<Order>;
                     return _createOrdersView(context, ordersList!);
                   }
-                }) /* _createOrdersView(context, state.orders) */),
+                })),
         showResumen
             ? Expanded(
                 flex: 1,
