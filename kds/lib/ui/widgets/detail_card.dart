@@ -7,13 +7,16 @@ import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/websocket_events.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class DetailCard extends StatefulWidget {
-  DetailCard({Key? key, required this.details, required this.order})
+  DetailCard(
+      {Key? key, required this.details, required this.order, this.socket})
       : super(key: key);
   final Details details;
   final Order order;
-
+  Socket? socket;
   @override
   State<DetailCard> createState() => _DetailCardState();
 }
@@ -33,15 +36,11 @@ class _DetailCardState extends State<DetailCard> {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
+  
 
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
-    return _itemPedido(context, widget.order,
-        widget.details); 
+    return _itemPedido(context, widget.order, widget.details);
   }
-
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
     return Container(
@@ -57,8 +56,15 @@ class _DetailCardState extends State<DetailCard> {
               idDetail: details.demId.toString(),
               status: _toogleStateButton(details.demEstado!));
 
-          BlocProvider.of<StatusDetailBloc>(context)
-              .add(DoStatusDetailEvent(newStatus));
+          
+          statusDetailRepository.statusDetail(newStatus).then((value) {
+            widget.socket!.emit(
+                WebSocketEvents.modifyDetail,
+                DetailDto(
+                    idOrder: value.idOrder,
+                    idDetail: value.idDetail,
+                    status: value.status));
+          });
         },
         child: ListTile(
           title: Text(

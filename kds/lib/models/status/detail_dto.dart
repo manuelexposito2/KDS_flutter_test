@@ -21,4 +21,11 @@ class DetailDto{
     _data['status'] = status;
     return _data;
   }
+
+  DetailDto.fromJson(Map<String, dynamic> json) {
+    idOrder = json['idOrder'];
+    idDetail = json['idDetail'];
+    status = json['status'];
+  }
+
 }
