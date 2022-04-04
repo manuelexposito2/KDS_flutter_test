@@ -9,7 +9,7 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
-import 'package:kds/repository/repository.dart';
+
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
@@ -604,7 +604,10 @@ class _ComandaCardState extends State<OrderCard> {
   Widget ticket_button(BuildContext context, Order order) {
     if (order.camUrgente == 0) {
       return TextButton(
-          onPressed: () {},
+          onPressed: () {
+
+            
+          },
           child: Container(
             width: 600,
             decoration: BoxDecoration(

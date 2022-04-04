@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
-import 'package:kds/repository/repository.dart';
+
 import 'package:kds/repository/repository/order_repository.dart';
+import 'package:kds/ui/screens/error_screen.dart';
+import 'package:kds/ui/screens/home_screen.dart';
+import 'package:kds/ui/screens/loading_screen.dart';
+import 'package:kds/ui/screens/waiting_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
-import 'package:kds/ui/widgets/error_screen.dart';
-import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/order_card.dart';
-import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -31,13 +33,15 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   String? filter = '';
-  //late StreamSocket _streamSocket;
+
   bool showResumen = false;
-  Order? newOrder;
+
   String? mensaje;
-  Repository repository = Repository();
+
   List<Order>? ordersList;
-  final _socketController = StreamController<List<Order?>>();
+  Order? selectedOrder;
+
+  //final _socketController = StreamController<List<Order?>>();
 
   @override
   void initState() {
@@ -45,26 +49,39 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    
-
   }
 
   @override
   Widget build(BuildContext context) {
-    
 
+    //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
     });
 
+
+    //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
+    //TODO: Animacion para la comanda que se borra
+    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+      OrderDto newStatus = OrderDto.fromJson(data);
+
+      if (newStatus.status == "T") {
+        
+        setState(() {
+          ordersList!.removeWhere(
+              (element) => element.camId.toString() == newStatus.idOrder);
+        });
+      }
+    }));
+
     return Scaffold(
       body: Row(children: [
         Expanded(
             flex: 3,
             child: FutureBuilder(
-                future: repository.getOrders(filter!),
+                future: orderRepository.getOrders(filter!),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting &&
                       !snapshot.hasData) {
@@ -95,7 +112,6 @@ class _OrdersListState extends State<OrdersList> {
       ]),
       bottomNavigationBar: bottomNavBar(context),
     );
-
   }
 
   //TODO: Hacer scrolleable la lista de comandas
@@ -115,8 +131,11 @@ class _OrdersListState extends State<OrdersList> {
                 curve: Curves.bounceIn,
                 direction: Direction.vertical,
                 offset: 0.5,
-                child: OrderCard(order: o, socket: widget.socket,),
-              ), 
+                child: OrderCard(
+                  order: o,
+                  socket: widget.socket,
+                ),
+              ),
           ],
         ),
       ),
@@ -151,7 +170,6 @@ class _OrdersListState extends State<OrdersList> {
             setState(() {
               filter = enProceso;
             });
-           
           },
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
@@ -161,8 +179,6 @@ class _OrdersListState extends State<OrdersList> {
               setState(() {
                 filter = terminadas;
               });
-
-             
             },
             child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
             style: Styles.buttonTerminadas),
@@ -171,8 +187,6 @@ class _OrdersListState extends State<OrdersList> {
               setState(() {
                 filter = todas;
               });
-
-           
             },
             child: Text(
               "Todas",
@@ -476,7 +490,9 @@ class _OrdersListState extends State<OrdersList> {
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
-                    builder: (BuildContext context) => OrdersList(socket: widget.socket,)),
+                    builder: (BuildContext context) => HomeScreen(
+                          socket: widget.socket,
+                        )),
               );
             },
             child: Icon(Icons.refresh),
