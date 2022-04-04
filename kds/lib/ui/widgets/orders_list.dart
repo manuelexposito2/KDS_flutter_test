@@ -45,13 +45,8 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    //_streamSocket = StreamSocket();
+    
 
-    repository.fetchOrders(filter!).forEach(
-      (element) {
-        _socketController.sink.add(element);
-      },
-    );
   }
 
   @override
@@ -101,82 +96,7 @@ class _OrdersListState extends State<OrdersList> {
       bottomNavigationBar: bottomNavBar(context),
     );
 
-    /* BlocProvider(
-      create: (context) =>
-          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter!)),
-      child: _createOrder(context),
-    ); */
   }
-
-/*   Widget _createOrder(BuildContext context) {
-    return BlocConsumer<OrderBloc, OrdersState>(
-      listenWhen: (previous, current) {
-        return previous is OrdersFetchSuccessState || current is OrdersFetchSuccessState;
-      },
-      listener: (context, state) {
-        if (state is OrdersFetchSuccessState){
-          context.read<OrderBloc>().add(FetchOrdersWithFilterEvent(filter!));
-        }
-      },
-      builder: (context, state) {
-        if (state is OrdersInitial) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is OrdersFetchErrorState) {
-          return const ErrorScreen();
-          //Incluir el mensaje requerido y el retry
-        } else if (state is OrdersFetchEmptyState) {
-          return LoadingScreen(
-            message: state.message,
-          );
-          //Incluir el retry
-        } else if (state is OrdersFetchNoOrdersState) {
-          return const WaitingScreen();
-          //Incluir el mensaje requerido y el retry
-        } else if (state is OrdersFetchSuccessState) {
-          List<String>? resumeList = [];
-
-          if (state.orders.isNotEmpty) {
-            for (var comanda in state.orders) {
-              if (comanda.details.isNotEmpty) {
-                for (var d in comanda.details) {
-                  //Todas las lineas de venta las metemos en una lista para hacer el resumen
-
-                  if (!d.demEstado!.contains("T")) {
-                    resumeList.add(d.demTitulo!);
-                  }
-                }
-              }
-            }
-          }
-
-          return Scaffold(
-            body: Row(children: [
-              Expanded(
-                  flex: 3, child: _createOrdersView(context, state.orders)),
-              showResumen
-                  ? Expanded(
-                      flex: 1,
-                      child: ResumeOrdersWidget(
-                        lineasComandas: reordering(resumeList),
-                      ))
-                  : Container()
-            ]),
-            bottomNavigationBar: bottomNavBar(context),
-          );
-        } else {
-          return const Text('Not Support');
-        }
-      },
-      buildWhen: (context, state) {
-        return state is OrdersFetchSuccessState ||
-            state is OrdersFetchErrorState ||
-            state is OrdersFetchEmptyState ||
-            state is OrdersFetchNoOrdersState;
-      },
-    );
-  } */
 
   //TODO: Hacer scrolleable la lista de comandas
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
@@ -196,7 +116,7 @@ class _OrdersListState extends State<OrdersList> {
                 direction: Direction.vertical,
                 offset: 0.5,
                 child: OrderCard(order: o, socket: widget.socket,),
-              ), /*OrderCard(order: o)*/
+              ), 
           ],
         ),
       ),

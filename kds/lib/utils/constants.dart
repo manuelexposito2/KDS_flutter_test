@@ -1,6 +1,7 @@
 
-//const apiBaseUrl = '10.0.2.2';
-const apiBaseUrl = '192.168.1.42';
+
+const apiBaseUrl = '192.168.1.43';
+//const apiBaseUrl = '192.168.1.42';
 
 const puertoPDA = '81';
 const puertoKDS = '82';
