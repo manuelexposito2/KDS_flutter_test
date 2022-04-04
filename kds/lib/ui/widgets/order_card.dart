@@ -7,6 +7,7 @@ import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/repository.dart';
@@ -29,7 +30,7 @@ class OrderCard extends StatefulWidget {
 
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
-
+  Order? order;
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
   late OrderByIdBloc orderByIdBloc;
@@ -42,27 +43,27 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
+  late String? showUrgente;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-
+    showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
-      
-      //status = data as OrderDto;
+    widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
       print(data);
 
-/* 
+      /*
       setState(() {
-        colorOrderStatus =
-            setColorWithStatus(data.status!);
-      }); */
+        showUrgente = UrgenteDto.fromJson(data).urgent;
+      });
+      */
+   
     }));
 
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
@@ -93,7 +94,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _showUrgente(BuildContext context, Order order) {
-    if (order.camUrgente == 1) {
+    if (showUrgente == "1") {
       return _urgente(context);
     } else {
       return Container();
@@ -230,8 +231,7 @@ class _ComandaCardState extends State<OrderCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(
-                  width: 195, height: 50, child: _buttonstate(order)),
+              SizedBox(width: 195, height: 50, child: _buttonstate(order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -602,9 +602,12 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket_button(BuildContext context, Order order) {
-    if (order.camUrgente == 0) {
+    if (showUrgente == "0") {
       return TextButton(
-          onPressed: () {},
+          onPressed: () {
+            widget.socket!.emit(WebSocketEvents.setUrgent,
+                UrgenteDto(idOrder: order.camId.toString(), urgent: "1"));
+          },
           child: Container(
             width: 600,
             decoration: BoxDecoration(
@@ -620,7 +623,10 @@ class _ComandaCardState extends State<OrderCard> {
           ));
     } else {
       return TextButton(
-          onPressed: () {},
+          onPressed: () {
+            widget.socket!.emit(WebSocketEvents.setUrgent,
+                UrgenteDto(idOrder: order.camId.toString(), urgent: "0"));
+          },
           child: Container(
             width: 600,
             decoration: BoxDecoration(
