@@ -19,6 +19,7 @@ import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket}) : super(key: key);
@@ -74,7 +75,7 @@ class _OrdersListState extends State<OrdersList> {
                 //initialData: repository.getOrders(filter!),
                 stream: repository.fetchOrders(filter!),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting  &&
+                  if (snapshot.connectionState == ConnectionState.waiting &&
                       !snapshot.hasData) {
                     return LoadingScreen(message: "Cargando...");
                   }
@@ -86,8 +87,7 @@ class _OrdersListState extends State<OrdersList> {
                   if (snapshot.connectionState == ConnectionState.done &&
                       snapshot.hasError) {
                     return ErrorScreen();
-                  }
-                  else {
+                  } else {
                     ordersList = snapshot.data as List<Order>;
                     return _createOrdersView(context, ordersList!);
                   }
@@ -191,7 +191,17 @@ class _OrdersListState extends State<OrdersList> {
           direction: Axis.horizontal,
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.start,
-          children: [for (var o in orders) OrderCard(order: o)],
+          children: [
+            for (var o in orders)
+              ShowUpAnimation(
+                delayStart: Duration(seconds: 1),
+                animationDuration: Duration(seconds: 1),
+                curve: Curves.bounceIn,
+                direction: Direction.vertical,
+                offset: 0.5,
+                child: OrderCard(order: o),
+              ), /*OrderCard(order: o)*/
+          ],
         ),
       ),
     );
