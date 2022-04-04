@@ -6,20 +6,21 @@ import 'package:kds/bloc/order_by_id/order_by_id_bloc.dart';
 import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
-import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
-import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/repository.dart';
 import 'package:kds/repository/repository/order_repository.dart';
-import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
+import 'package:kds/utils/websocket_events.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
-  OrderCard({Key? key, required this.order}) : super(key: key);
+  OrderCard({Key? key, required this.order, this.socket}) : super(key: key);
 
+  Socket? socket;
   final Order? order;
 
   @override
@@ -34,29 +35,45 @@ class _ComandaCardState extends State<OrderCard> {
   late OrderByIdBloc orderByIdBloc;
 
   late OrderRepository orderRepository;
+
   //Esta comanda es la misma que la principal pero existe para darle más datos
-  late final Future<Order>? orderExtended;
+  Future<Order>? orderExtended;
 
   Color? colorOrderStatus;
   Color? color;
-
+  OrderDto? status;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
-    orderExtended =
-        orderRepository.getOrderById(widget.order!.camId.toString());
 
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => StatusOrderBloc(statusOrderRepository),
-        child: blocBuilderCardComanda(context));
+    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+      
+      //status = data as OrderDto;
+      print(data);
+
+/* 
+      setState(() {
+        colorOrderStatus =
+            setColorWithStatus(data.status!);
+      }); */
+    }));
+
+    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
+    return Container(
+      decoration: BoxDecoration(
+          color: colorOrderStatus,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
+      margin: EdgeInsets.all(10),
+      width: 300,
+      child: _contentCard(context, widget.order!),
+    );
   }
 
   setColorWithStatus(String status) {
@@ -77,12 +94,13 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget _showUrgente(BuildContext context, Order order) {
     if (order.camUrgente == 1) {
-      return _urgente();
+      return _urgente(context);
     } else {
       return Container();
     }
   }
 
+/* 
   Widget blocBuilderCardComanda(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -94,9 +112,9 @@ class _ComandaCardState extends State<OrderCard> {
         builder: ((context, state) {
           if (state is StatusOrderSuccessState) {
             colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-            return _contentCard(context, widget.order!);
+            return _contentCard(context, order);
           } else {
-            return _contentCard(context, widget.order!);
+            return _contentCard(context, order);
           }
         }),
         buildWhen: ((context, state) {
@@ -118,7 +136,7 @@ class _ComandaCardState extends State<OrderCard> {
       ),
     );
   }
-
+ */
   Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
@@ -138,12 +156,12 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                total() + ' min.',
+                total(order) + ' min.',
                 style: Styles.regularText,
               ),
               Text(
                 //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                '${widget.order!.details.where((element) => element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${widget.order!.details.toList().length}',
+                '${order.details.where((element) => element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
                 style: Styles.regularText,
               )
             ],
@@ -158,7 +176,7 @@ class _ComandaCardState extends State<OrderCard> {
                 color: Colors.white,
               ),
               Text(
-                widget.order!.camOperario!,
+                order.camOperario!,
                 style: Styles.regularText,
               )
             ],
@@ -176,7 +194,7 @@ class _ComandaCardState extends State<OrderCard> {
                     color: Colors.white,
                   ),
                   Text(
-                    widget.order!.camMesa.toString(),
+                    order.camMesa.toString(),
                     style: Styles.regularText,
                   )
                 ],
@@ -190,6 +208,9 @@ class _ComandaCardState extends State<OrderCard> {
                       onPressed: () => showDialog(
                           context: context,
                           builder: (BuildContext context) {
+                            orderExtended = orderRepository
+                                .getOrderById(widget.order!.camId.toString());
+
                             return AlertDialog(
                               content: _futureInfo(context),
                             );
@@ -210,7 +231,7 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SizedBox(
-                  width: 195, height: 50, child: _buttonstate(context, order)),
+                  width: 195, height: 50, child: _buttonstate(order)),
               SizedBox(
                 width: 95,
                 height: 50,
@@ -229,7 +250,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buttonstate(BuildContext context, Order order) {
+  Widget _buttonstate(Order order) {
     Text label = const Text('Preparar');
     Icon icon = const Icon(
       Icons.play_arrow,
@@ -263,8 +284,11 @@ class _ComandaCardState extends State<OrderCard> {
             idOrder: order.camId.toString(),
             status: _toogleStateButton(order.camEstado!));
 
-        BlocProvider.of<StatusOrderBloc>(context)
-            .add(DoStatusOrderEvent(newStatus));
+        statusOrderRepository.statusOrder(newStatus).then((value) {
+          widget.socket!.emit(WebSocketEvents.modifyOrder,
+              OrderDto(idOrder: value.idOrder, status: value.status));
+        });
+
         debugPrint(newStatus.idOrder);
         debugPrint(newStatus.status);
       },
@@ -298,8 +322,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
- 
-  Widget _urgente() {
+  Widget _urgente(BuildContext context) {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
@@ -316,7 +339,6 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   String _toogleStateButton(String status) {
-   
     if (status.contains('E')) {
       return 'P';
     } else if (status.contains('P')) {
@@ -326,28 +348,27 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
-  String total() {
-    var date =
-        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
+  String total(Order order) {
+    var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000);
     var date2 = DateTime.now();
     final horatotal = date2.difference(date);
     return horatotal.inMinutes.toString();
   }
 
-  camEstado() {
-    if (widget.order!.camEstado == 'E') {
+  camEstado(Order order) {
+    if (order.camEstado == 'E') {
       return Text('En espera', style: Styles.textRegularInfo);
-    } else if (widget.order!.camEstado == 'P') {
+    } else if (order.camEstado == 'P') {
       return Text('En proceso', style: Styles.textRegularInfo);
-    } else if (widget.order!.camEstado == 'R') {
+    } else if (order.camEstado == 'R') {
       return Text('En recogida', style: Styles.textRegularInfo);
-    } else if (widget.order!.camEstado == 'T') {
+    } else if (order.camEstado == 'T') {
       return Text('Terminado', style: Styles.textRegularInfo);
     }
   }
 
-  esPagado() {
-    if (widget.order!.camEstadoCab == 'C') {
+  esPagado(Order order) {
+    if (order.camEstadoCab == 'C') {
       return Row(
         children: [
           Icon(Icons.euro_outlined),
@@ -360,7 +381,7 @@ class _ComandaCardState extends State<OrderCard> {
           Text('SI', style: Styles.textRegularInfo)
         ],
       );
-    } else if (widget.order!.camEstadoCab == 'P') {
+    } else if (order.camEstadoCab == 'P') {
       return Row(
         children: [
           Icon(Icons.euro_outlined),
@@ -451,7 +472,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.push_pin),
                               Text(' Salón: ', style: Styles.textBoldInfo),
-                              Text(widget.order!.camSalon.toString(),
+                              Text(order.camSalon.toString(),
                                   style: Styles.textRegularInfo)
                             ],
                           ),
@@ -462,7 +483,7 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.query_stats_rounded),
                               Text(' Estado: ', style: Styles.textBoldInfo),
-                              camEstado(),
+                              camEstado(order),
                             ],
                           ),
                         ),
@@ -472,13 +493,13 @@ class _ComandaCardState extends State<OrderCard> {
                             children: [
                               Icon(Icons.chat_bubble),
                               Text(' Notas: ', style: Styles.textBoldInfo),
-                              Text(widget.order!.camNota.toString(),
+                              Text(order.camNota.toString(),
                                   style: Styles.textRegularInfo)
                             ],
                           ),
                         ),
                         Divider(),
-                        Padding(padding: espaciado, child: esPagado()),
+                        Padding(padding: espaciado, child: esPagado(order)),
                         Divider()
                       ],
                     )
@@ -620,9 +641,9 @@ class _ComandaCardState extends State<OrderCard> {
     /*
     final df = new DateFormat('dd-MM-yyyy hh:mm a');
     String result = df.format(
-        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000));
+        DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000));
     var date =
-        DateTime.fromMillisecondsSinceEpoch(widget.order!.camFecini! * 1000);
+        DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000);
     */
     return Container(
         decoration: BoxDecoration(

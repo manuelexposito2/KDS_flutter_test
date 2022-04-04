@@ -1,23 +1,26 @@
-import 'dart:ui';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/repository/repository.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/error_screen.dart';
 import 'package:kds/ui/widgets/loading_screen.dart';
 import 'package:kds/ui/widgets/order_card.dart';
-import 'package:kds/ui/widgets/resume_orders.dart';
-import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/ui/widgets/waiting_screen.dart';
 import 'package:kds/utils/constants.dart';
+import 'package:kds/utils/websocket_events.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 
 class OrdersList extends StatefulWidget {
-  const OrdersList({Key? key}) : super(key: key);
+  OrdersList({Key? key, this.socket}) : super(key: key);
+  Socket? socket;
 
   @override
   State<OrdersList> createState() => _OrdersListState();
@@ -28,94 +31,71 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   String? filter = '';
-
+  //late StreamSocket _streamSocket;
   bool showResumen = false;
+  Order? newOrder;
+  String? mensaje;
+  Repository repository = Repository();
+  List<Order>? ordersList;
+  final _socketController = StreamController<List<Order?>>();
+
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-  }
+    
 
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          OrderBloc(orderRepository)..add(FetchOrdersWithFilterEvent(filter!)),
-      child: _createOrder(context),
-    );
-  }
+    
 
-  Widget _createOrder(BuildContext context) {
-    return BlocConsumer<OrderBloc, OrdersState>(
-      listenWhen: (previous, current) {
-        return previous is OrdersFetchSuccessState || current is OrdersFetchSuccessState;
-      },
-      listener: (context, state) {
-        if (state is OrdersFetchSuccessState){
-          context.read<OrderBloc>().add(FetchOrdersWithFilterEvent(filter!));
-        }
-      },
-      builder: (context, state) {
-        if (state is OrdersInitial) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is OrdersFetchErrorState) {
-          return const ErrorScreen();
-          //Incluir el mensaje requerido y el retry
-        } else if (state is OrdersFetchEmptyState) {
-          return LoadingScreen(
-            message: state.message,
-          );
-          //Incluir el retry
-        } else if (state is OrdersFetchNoOrdersState) {
-          return const WaitingScreen();
-          //Incluir el mensaje requerido y el retry
-        } else if (state is OrdersFetchSuccessState) {
-          List<String>? resumeList = [];
+    widget.socket!.on(WebSocketEvents.newOrder, (data) {
+      setState(() {
+        ordersList!.add(Order.fromJson(data));
+      });
+    });
 
-          if (state.orders.isNotEmpty) {
-            for (var comanda in state.orders) {
-              if (comanda.details.isNotEmpty) {
-                for (var d in comanda.details) {
-                  //Todas las lineas de venta las metemos en una lista para hacer el resumen
-
-                  if (!d.demEstado!.contains("T")) {
-                    resumeList.add(d.demTitulo!);
+    return Scaffold(
+      body: Row(children: [
+        Expanded(
+            flex: 3,
+            child: FutureBuilder(
+                future: repository.getOrders(filter!),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      !snapshot.hasData) {
+                    return LoadingScreen(message: "Cargando...");
                   }
-                }
-              }
-            }
-          }
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      !snapshot.hasData) {
+                    return WaitingScreen();
+                  }
 
-          return Scaffold(
-            body: Row(children: [
-              Expanded(
-                  flex: 3, child: _createOrdersView(context, state.orders)),
-              showResumen
-                  ? Expanded(
-                      flex: 1,
-                      child: ResumeOrdersWidget(
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasError) {
+                    return ErrorScreen();
+                  } else {
+                    ordersList = snapshot.data as List<Order>;
+                    return _createOrdersView(context, ordersList!);
+                  }
+                }) /* _createOrdersView(context, state.orders) */),
+        showResumen
+            ? Expanded(
+                flex: 1,
+                child: Text(
+                    "Resume") /*  ResumeOrdersWidget(
                         lineasComandas: reordering(resumeList),
-                      ))
-                  : Container()
-            ]),
-            bottomNavigationBar: bottomNavBar(context),
-          );
-        } else {
-          return const Text('Not Support');
-        }
-      },
-      buildWhen: (context, state) {
-        return state is OrdersFetchSuccessState ||
-            state is OrdersFetchErrorState ||
-            state is OrdersFetchEmptyState ||
-            state is OrdersFetchNoOrdersState;
-      },
+                      ) */
+                )
+            : Container()
+      ]),
+      bottomNavigationBar: bottomNavBar(context),
     );
+
   }
 
   //TODO: Hacer scrolleable la lista de comandas
@@ -127,7 +107,17 @@ class _OrdersListState extends State<OrdersList> {
           direction: Axis.horizontal,
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.start,
-          children: [for (var o in orders) OrderCard(order: o)],
+          children: [
+            for (var o in orders)
+              ShowUpAnimation(
+                delayStart: Duration(seconds: 1),
+                animationDuration: Duration(seconds: 1),
+                curve: Curves.bounceIn,
+                direction: Direction.vertical,
+                offset: 0.5,
+                child: OrderCard(order: o, socket: widget.socket,),
+              ), 
+          ],
         ),
       ),
     );
@@ -140,7 +130,11 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [/*TimerWidget()*/Container(), _buttonsFilter(context), _buttonsOptions()],
+          children: [
+            /*TimerWidget()*/ Container(),
+            _buttonsFilter(context),
+            _buttonsOptions()
+          ],
         ));
   }
 
@@ -157,8 +151,7 @@ class _OrdersListState extends State<OrdersList> {
             setState(() {
               filter = enProceso;
             });
-            BlocProvider.of<OrderBloc>(context)
-                .add(FetchOrdersWithFilterEvent(filter!));
+           
           },
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
@@ -169,8 +162,7 @@ class _OrdersListState extends State<OrdersList> {
                 filter = terminadas;
               });
 
-              BlocProvider.of<OrderBloc>(context)
-                  .add(FetchOrdersWithFilterEvent(filter!));
+             
             },
             child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
             style: Styles.buttonTerminadas),
@@ -180,8 +172,7 @@ class _OrdersListState extends State<OrdersList> {
                 filter = todas;
               });
 
-              BlocProvider.of<OrderBloc>(context)
-                  .add(FetchOrdersWithFilterEvent(filter!));
+           
             },
             child: Text(
               "Todas",
@@ -232,67 +223,74 @@ class _OrdersListState extends State<OrdersList> {
                                       textAlign: TextAlign.center,
                                     ),
                                     content: Container(
-                                      width: 760,
-                                      height: 270,
-                                      child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                        width: 760,
+                                        height: 270,
+                                        child: Form(
+                                          key: _formKey,
+                                          child: Column(
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                    vertical: 20),
-                                                child: Text(
-                                                  'Introduzca su coódigo de operario:',
-                                                  style: Styles.textRegularInfo,
-                                                ),
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        vertical: 20),
+                                                    child: Text(
+                                                      'Introduzca su código de operario:',
+                                                      style: Styles
+                                                          .textRegularInfo,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: 750,
+                                                    height: 70,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors
+                                                                .blueAccent)),
+                                                    child: TextFormField(
+                                                      controller:
+                                                          operarioController,
+                                                      style: const TextStyle(
+                                                          fontSize: 35),
+                                                      decoration: const InputDecoration(
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white))),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                               Container(
-                                                width: 750,
-                                                height: 70,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color:
-                                                            Colors.blueAccent)),
-                                                child: TextFormField(
-                                                  controller: operarioController,
-                                                  style: const TextStyle(
-                                                      fontSize: 35),
-                                                  decoration: const InputDecoration(
-                                                      enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .white))),
-                                                ),
+                                                margin:
+                                                    EdgeInsets.only(top: 30),
+                                                child: TextButton(
+                                                    onPressed: () {},
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 750,
+                                                      height: 70,
+                                                      color: Colors.green,
+                                                      child: Text(
+                                                        'Continuar',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Styles
+                                                            .textButtonCancelar,
+                                                      ),
+                                                    )),
                                               ),
                                             ],
                                           ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 30),
-                                            child: TextButton(
-                                                onPressed: () {},
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  width: 750,
-                                                  height: 70,
-                                                  color: Colors.green,
-                                                  child: Text(
-                                                    'Continuar',
-                                                    textAlign: TextAlign.center,
-                                                    style: Styles
-                                                        .textButtonCancelar,
-                                                  ),
-                                                )),
-                                          ),
-                                        ],
-                                      ),)
-                                    ),
+                                        )),
                                     actions: <Widget>[
                                       TextButton(
                                           onPressed: () {
@@ -342,67 +340,74 @@ class _OrdersListState extends State<OrdersList> {
                                       textAlign: TextAlign.center,
                                     ),
                                     content: Container(
-                                      width: 760,
-                                      height: 270,
-                                      child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                        width: 760,
+                                        height: 270,
+                                        child: Form(
+                                          key: _formKey,
+                                          child: Column(
                                             children: [
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 20),
-                                                child: Text(
-                                                  'Introduzca su coódigo de operario:',
-                                                  style: Styles.textRegularInfo,
-                                                ),
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 20),
+                                                    child: Text(
+                                                      'Introduzca su coódigo de operario:',
+                                                      style: Styles
+                                                          .textRegularInfo,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: 750,
+                                                    height: 70,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors
+                                                                .blueAccent)),
+                                                    child: TextFormField(
+                                                      controller:
+                                                          operarioController,
+                                                      style: const TextStyle(
+                                                          fontSize: 35),
+                                                      decoration: const InputDecoration(
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white))),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                               Container(
-                                                width: 750,
-                                                height: 70,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color:
-                                                            Colors.blueAccent)),
-                                                child: TextFormField(
-                                                  controller: operarioController,
-                                                  style: const TextStyle(
-                                                      fontSize: 35),
-                                                  decoration: const InputDecoration(
-                                                      enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .white))),
-                                                ),
+                                                margin:
+                                                    EdgeInsets.only(top: 30),
+                                                child: TextButton(
+                                                    onPressed: () {},
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      width: 750,
+                                                      height: 70,
+                                                      color: Colors.green,
+                                                      child: Text(
+                                                        'Continuar',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Styles
+                                                            .textButtonCancelar,
+                                                      ),
+                                                    )),
                                               ),
                                             ],
                                           ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 30),
-                                            child: TextButton(
-                                                onPressed: () {},
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  width: 750,
-                                                  height: 70,
-                                                  color: Colors.green,
-                                                  child: Text(
-                                                    'Continuar',
-                                                    textAlign: TextAlign.center,
-                                                    style: Styles
-                                                        .textButtonCancelar,
-                                                  ),
-                                                )),
-                                          ),
-                                        ],
-                                      ),)
-                                    ),
+                                        )),
                                     actions: <Widget>[
                                       TextButton(
                                           onPressed: () {
@@ -471,7 +476,7 @@ class _OrdersListState extends State<OrdersList> {
               Navigator.pushReplacement<void, void>(
                 context,
                 MaterialPageRoute<void>(
-                    builder: (BuildContext context) => OrdersList()),
+                    builder: (BuildContext context) => OrdersList(socket: widget.socket,)),
               );
             },
             child: Icon(Icons.refresh),
