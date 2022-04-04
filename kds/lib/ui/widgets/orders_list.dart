@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
@@ -42,7 +43,7 @@ class _OrdersListState extends State<OrdersList> {
   Order? selectedOrder;
 
   //final _socketController = StreamController<List<Order?>>();
-  
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -86,6 +87,8 @@ class _OrdersListState extends State<OrdersList> {
         });
       }
     }));
+
+ 
 
     return Scaffold(
       body: Row(children: [
@@ -140,7 +143,7 @@ class _OrdersListState extends State<OrdersList> {
                 delayStart: Duration(seconds: 1),
                 animationDuration: Duration(seconds: 1),
                 curve: Curves.bounceIn,
-                direction: Direction.vertical,
+                direction: Direction.horizontal,
                 offset: 0.5,
                 child: OrderCard(
                   order: o,

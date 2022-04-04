@@ -10,9 +10,12 @@ import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
+import 'package:kds/repository/repository/urgent_repository.dart';
+import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
 import 'package:kds/utils/websocket_events.dart';
@@ -30,6 +33,7 @@ class OrderCard extends StatefulWidget {
 
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
+  late UrgenteRepository urgenteRepository;
   Order? order;
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
@@ -56,6 +60,7 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
@@ -64,23 +69,28 @@ class _ComandaCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
 
-    //widget.socket!.on(WebSocketEvents.setUrgent, ((data) {}
-      /*  widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+       widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
       
-      //status = data as OrderDto;
-      print(data);
+      //UrgenteDto newUrgenteDto = UrgenteDto.fromJson(data);
+      Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => HomeScreen(
+                          socket: widget.socket,
+                        )),
+              );
+      
+    }));
 
-*/
-      colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
-      return Container(
-        decoration: BoxDecoration(
-            color: colorOrderStatus,
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        margin: EdgeInsets.all(10),
-        width: 300,
-        child: _contentCard(context, widget.order!),
-      );
-
+    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
+    return Container(
+      decoration: BoxDecoration(
+          color: colorOrderStatus,
+          borderRadius: BorderRadius.all(Radius.circular(5))),
+      margin: EdgeInsets.all(10),
+      width: 300,
+      child: _contentCard(context, widget.order!),
+    );
   }
 
   setColorWithStatus(String status) {
@@ -574,8 +584,27 @@ class _ComandaCardState extends State<OrderCard> {
     if (showUrgente == "0") {
       return TextButton(
           onPressed: () {
-            widget.socket!.emit(WebSocketEvents.setUrgent,
-                UrgenteDto(idOrder: order.camId.toString(), urgent: "1"));
+
+            /*
+            OrderDto newStatus = OrderDto(
+            idOrder: order.camId.toString(),
+            status: _toogleStateButton(order.camEstado!));
+
+        statusOrderRepository.statusOrder(newStatus).then((value) {
+          widget.socket!.emit(WebSocketEvents.modifyOrder,
+              OrderDto(idOrder: value.idOrder, status: value.status));
+        });
+            */
+
+            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '1');
+
+
+        urgenteRepository.urgente
+             (newUrgent).then((value) {
+          widget.socket!.emit(WebSocketEvents.setUrgent,
+              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+        });
+
           },
           child: Container(
             width: 600,
@@ -637,6 +666,5 @@ class _ComandaCardState extends State<OrderCard> {
               order.camTicket!,
               style: Styles.textTicketInfo,
             )));
-    
   }
 }
