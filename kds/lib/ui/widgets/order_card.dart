@@ -69,18 +69,7 @@ class _ComandaCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
 
-       widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
-      
-      //UrgenteDto newUrgenteDto = UrgenteDto.fromJson(data);
-      Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute<void>(
-                    builder: (BuildContext context) => HomeScreen(
-                          socket: widget.socket,
-                        )),
-              );
-      
-    }));
+  
 
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return Container(
