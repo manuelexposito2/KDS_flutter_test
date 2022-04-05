@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 
@@ -15,7 +15,7 @@ class ErrorScreen extends StatelessWidget {
         alignment: Alignment.topCenter,
         child: Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 80),
+            margin: const EdgeInsets.only(top: 80),
             width: 900,
             height: 400,
             color: Colors.white,

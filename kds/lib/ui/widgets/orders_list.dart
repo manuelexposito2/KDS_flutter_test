@@ -1,13 +1,8 @@
-import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
-import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
@@ -72,7 +67,6 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
     WidgetsFlutterBinding.ensureInitialized();
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-
       _audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
@@ -99,16 +93,15 @@ class _OrdersListState extends State<OrdersList> {
       }
     }));
 
-      widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
+    widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
       //print(data);
 
       DetailDto detailDto = DetailDto.fromJson(data);
 
       setState(() {
-          ordersList!.where(
-              (element) => element.camId.toString() == detailDto.idOrder);
-        });
-
+        ordersList!
+            .where((element) => element.camId.toString() == detailDto.idOrder);
+      });
     });
 
     return Scaffold(
@@ -127,8 +120,7 @@ class _OrdersListState extends State<OrdersList> {
                     return WaitingScreen();
                   }
 
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasError) {
+                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasError) {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
@@ -161,12 +153,13 @@ class _OrdersListState extends State<OrdersList> {
           children: [
             for (var o in orders)
               ShowUpAnimation(
-                delayStart: Duration(seconds: 1),
-                animationDuration: Duration(seconds: 1),
+                delayStart: Duration(milliseconds: 500),
+                animationDuration: Duration(milliseconds: 500),
                 curve: Curves.bounceIn,
                 direction: Direction.vertical,
                 offset: 0.5,
                 child: OrderCard(
+                  key: UniqueKey(),
                   order: o,
                   socket: widget.socket,
                 ),
@@ -184,7 +177,11 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [const TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
+          children: [
+            const TimerWidget(),
+            _buttonsFilter(context),
+            _buttonsOptions()
+          ],
         ));
   }
 

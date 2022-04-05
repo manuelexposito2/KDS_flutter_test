@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
-import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
