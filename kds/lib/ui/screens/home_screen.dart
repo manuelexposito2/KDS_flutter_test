@@ -4,21 +4,19 @@ import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class HomeScreen extends StatefulWidget {
-   HomeScreen({Key? key, this.socket}) : super(key: key);
+  HomeScreen({Key? key, this.socket}) : super(key: key);
   Socket? socket;
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-
-
 class _HomeScreenState extends State<HomeScreen> {
 
-@override
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    
   }
 
   @override

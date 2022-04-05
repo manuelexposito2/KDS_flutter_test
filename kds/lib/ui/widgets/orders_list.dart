@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -16,6 +17,7 @@ import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/screens/waiting_screen.dart';
+import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -88,7 +90,17 @@ class _OrdersListState extends State<OrdersList> {
       }
     }));
 
- 
+      widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
+      //print(data);
+
+      DetailDto detailDto = DetailDto.fromJson(data);
+
+      setState(() {
+          ordersList!.where(
+              (element) => element.camId.toString() == detailDto.idOrder);
+        });
+
+    });
 
     return Scaffold(
       body: Row(children: [
@@ -163,11 +175,7 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            /*TimerWidget()*/ Container(),
-            _buttonsFilter(context),
-            _buttonsOptions()
-          ],
+          children: [const TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
         ));
   }
 

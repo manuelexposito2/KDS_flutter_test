@@ -116,8 +116,7 @@ class _ComandaCardState extends State<OrderCard> {
       return Container();
     }
   }
-
-  Widget _contentCard(BuildContext context, Order order) {
+ Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
         _comandaHeader(context, order),
@@ -296,7 +295,7 @@ class _ComandaCardState extends State<OrderCard> {
       alignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
-        for (var d in order.details) DetailCard(details: d, order: order)
+        for (var d in order.details) DetailCard(details: d, order: order, socket: widget.socket,)
       ],
     );
   }

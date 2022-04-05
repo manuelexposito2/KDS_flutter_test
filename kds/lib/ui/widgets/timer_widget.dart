@@ -16,6 +16,13 @@ class _TimerWidgetState extends State<TimerWidget> {
   String? _timeString;
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -48,7 +55,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     );
   }
 
-   void _getTime() {
+  void _getTime() {
     final DateTime now = DateTime.now();
     final String formattedDateTime = _formatDateTime(now);
     setState(() {
@@ -59,5 +66,4 @@ class _TimerWidgetState extends State<TimerWidget> {
   String _formatDateTime(DateTime dateTime) {
     return DateFormat('Hms', 'en_US').format(dateTime);
   }
-
 }
