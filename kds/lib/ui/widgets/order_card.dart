@@ -7,11 +7,15 @@ import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
 import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
+import 'package:kds/repository/repository/urgent_repository.dart';
+import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
 import 'package:kds/utils/websocket_events.dart';
@@ -29,7 +33,8 @@ class OrderCard extends StatefulWidget {
 
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
-
+  late UrgenteRepository urgenteRepository;
+  Order? order;
   late StatusOrderBloc statusOrderBloc;
   late StatusDetailBloc statusDetailBloc;
   late OrderByIdBloc orderByIdBloc;
@@ -42,6 +47,7 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
+  late String? showUrgente;
 
   @override
   void setState(fn) {
@@ -54,13 +60,27 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
-
+    showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
+
+       widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
+      
+      //UrgenteDto newUrgenteDto = UrgenteDto.fromJson(data);
+      Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => HomeScreen(
+                          socket: widget.socket,
+                        )),
+              );
+      
+    }));
 
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return Container(
@@ -90,7 +110,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _showUrgente(BuildContext context, Order order) {
-    if (order.camUrgente == 1) {
+    if (showUrgente == "1") {
       return _urgente(context);
     } else {
       return Container();
@@ -358,7 +378,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 20);
     return Container(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height / 1.5,
       child: Column(
         children: [
           Container(
@@ -560,9 +580,31 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket_button(BuildContext context, Order order) {
-    if (order.camUrgente == 0) {
+    if (showUrgente == "0") {
       return TextButton(
-          onPressed: () {},
+          onPressed: () {
+
+            /*
+            OrderDto newStatus = OrderDto(
+            idOrder: order.camId.toString(),
+            status: _toogleStateButton(order.camEstado!));
+
+        statusOrderRepository.statusOrder(newStatus).then((value) {
+          widget.socket!.emit(WebSocketEvents.modifyOrder,
+              OrderDto(idOrder: value.idOrder, status: value.status));
+        });
+            */
+
+            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '1');
+
+
+        urgenteRepository.urgente
+             (newUrgent).then((value) {
+          widget.socket!.emit(WebSocketEvents.setUrgent,
+              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+        });
+
+          },
           child: Container(
             width: 600,
             decoration: BoxDecoration(
@@ -578,7 +620,16 @@ class _ComandaCardState extends State<OrderCard> {
           ));
     } else {
       return TextButton(
-          onPressed: () {},
+          onPressed: () {
+            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '0');
+
+
+        urgenteRepository.urgente
+             (newUrgent).then((value) {
+          widget.socket!.emit(WebSocketEvents.setUrgent,
+              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+        });
+          },
           child: Container(
             width: 600,
             decoration: BoxDecoration(
@@ -620,5 +671,5 @@ class _ComandaCardState extends State<OrderCard> {
               order.camTicket!,
               style: Styles.textTicketInfo,
             )));
-     }
+  }
 }

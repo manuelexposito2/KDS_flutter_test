@@ -13,5 +13,18 @@ class UrgenteDto{
     _data['urgent'] = urgent;
     return _data;
   }
+
+  UrgenteDto.fromJson(Map<String, dynamic> json){
+
+    idOrder = json['idOrder'];
+    urgent = json['urgent'];
+  }
+
+  /*
+   Order.fromJson(Map<String, dynamic> json){
+    camId = json['cam_id'];
+    camUrgente = json['cam_urgente'];
+  */
+
 }
 

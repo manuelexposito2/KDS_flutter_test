@@ -6,16 +6,17 @@ import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/screens/loading_screen.dart';
-import 'package:kds/ui/screens/waiting_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/order_card.dart';
+import 'package:kds/ui/screens/waiting_screen.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
