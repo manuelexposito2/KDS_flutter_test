@@ -1,8 +1,11 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/utils/constants.dart';
+import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 void main() {
@@ -15,15 +18,18 @@ void main() {
           .build());
   socket.connect();
   socket.onConnect((_) {
-    runApp(MyApp(socket: socket,));
+    runApp(MyApp(
+      socket: socket,
+    ));
     print("Connected");
   });
-  
+
+
   socket.onDisconnect((_) => print('disconnect'));
 }
 
 class MyApp extends StatelessWidget {
-   MyApp({Key? key, required this.socket}) : super(key: key);
+  MyApp({Key? key, required this.socket}) : super(key: key);
 
   Socket socket;
   @override
@@ -39,7 +45,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
-      routes: {'/': (context) => HomeScreen(socket: socket,)},
+      routes: {
+        '/': (context) => HomeScreen(
+              socket: socket,
+            )
+      },
     );
   }
 }
