@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kds/bloc/order/order_bloc.dart';
@@ -35,6 +36,7 @@ class _OrdersListState extends State<OrdersList> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
+  late final AudioCache _audioCache;
   String? filter = '';
 
   bool showResumen = false;
@@ -59,12 +61,19 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
+    _audioCache = AudioCache(
+      prefix: 'sounds/',
+      fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
+    WidgetsFlutterBinding.ensureInitialized();
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
+
+      _audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
