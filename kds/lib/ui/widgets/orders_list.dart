@@ -65,9 +65,9 @@ class _OrdersListState extends State<OrdersList> {
   @override
   Widget build(BuildContext context) {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
-    WidgetsFlutterBinding.ensureInitialized();
+
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      _audioCache.play('bell_ring.mp3');
+      //_audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
@@ -111,8 +111,7 @@ class _OrdersListState extends State<OrdersList> {
             child: FutureBuilder(
                 future: orderRepository.getOrders(filter!),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting &&
-                      !snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
                     return LoadingScreen(message: "Cargando...");
                   }
                   if (snapshot.connectionState == ConnectionState.done &&
@@ -120,7 +119,8 @@ class _OrdersListState extends State<OrdersList> {
                     return WaitingScreen();
                   }
 
-                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasError) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasError) {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
