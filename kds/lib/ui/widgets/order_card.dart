@@ -61,18 +61,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    /*  widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
-      
-      //status = data as OrderDto;
-      print(data);
 
-/* 
-      setState(() {
-        colorOrderStatus =
-            setColorWithStatus(data.status!);
-      }); 
-    }));*/
- */
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return Container(
       decoration: BoxDecoration(
@@ -107,45 +96,7 @@ class _ComandaCardState extends State<OrderCard> {
       return Container();
     }
   }
-
-/* 
-  Widget blocBuilderCardComanda(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: colorOrderStatus,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      margin: EdgeInsets.all(10),
-      width: 300,
-      child: BlocConsumer<StatusOrderBloc, StatusOrderState>(
-        builder: ((context, state) {
-          if (state is StatusOrderSuccessState) {
-            colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-            return _contentCard(context, order);
-          } else {
-            return _contentCard(context, order);
-          }
-        }),
-        buildWhen: ((context, state) {
-          return state is StatusOrderInitial ||
-              state is StatusOrderSuccessState ||
-              state is StatusOrderLoadingState;
-        }),
-        listenWhen: ((context, state) {
-          return state is StatusOrderErrorState ||
-              state is StatusOrderSuccessState;
-        }),
-        listener: ((context, state) {
-          if (state is StatusOrderSuccessState) {
-            setState(() {
-              colorOrderStatus = setColorWithStatus(state.orderDto.status!);
-            });
-          }
-        }),
-      ),
-    );
-  }
- */
-  Widget _contentCard(BuildContext context, Order order) {
+ Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
         _comandaHeader(context, order),
@@ -324,7 +275,7 @@ class _ComandaCardState extends State<OrderCard> {
       alignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
-        for (var d in order.details) DetailCard(details: d, order: order)
+        for (var d in order.details) DetailCard(details: d, order: order, socket: widget.socket,)
       ],
     );
   }
@@ -669,115 +620,5 @@ class _ComandaCardState extends State<OrderCard> {
               order.camTicket!,
               style: Styles.textTicketInfo,
             )));
-    /*child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Fecha: ',
-                                style: Styles.textTicketInfo,
-                              ),
-                              Text(
-                                result,
-                                style: Styles.textTicketInfo,
-                              )
-                            ],
-                          ))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Row(
-                      children: List.generate(
-                          300 ~/ 5,
-                          (index) => Expanded(
-                                child: Container(
-                                  color: index % 2 == 0
-                                      ? Colors.transparent
-                                      : Color.fromARGB(255, 0, 0, 0),
-                                  height: 1,
-                                ),
-                              )),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 170),
-                        child: Text('Articulo', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Ud', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                        child: Text('Precio', style: Styles.textTicketInfo),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Text('Importe', style: Styles.textTicketInfo),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  children: List.generate(
-                      300 ~/ 5,
-                      (index) => Expanded(
-                            child: Container(
-                              color: index % 2 == 0
-                                  ? Colors.transparent
-                                  : Color.fromARGB(255, 0, 0, 0),
-                              height: 1,
-                            ),
-                          )),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('Total EUR:', style: Styles.textTicketInfo),
-                    Text('7.00', style: Styles.textTicketInfo)
-                  ],
-                ),
-              )
-            ],
-          ),
-        ));
-  */
-  }
+     }
 }
