@@ -164,7 +164,7 @@ class _OrdersListState extends State<OrdersList> {
                 delayStart: Duration(seconds: 1),
                 animationDuration: Duration(seconds: 1),
                 curve: Curves.bounceIn,
-                direction: Direction.horizontal,
+                direction: Direction.vertical,
                 offset: 0.5,
                 child: OrderCard(
                   order: o,
