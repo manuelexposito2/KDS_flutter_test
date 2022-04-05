@@ -6,6 +6,7 @@ import 'package:kds/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   //runApp(const MyApp());
   Socket socket = io(
       'http://$apiBaseUrl:$puertoKDS',
@@ -15,12 +16,12 @@ void main() {
           .build());
   socket.connect();
   socket.onConnect((_) {
-    runApp(MyApp(
-      socket: socket,
-    ));
+   
     print("Connected");
   });
-
+   runApp(MyApp(
+      socket: socket,
+    ));
   socket.onDisconnect((_) => print('disconnect'));
 }
 
