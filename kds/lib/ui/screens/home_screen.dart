@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kds/ui/widgets/orders_list.dart';
-import 'package:kds/ui/widgets/timer_widget.dart';
+
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 

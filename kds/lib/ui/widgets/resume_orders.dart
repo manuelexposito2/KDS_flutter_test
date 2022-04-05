@@ -1,9 +1,7 @@
-// ignore_for_file: void_checks
+
 
 import 'package:flutter/material.dart';
-import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/ui/styles/styles.dart';
-import "package:collection/collection.dart";
 
 class ResumeOrdersWidget extends StatefulWidget {
   ResumeOrdersWidget({Key? key, required this.lineasComandas})

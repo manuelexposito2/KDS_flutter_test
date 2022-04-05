@@ -1,13 +1,9 @@
-import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kds/bloc/order/order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
-import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
@@ -161,12 +157,13 @@ class _OrdersListState extends State<OrdersList> {
           children: [
             for (var o in orders)
               ShowUpAnimation(
-                delayStart: Duration(seconds: 1),
-                animationDuration: Duration(seconds: 1),
+                delayStart: Duration(milliseconds: 500),
+                animationDuration: Duration(milliseconds: 500),
                 curve: Curves.bounceIn,
                 direction: Direction.vertical,
                 offset: 0.5,
                 child: OrderCard(
+                  key: UniqueKey(),
                   order: o,
                   socket: widget.socket,
                 ),

@@ -1,11 +1,9 @@
-import 'dart:js';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/utils/constants.dart';
-import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 void main() {
@@ -29,9 +27,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key, required this.socket}) : super(key: key);
+  MyApp({Key? key,  this.socket}) : super(key: key);
 
-  Socket socket;
+  Socket? socket;
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
