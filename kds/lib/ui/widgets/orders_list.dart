@@ -1,4 +1,3 @@
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
@@ -68,7 +67,6 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
     WidgetsFlutterBinding.ensureInitialized();
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-
       _audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
@@ -95,16 +93,15 @@ class _OrdersListState extends State<OrdersList> {
       }
     }));
 
-      widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
+    widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
       //print(data);
 
       DetailDto detailDto = DetailDto.fromJson(data);
 
       setState(() {
-          ordersList!.where(
-              (element) => element.camId.toString() == detailDto.idOrder);
-        });
-
+        ordersList!
+            .where((element) => element.camId.toString() == detailDto.idOrder);
+      });
     });
 
     return Scaffold(
@@ -123,8 +120,7 @@ class _OrdersListState extends State<OrdersList> {
                     return WaitingScreen();
                   }
 
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasError) {
+                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasError) {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
@@ -181,7 +177,11 @@ class _OrdersListState extends State<OrdersList> {
         color: Styles.bottomNavColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [const TimerWidget(), _buttonsFilter(context), _buttonsOptions()],
+          children: [
+            const TimerWidget(),
+            _buttonsFilter(context),
+            _buttonsOptions()
+          ],
         ));
   }
 

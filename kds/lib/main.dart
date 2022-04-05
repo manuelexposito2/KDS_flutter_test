@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,12 +21,11 @@ void main() {
     print("Connected");
   });
 
-
   socket.onDisconnect((_) => print('disconnect'));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key,  this.socket}) : super(key: key);
+  MyApp({Key? key, this.socket}) : super(key: key);
 
   Socket? socket;
   @override

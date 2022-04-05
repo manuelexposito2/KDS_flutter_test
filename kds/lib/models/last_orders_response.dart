@@ -1,4 +1,3 @@
-
 class LastOrdersResponse {
   LastOrdersResponse({
     required this.getLastOrders,
@@ -91,8 +90,8 @@ class Order {
   late final String? cliNotas;
   late final String? cliZona;
   late final List<Details> details;
-  
-  Order.fromJson(Map<String, dynamic> json){
+
+  Order.fromJson(Map<String, dynamic> json) {
     camId = json['cam_id'];
     camUrgente = json['cam_urgente'];
     camIdCab = json['cam_id_cab'];
@@ -127,7 +126,8 @@ class Order {
     cliProvincia = json['cli_provincia'];
     cliNotas = json['cli_notas'];
     cliZona = json['cli_zona'];
-    details = List.from(json['details']).map((e)=>Details.fromJson(e)).toList();
+    details =
+        List.from(json['details']).map((e) => Details.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -166,11 +166,10 @@ class Order {
     _data['cli_provincia'] = cliProvincia;
     _data['cli_notas'] = cliNotas;
     _data['cli_zona'] = cliZona;
-    _data['details'] = details.map((e)=>e.toJson()).toList();
+    _data['details'] = details.map((e) => e.toJson()).toList();
     return _data;
   }
 }
-
 
 class Details {
   Details({

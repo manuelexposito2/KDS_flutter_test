@@ -7,7 +7,7 @@ class ResumeOrdersWidget extends StatefulWidget {
   ResumeOrdersWidget({Key? key, required this.lineasComandas})
       : super(key: key);
 
-  //TODO: Hacer una operación STREAM desde HOME y pasarla a ResumeOrdersWidget
+  
   final List<String>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();

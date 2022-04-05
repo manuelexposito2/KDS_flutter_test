@@ -1,5 +1,3 @@
-
-
 class OrderDto {
   OrderDto({required this.idOrder, required this.status});
 

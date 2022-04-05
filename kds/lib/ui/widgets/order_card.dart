@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kds/bloc/order_by_id/order_by_id_bloc.dart';
-import 'package:kds/bloc/status_detail/status_detail_bloc.dart';
-import 'package:kds/bloc/status_order/status_order_bloc.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
@@ -32,9 +29,6 @@ class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
   late UrgenteRepository urgenteRepository;
   Order? order;
-  late StatusOrderBloc statusOrderBloc;
-  late StatusDetailBloc statusDetailBloc;
-  late OrderByIdBloc orderByIdBloc;
 
   late OrderRepository orderRepository;
 

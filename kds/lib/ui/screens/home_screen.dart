@@ -12,34 +12,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
+      Navigator.pushReplacement<void, void>(
+        context,
+        MaterialPageRoute<void>(
+            builder: (BuildContext context) => OrdersList(
+                  socket: widget.socket,
+                )),
+      );
+    }));
 
-     widget.socket!.on(WebSocketEvents.setUrgent, ((data) {
-    //UrgenteDto newUrgenteDto = UrgenteDto.fromJson(data);
-    Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute<void>(
-                    builder: (BuildContext context) => OrdersList(
-                          socket: widget.socket,
-                        )),
-              );
-  }));
-
-
-    return Stack(
-      children: [
-        OrdersList(socket: widget.socket),
-        //Positioned(bottom: 10, left: 10, child: TimerWidget()),
-      ],
-    );
+    return OrdersList(socket: widget.socket);
   }
 }

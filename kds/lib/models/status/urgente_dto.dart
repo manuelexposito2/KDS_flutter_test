@@ -1,30 +1,18 @@
-class UrgenteDto{
-  UrgenteDto({
-    required this.idOrder,
-    required this.urgent
-  });
+class UrgenteDto {
+  UrgenteDto({required this.idOrder, required this.urgent});
 
   late final String? idOrder;
   late final String? urgent;
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['idOrder'] = idOrder;
     _data['urgent'] = urgent;
     return _data;
   }
 
-  UrgenteDto.fromJson(Map<String, dynamic> json){
-
+  UrgenteDto.fromJson(Map<String, dynamic> json) {
     idOrder = json['idOrder'];
     urgent = json['urgent'];
   }
-
-  /*
-   Order.fromJson(Map<String, dynamic> json){
-    camId = json['cam_id'];
-    camUrgente = json['cam_urgente'];
-  */
-
 }
-
