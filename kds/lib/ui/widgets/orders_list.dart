@@ -152,18 +152,12 @@ class _OrdersListState extends State<OrdersList> {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             for (var o in orders)
-              ShowUpAnimation(
-                delayStart: Duration(milliseconds: 500),
-                animationDuration: Duration(milliseconds: 500),
-                curve: Curves.bounceIn,
-                direction: Direction.vertical,
-                offset: 0.5,
-                child: OrderCard(
+            OrderCard(
                   key: UniqueKey(),
                   order: o,
                   socket: widget.socket,
                 ),
-              ),
+              
           ],
         ),
       ),

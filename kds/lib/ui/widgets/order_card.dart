@@ -13,6 +13,7 @@ import 'package:kds/repository/repository/urgent_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
 import 'package:kds/utils/websocket_events.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
@@ -59,18 +60,21 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-
-  
-
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
-    return Container(
-      decoration: BoxDecoration(
-          color: colorOrderStatus,
-          borderRadius: BorderRadius.all(Radius.circular(5))),
-      margin: EdgeInsets.all(10),
-      width: 300,
-      child: _contentCard(context, widget.order!),
-    );
+    return ShowUpAnimation(
+        delayStart: Duration(milliseconds: 500),
+        animationDuration: Duration(milliseconds: 500),
+        curve: Curves.bounceIn,
+        direction: Direction.vertical,
+        offset: 0.5,
+        child: Container(
+          decoration: BoxDecoration(
+              color: colorOrderStatus,
+              borderRadius: BorderRadius.all(Radius.circular(5))),
+          margin: EdgeInsets.all(10),
+          width: 300,
+          child: _contentCard(context, widget.order!),
+        ));
   }
 
   setColorWithStatus(String status) {
@@ -96,7 +100,8 @@ class _ComandaCardState extends State<OrderCard> {
       return Container();
     }
   }
- Widget _contentCard(BuildContext context, Order order) {
+
+  Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
         _comandaHeader(context, order),
@@ -275,7 +280,12 @@ class _ComandaCardState extends State<OrderCard> {
       alignment: WrapAlignment.start,
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
-        for (var d in order.details) DetailCard(details: d, order: order, socket: widget.socket,)
+        for (var d in order.details)
+          DetailCard(
+            details: d,
+            order: order,
+            socket: widget.socket,
+          )
       ],
     );
   }
@@ -563,7 +573,6 @@ class _ComandaCardState extends State<OrderCard> {
     if (showUrgente == "0") {
       return TextButton(
           onPressed: () {
-
             /*
             OrderDto newStatus = OrderDto(
             idOrder: order.camId.toString(),
@@ -575,15 +584,13 @@ class _ComandaCardState extends State<OrderCard> {
         });
             */
 
-            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '1');
+            UrgenteDto newUrgent =
+                UrgenteDto(idOrder: order.camId.toString(), urgent: '1');
 
-
-        urgenteRepository.urgente
-             (newUrgent).then((value) {
-          widget.socket!.emit(WebSocketEvents.setUrgent,
-              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
-        });
-
+            urgenteRepository.urgente(newUrgent).then((value) {
+              widget.socket!.emit(WebSocketEvents.setUrgent,
+                  UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+            });
           },
           child: Container(
             width: 600,
@@ -601,14 +608,13 @@ class _ComandaCardState extends State<OrderCard> {
     } else {
       return TextButton(
           onPressed: () {
-            UrgenteDto newUrgent = UrgenteDto(idOrder: order.camId.toString(), urgent: '0');
+            UrgenteDto newUrgent =
+                UrgenteDto(idOrder: order.camId.toString(), urgent: '0');
 
-
-        urgenteRepository.urgente
-             (newUrgent).then((value) {
-          widget.socket!.emit(WebSocketEvents.setUrgent,
-              UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
-        });
+            urgenteRepository.urgente(newUrgent).then((value) {
+              widget.socket!.emit(WebSocketEvents.setUrgent,
+                  UrgenteDto(idOrder: value.idOrder, urgent: value.urgent));
+            });
           },
           child: Container(
             width: 600,
