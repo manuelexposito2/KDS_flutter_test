@@ -1,4 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
@@ -111,7 +113,8 @@ class _OrdersListState extends State<OrdersList> {
             child: FutureBuilder(
                 future: orderRepository.getOrders(filter!),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      !snapshot.hasData) {
                     return LoadingScreen(message: "Cargando...");
                   }
                   if (snapshot.connectionState == ConnectionState.done &&
@@ -124,7 +127,50 @@ class _OrdersListState extends State<OrdersList> {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
-                    return _createOrdersView(context, ordersList!);
+                    return DynamicHeightGridView(builder: (context, index) => OrderCard(
+                          order: ordersList!.elementAt(index),
+                          socket: widget.socket,
+                          ), itemCount: ordersList!.length, crossAxisCount: 6,);
+                    /*
+                    GridView.builder(
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+    maxCrossAxisExtent: 320,
+    mainAxisExtent: 600,
+  ),
+                      itemBuilder: (context, index) => OrderCard(
+                          order: ordersList!.elementAt(index),
+                          socket: widget.socket,
+                          ),
+                           
+                            );
+                    */
+
+                    /*
+                    Row(
+                      children: [
+                        Expanded(
+
+                          child:
+                            ListView.builder(
+                              itemCount: ordersList!.length,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              dragStartBehavior: DragStartBehavior.down,
+                              itemBuilder: (context, index) {
+                          return Wrap(
+                            alignment: WrapAlignment.spaceAround,
+                            direction: Axis.horizontal,
+                            //verticalDirection: VerticalDirection.down,
+                            //crossAxisAlignment: WrapCrossAlignment.end,
+                            children: [OrderCard(
+                          order: ordersList!.elementAt(index),
+                          socket: widget.socket,
+                          )],);
+                        }))
+                      ],
+                    );
+                    */
+                    //_createOrdersView(context, ordersList!);
                   }
                 })),
         showResumen
@@ -152,12 +198,11 @@ class _OrdersListState extends State<OrdersList> {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             for (var o in orders)
-            OrderCard(
-                  key: UniqueKey(),
-                  order: o,
-                  socket: widget.socket,
-                ),
-              
+              OrderCard(
+                key: UniqueKey(),
+                order: o,
+                socket: widget.socket,
+              ),
           ],
         ),
       ),
