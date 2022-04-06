@@ -14,7 +14,7 @@ class OrderRepositoryImpl implements OrderRepository {
   Map<String, String> headers = {
     "callback": "getLastOrders",
     "Access-Control-Allow-Origin": "*",
-    "Content-Type": "text/html"
+    "Content-Type": "text/plain"
   };
 
   @override
