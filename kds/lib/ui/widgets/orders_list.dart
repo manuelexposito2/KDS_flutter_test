@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
@@ -19,7 +18,6 @@ import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-import 'package:show_up_animation/show_up_animation.dart';
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket}) : super(key: key);

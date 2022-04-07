@@ -81,7 +81,7 @@ class _ComandaCardState extends State<OrderCard> {
   setColor(){
     if(widget.order!.camEstado.toString() == "E"){
       return Styles.baseColor;
-    }else if(widget.order!.camEstado.toString() == "P" || widget.order!.details.where((element) => element.demEstado == "P").isNotEmpty){
+    }else if(widget.order!.camEstado.toString() == "P" ){
       return Styles.mediumColor;
     }else if(widget.order!.camEstado.toString() == "T"){
       return Styles.succesColor;
