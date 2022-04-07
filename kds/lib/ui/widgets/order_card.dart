@@ -60,7 +60,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
+    colorOrderStatus = setColor();
     return ShowUpAnimation(
         delayStart: Duration(milliseconds: 200),
         animationDuration: Duration(milliseconds: 350),
@@ -77,19 +77,16 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
-  setColorWithStatus(String status) {
-    switch (status) {
-      case "E":
-        return Styles.baseColor;
 
-      case "P":
-        return Styles.mediumColor;
-
-      case "T":
-        return Styles.succesColor;
-
-      default:
-        return Styles.baseColor;
+  setColor(){
+    if(widget.order!.camEstado.toString() == "E" ){
+      return Styles.baseColor;
+    }else if(widget.order!.camEstado.toString() == "P"){
+      return Styles.mediumColor;
+    }else if(widget.order!.camEstado.toString() == "T"){
+      return Styles.succesColor;
+    }else{
+      return Styles.baseColor;
     }
   }
 
@@ -660,3 +657,4 @@ class _ComandaCardState extends State<OrderCard> {
             )));
   }
 }
+

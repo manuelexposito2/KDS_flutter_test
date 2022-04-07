@@ -81,7 +81,7 @@ class _OrdersListState extends State<OrdersList> {
 
     //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
     //TODO: Animacion para la comanda que se borra
-    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
 
       if (newStatus.status == "P") {
@@ -90,8 +90,9 @@ class _OrdersListState extends State<OrdersList> {
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
-
+      
       if (newStatus.status == "T") {
+
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
