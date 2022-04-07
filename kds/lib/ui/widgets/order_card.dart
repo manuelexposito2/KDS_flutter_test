@@ -39,7 +39,7 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
-  late String? showUrgente;
+  //late String? showUrgente;
 
   @override
   void setState(fn) {
@@ -54,7 +54,7 @@ class _ComandaCardState extends State<OrderCard> {
     super.initState();
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
-    showUrgente = widget.order!.camUrgente!.toString();
+    //showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
@@ -94,7 +94,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _showUrgente(BuildContext context, Order order) {
-    if (showUrgente == "1") {
+    if (widget.order!.camUrgente.toString() == "1") {
       return _urgente(context);
     } else {
       return Container();
@@ -570,20 +570,9 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket_button(BuildContext context, Order order) {
-    if (showUrgente == "0") {
+    if (widget.order!.camUrgente.toString() == "0") {
       return TextButton(
           onPressed: () {
-            /*
-            OrderDto newStatus = OrderDto(
-            idOrder: order.camId.toString(),
-            status: _toogleStateButton(order.camEstado!));
-
-        statusOrderRepository.statusOrder(newStatus).then((value) {
-          widget.socket!.emit(WebSocketEvents.modifyOrder,
-              OrderDto(idOrder: value.idOrder, status: value.status));
-        });
-            */
-
             UrgenteDto newUrgent =
                 UrgenteDto(idOrder: order.camId.toString(), urgent: '1');
 
