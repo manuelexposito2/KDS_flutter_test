@@ -73,7 +73,7 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      //_audioCache.play('bell_ring.mp3');
+      _audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });

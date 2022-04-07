@@ -62,8 +62,8 @@ class _ComandaCardState extends State<OrderCard> {
   Widget build(BuildContext context) {
     colorOrderStatus = setColorWithStatus(widget.order!.camEstado!);
     return ShowUpAnimation(
-        delayStart: Duration(milliseconds: 500),
-        animationDuration: Duration(milliseconds: 500),
+        delayStart: Duration(milliseconds: 200),
+        animationDuration: Duration(milliseconds: 350),
         curve: Curves.bounceIn,
         direction: Direction.vertical,
         offset: 0.5,
