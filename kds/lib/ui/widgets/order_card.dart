@@ -321,8 +321,10 @@ class _ComandaCardState extends State<OrderCard> {
       return 'P';
     } else if (status.contains('P')) {
       return 'T';
-    } else {
+    } else if (status.contains('T')){
       return 'E';
+    }else{
+      return 'P';
     }
   }
 

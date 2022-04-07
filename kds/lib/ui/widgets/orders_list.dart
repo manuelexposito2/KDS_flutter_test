@@ -97,6 +97,13 @@ class _OrdersListState extends State<OrdersList> {
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
+
+      if (filter == "T" && newStatus.status == "E") {
+        setState(() {
+          ordersList!.removeWhere(
+              (element) => element.camId.toString() == newStatus.idOrder);
+        });
+      }
     }));
 
     widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
