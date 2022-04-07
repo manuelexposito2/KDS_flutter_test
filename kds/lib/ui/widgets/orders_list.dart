@@ -1,4 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/detail_dto.dart';
@@ -34,6 +36,10 @@ class _OrdersListState extends State<OrdersList> {
   late final AudioCache _audioCache;
   String? filter = '';
 
+  var navbarHeightmin = 280.0;
+  var navbarHeightMedium = 150.0;
+  var navbarHeight = 70.0;
+
   bool showResumen = false;
 
   String? mensaje;
@@ -67,7 +73,7 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      //_audioCache.play('bell_ring.mp3');
+      _audioCache.play('bell_ring.mp3');
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
@@ -111,7 +117,8 @@ class _OrdersListState extends State<OrdersList> {
             child: FutureBuilder(
                 future: orderRepository.getOrders(filter!),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      !snapshot.hasData) {
                     return LoadingScreen(message: "Cargando...");
                   }
                   if (snapshot.connectionState == ConnectionState.done &&
@@ -124,7 +131,7 @@ class _OrdersListState extends State<OrdersList> {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
-                    return _createOrdersView(context, ordersList!);
+                    return responsiveOrder();
                   }
                 })),
         showResumen
@@ -141,6 +148,68 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  Widget responsiveOrder() {
+    //double responsiveWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      if (constraints.minWidth > 1700) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 6,
+        );
+      } else if (constraints.minWidth > 1500) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 5,
+        );
+      } else if (constraints.minWidth > 1000) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 4,
+        );
+      } else if (constraints.minWidth > 900) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 3,
+        );
+      } else if (constraints.minWidth > 500) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 2,
+        );
+      } else {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 1,
+        );
+      }
+    });
+  }
+
   //TODO: Hacer scrolleable la lista de comandas
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
@@ -152,17 +221,10 @@ class _OrdersListState extends State<OrdersList> {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             for (var o in orders)
-              ShowUpAnimation(
-                delayStart: Duration(milliseconds: 500),
-                animationDuration: Duration(milliseconds: 500),
-                curve: Curves.bounceIn,
-                direction: Direction.vertical,
-                offset: 0.5,
-                child: OrderCard(
-                  key: UniqueKey(),
-                  order: o,
-                  socket: widget.socket,
-                ),
+              OrderCard(
+                key: UniqueKey(),
+                order: o,
+                socket: widget.socket,
               ),
           ],
         ),
@@ -172,17 +234,55 @@ class _OrdersListState extends State<OrdersList> {
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
-    return Container(
-        height: Styles.navbarHeight,
-        color: Styles.bottomNavColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const TimerWidget(),
-            _buttonsFilter(context),
-            _buttonsOptions()
-          ],
-        ));
+    double responsiveWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      if (constraints.minWidth > 1250) {
+        return Container(
+            height: Styles.navbarHeight,
+            color: Styles.bottomNavColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const TimerWidget(),
+                _buttonsFilter(context),
+                _buttonsOptions()
+              ],
+            ));
+      } else if (constraints.minWidth > 900) {
+        return Container(
+          height: navbarHeightMedium,
+          color: Styles.bottomNavColor,
+          child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+              child: Column(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const TimerWidget(),
+                      _buttonsFilter(context),
+                      _buttonsOptions()
+                    ],
+                  )
+                ],
+              )),
+        );
+      } else {
+        return Container(
+            height: navbarHeightmin,
+            color: Styles.bottomNavColor,
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                child: Column(
+                  children: [
+                    const TimerWidget(),
+                    _buttonsFilterMin(context),
+                    _buttonsOptions()
+                  ],
+                )));
+      }
+    });
   }
 
 //BUTTONS
@@ -222,6 +322,46 @@ class _OrdersListState extends State<OrdersList> {
             ),
             style: Styles.buttonTodas)
       ],
+    );
+  }
+
+  Widget _buttonsFilterMin(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10, top: 5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = enProceso;
+              });
+            },
+            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
+            style: Styles.buttonEnProcesomin,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  filter = terminadas;
+                });
+              },
+              child:
+                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
+              style: Styles.buttonTerminadasmin),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  filter = todas;
+                });
+              },
+              child: Text(
+                "Todas",
+                style: Styles.btnTextSize(Colors.black),
+              ),
+              style: Styles.buttonTodasmin)
+        ],
+      ),
     );
   }
 
