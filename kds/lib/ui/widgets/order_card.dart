@@ -194,16 +194,26 @@ class _ComandaCardState extends State<OrderCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(width: 195, height: 50, child: _buttonstate(order)),
-              SizedBox(
-                width: 95,
-                height: 50,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      primary: Color.fromARGB(255, 87, 87, 87)),
-                  child: Icon(Icons.print),
-                  onPressed: () {},
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 1),
+                  child: SizedBox(
+                      width: 195, height: 50, child: _buttonstate(order)),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: SizedBox(
+                  width: 95,
+                  height: 50,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        primary: Color.fromARGB(255, 87, 87, 87)),
+                    child: Icon(Icons.print),
+                    onPressed: () {},
+                  ),
                 ),
               )
             ],
