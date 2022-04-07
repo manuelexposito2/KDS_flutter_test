@@ -131,79 +131,8 @@ class _OrdersListState extends State<OrdersList> {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
-                    double responsiveWidth = MediaQuery.of(context).size.width;
-                    return LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      if (constraints.minWidth > 1700) {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 6,
-                        );
-                      } else if (constraints.minWidth > 1500) {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 5,
-                        );
-                      } else if (constraints.minWidth > 1000) {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 4,
-                        );
-                      } else if (constraints.minWidth > 900) {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 3,
-                        );
-                      } else if (constraints.minWidth > 500) {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 2,
-                        );
-                      } 
-                      
-                      else {
-                        return DynamicHeightGridView(
-                          builder: (context, index) => OrderCard(
-                            order: ordersList!.elementAt(index),
-                            socket: widget.socket,
-                          ),
-                          itemCount: ordersList!.length,
-                          crossAxisCount: 1,
-                        );
-                      }
-                    });
+                    return responsiveOrder();
                   }
-
-                  /*
-                  DynamicHeightGridView(
-                      builder: (context, index) => OrderCard(
-                        order: ordersList!.elementAt(index),
-                        socket: widget.socket,
-                      ),
-                      itemCount: ordersList!.length,
-                      crossAxisCount: 5,
-                    );
-                  */
                 })),
         showResumen
             ? Expanded(
@@ -217,6 +146,68 @@ class _OrdersListState extends State<OrdersList> {
       ]),
       bottomNavigationBar: bottomNavBar(context),
     );
+  }
+
+  Widget responsiveOrder() {
+    //double responsiveWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      if (constraints.minWidth > 1700) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 6,
+        );
+      } else if (constraints.minWidth > 1500) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 5,
+        );
+      } else if (constraints.minWidth > 1000) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 4,
+        );
+      } else if (constraints.minWidth > 900) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 3,
+        );
+      } else if (constraints.minWidth > 500) {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 2,
+        );
+      } else {
+        return DynamicHeightGridView(
+          builder: (context, index) => OrderCard(
+            order: ordersList!.elementAt(index),
+            socket: widget.socket,
+          ),
+          itemCount: ordersList!.length,
+          crossAxisCount: 1,
+        );
+      }
+    });
   }
 
   //TODO: Hacer scrolleable la lista de comandas
