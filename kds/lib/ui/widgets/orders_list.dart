@@ -36,6 +36,10 @@ class _OrdersListState extends State<OrdersList> {
   late final AudioCache _audioCache;
   String? filter = '';
 
+  var navbarHeightmin = 280.0;
+  var navbarHeightMedium = 150.0;
+  var navbarHeight = 70.0;
+
   bool showResumen = false;
 
   String? mensaje;
@@ -127,10 +131,14 @@ class _OrdersListState extends State<OrdersList> {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
-                    return DynamicHeightGridView(builder: (context, index) => OrderCard(
-                          order: ordersList!.elementAt(index),
-                          socket: widget.socket,
-                          ), itemCount: ordersList!.length, crossAxisCount: 6,);
+                    return DynamicHeightGridView(
+                      builder: (context, index) => OrderCard(
+                        order: ordersList!.elementAt(index),
+                        socket: widget.socket,
+                      ),
+                      itemCount: ordersList!.length,
+                      crossAxisCount: 6,
+                    );
                     /*
                     GridView.builder(
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -211,7 +219,58 @@ class _OrdersListState extends State<OrdersList> {
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
-    return Container(
+    double responsiveWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      if (constraints.minWidth > 1250) {
+        return Container(
+            height: Styles.navbarHeight,
+            color: Styles.bottomNavColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const TimerWidget(),
+                _buttonsFilter(context),
+                _buttonsOptions()
+              ],
+            ));
+      } else if (constraints.minWidth > 900) {
+        return Container(
+          height: navbarHeightMedium,
+          color: Styles.bottomNavColor,
+          child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+              child: Column(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const TimerWidget(),
+                      _buttonsFilter(context),
+                      _buttonsOptions()
+                    ],
+                  )
+                ],
+              )),
+        );
+      } else {
+        return Container(height: navbarHeightmin, color: Styles.bottomNavColor, child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+              child: Column(
+                    children: [
+                      const TimerWidget(),
+                      _buttonsFilterMin(context),
+                      _buttonsOptions()
+                    ],
+                  )
+              ));
+      }
+    });
+  }
+  //_buttonsFilterMin
+
+  /*
+   Container(
         height: Styles.navbarHeight,
         color: Styles.bottomNavColor,
         child: Row(
@@ -222,7 +281,7 @@ class _OrdersListState extends State<OrdersList> {
             _buttonsOptions()
           ],
         ));
-  }
+  */
 
 //BUTTONS
 
@@ -261,6 +320,43 @@ class _OrdersListState extends State<OrdersList> {
             ),
             style: Styles.buttonTodas)
       ],
+    );
+  }
+
+  Widget _buttonsFilterMin(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10, top: 5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [ElevatedButton(
+          onPressed: () {
+            setState(() {
+              filter = enProceso;
+            });
+          },
+          child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
+          style: Styles.buttonEnProcesomin,
+        ),
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = terminadas;
+              });
+            },
+            child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
+            style: Styles.buttonTerminadasmin),
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = todas;
+              });
+            },
+            child: Text(
+              "Todas",
+              style: Styles.btnTextSize(Colors.black),
+            ),
+            style: Styles.buttonTodasmin)],
+      ),
     );
   }
 
