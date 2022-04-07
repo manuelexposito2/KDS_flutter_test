@@ -79,9 +79,9 @@ class _ComandaCardState extends State<OrderCard> {
 
 
   setColor(){
-    if(widget.order!.camEstado.toString() == "E" ){
+    if(widget.order!.camEstado.toString() == "E"){
       return Styles.baseColor;
-    }else if(widget.order!.camEstado.toString() == "P"){
+    }else if(widget.order!.camEstado.toString() == "P" || widget.order!.details.contains("P")){
       return Styles.mediumColor;
     }else if(widget.order!.camEstado.toString() == "T"){
       return Styles.succesColor;
@@ -340,14 +340,11 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _urgente(BuildContext context) {
-    //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
-    //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
     return Container(
       width: MediaQuery.of(context).size.width,
       color: Styles.alertColor,
       alignment: Alignment.center,
       height: 65,
-      //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
       child: Text(
         '¡¡¡URGENTE!!!',
         style: Styles.urgent,
@@ -356,11 +353,11 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   String _toogleStateButton(String status) {
-    if (status.contains('E')) {
+    if (widget.order!.camEstado.toString() == "E") {
       return 'P';
-    } else if (status.contains('P')) {
+    } else if (widget.order!.camEstado.toString() == "P") {
       return 'T';
-    } else if (status.contains('T')){
+    } else if (widget.order!.camEstado.toString() == "T"){
       return 'E';
     }else{
       return 'P';
