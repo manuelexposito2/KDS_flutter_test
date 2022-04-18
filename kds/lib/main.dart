@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:kds/ui/screens/home_screen.dart';
+import 'package:kds/ui/screens/landing_screen.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -43,9 +44,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeScreen(
+        '/' : (context) => LandingScreen(
               socket: socket,
-            )
+            ),
       },
     );
   }

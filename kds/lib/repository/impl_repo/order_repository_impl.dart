@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:kds/models/status/config.dart';
+
 import './../../utils/string_extension.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -18,9 +20,10 @@ class OrderRepositoryImpl implements OrderRepository {
   };
 
   @override
-  Future<List<Order>> getOrders(String filter) async {
-    String url =
-        'http://$apiBaseUrl:$puertoPDA/KDS/getOrders.htm?state=$filter';
+  Future<List<Order>> getOrders(String filter, Config config) async {
+    //String url ='http://$apiBaseUrl:$puertoPDA/KDS/getOrders.htm?state=$filter';
+
+    String url = '${config.urlPDA}/KDS/getOrders.htm?state=$filter';
 
     final request = await http.get(Uri.parse(url), headers: headers);
     debugPrint(request.statusCode.toString());
@@ -33,9 +36,9 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Order> getOrderById(String id) async {
-    String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
-
+  Future<Order> getOrderById(String id, Config config) async {
+    //String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
+    String url = '${config.urlPDA}/KDS/getIdOrder.htm?id=$id';
     final request = await http.get(Uri.parse(url), headers: headers);
     
 

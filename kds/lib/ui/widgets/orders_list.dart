@@ -3,6 +3,7 @@ import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -22,9 +23,9 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'package:show_up_animation/show_up_animation.dart';
 
 class OrdersList extends StatefulWidget {
-  OrdersList({Key? key, this.socket}) : super(key: key);
+  OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
   Socket? socket;
-
+  Config config;
   @override
   State<OrdersList> createState() => _OrdersListState();
 }
@@ -123,7 +124,7 @@ class _OrdersListState extends State<OrdersList> {
         Expanded(
             flex: 3,
             child: FutureBuilder(
-                future: orderRepository.getOrders(filter!),
+                future: orderRepository.getOrders(filter!, widget.config),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting &&
                       !snapshot.hasData) {
@@ -174,6 +175,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 5,
@@ -668,6 +670,7 @@ class _OrdersListState extends State<OrdersList> {
                 MaterialPageRoute<void>(
                     builder: (BuildContext context) => HomeScreen(
                           socket: widget.socket,
+                          config: widget.config,
                         )),
               );
             },

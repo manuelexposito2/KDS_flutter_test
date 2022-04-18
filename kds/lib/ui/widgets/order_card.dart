@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -17,9 +18,10 @@ import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
-  OrderCard({Key? key, required this.order, this.socket}) : super(key: key);
+  OrderCard({Key? key, required this.order, this.socket, this.config}) : super(key: key);
 
   Socket? socket;
+  Config? config;
   final Order? order;
 
   @override
@@ -170,7 +172,7 @@ class _ComandaCardState extends State<OrderCard> {
                           context: context,
                           builder: (BuildContext context) {
                             orderExtended = orderRepository
-                                .getOrderById(widget.order!.camId.toString());
+                                .getOrderById(widget.order!.camId.toString(), widget.config!);
 
                             return AlertDialog(
                               content: _futureInfo(context),
