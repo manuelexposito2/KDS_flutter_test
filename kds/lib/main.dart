@@ -8,26 +8,12 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  //runApp(const MyApp());
-  Socket socket = io(
-      'http://$apiBaseUrl:$puertoKDS',
-      OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build());
-  socket.connect();
-  socket.onConnect((_) {
-   
-    print("Connected");
-  });
-   runApp(MyApp(
-      socket: socket,
-    ));
-  socket.onDisconnect((_) => print('disconnect'));
+  runApp(MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key, this.socket}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   Socket? socket;
   @override
@@ -44,9 +30,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/' : (context) => LandingScreen(
-              socket: socket,
-            ),
+        '/': (context) => LandingScreen(),
       },
     );
   }
