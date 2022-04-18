@@ -124,7 +124,7 @@ packages:
       name: flutter_hooks
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.18.2+1"
+    version: "0.18.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -255,7 +255,7 @@ packages:
     source: hosted
     version: "1.0.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
@@ -358,7 +358,7 @@ packages:
       name: scroll_snap_list
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.4"
+    version: "0.8.6"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -510,7 +510,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.2"
+    version: "2.5.1"
   xdg_directories:
     dependency: transitive
     description:
