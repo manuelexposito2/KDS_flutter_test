@@ -16,7 +16,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   void initState() {
@@ -30,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context) => OrdersList(
-                  socket: widget.socket,
+                  socket: widget.socket!,
                   config: widget.config!,
                 )),
       );

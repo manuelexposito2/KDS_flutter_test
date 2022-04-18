@@ -78,7 +78,6 @@ flutter:
    - assets/images/clock.svg
    - assets/sounds/bell_ring.mp3
    - assets/files/numierKDS.ini
-   - assets/files/prueba.txt
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

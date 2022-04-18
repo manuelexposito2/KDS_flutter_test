@@ -14,13 +14,25 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
+    //Primero buscamos la UrlKDS del fichero numierKDS.ini, y cuando la tengamos, hacemos la conexión
+    //con websocket y buscamos la configuración.
+
+    //TODO: Quedaría gestionar los errores y una mejor pantalla de carga.
+
     ConfigRepository.getUrlKDS().then(
-      (value) {
+      (url) {
         Socket socket = io(
-            value,
+            url,
             OptionBuilder()
                 .setTransports(['websocket'])
                 .disableAutoConnect()
@@ -29,13 +41,13 @@ class _LandingScreenState extends State<LandingScreen> {
         socket.onConnect((_) {
           print("Connected");
 
-          ConfigRepository.readConfig().then((value) {
+          ConfigRepository.readConfig().then((config) {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute<void>(
                   builder: (BuildContext context) => HomeScreen(
                         socket: socket,
-                        config: value,
+                        config: config,
                       )),
             );
           }).onError((error, stackTrace) {

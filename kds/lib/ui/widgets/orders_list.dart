@@ -166,6 +166,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 6,
@@ -185,6 +186,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 4,
@@ -194,6 +196,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 3,
@@ -203,6 +206,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 2,
@@ -212,6 +216,7 @@ class _OrdersListState extends State<OrdersList> {
           builder: (context, index) => OrderCard(
             order: ordersList!.elementAt(index),
             socket: widget.socket,
+            config: widget.config,
           ),
           itemCount: ordersList!.length,
           crossAxisCount: 1,
@@ -235,6 +240,7 @@ class _OrdersListState extends State<OrdersList> {
                 key: UniqueKey(),
                 order: o,
                 socket: widget.socket,
+                config: widget.config,
               ),
           ],
         ),
