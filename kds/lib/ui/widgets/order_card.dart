@@ -18,10 +18,10 @@ import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
-  OrderCard({Key? key, required this.order, this.socket, this.config}) : super(key: key);
+  OrderCard({Key? key, required this.order, this.socket, required this.config}) : super(key: key);
 
   Socket? socket;
-  Config? config;
+  Config config;
   final Order? order;
 
   @override
@@ -41,7 +41,6 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
-  //late String? showUrgente;
 
   @override
   void setState(fn) {
@@ -56,7 +55,6 @@ class _ComandaCardState extends State<OrderCard> {
     super.initState();
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
-    //showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
@@ -87,6 +85,8 @@ class _ComandaCardState extends State<OrderCard> {
       return Styles.mediumColor;
     }else if(widget.order!.camEstado.toString() == "T"){
       return Styles.succesColor;
+    } else if(widget.order!.camEstado.toString() == "R"){
+      return Styles.purpleBtn;
     }else{
       return Styles.baseColor;
     }
@@ -124,7 +124,7 @@ class _ComandaCardState extends State<OrderCard> {
               ),
               Text(
                 //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                '${order.details.where((element) => element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
+                '${order.details.where((element) => element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
                 style: Styles.regularText,
               )
             ],
@@ -172,7 +172,7 @@ class _ComandaCardState extends State<OrderCard> {
                           context: context,
                           builder: (BuildContext context) {
                             orderExtended = orderRepository
-                                .getOrderById(widget.order!.camId.toString(), widget.config!);
+                                .getOrderById(widget.order!.camId.toString(), widget.config);
 
                             return AlertDialog(
                               content: _futureInfo(context),
@@ -294,6 +294,7 @@ class _ComandaCardState extends State<OrderCard> {
             details: d,
             order: order,
             socket: widget.socket,
+            config: widget.config,
           )
       ],
     );
@@ -318,14 +319,16 @@ class _ComandaCardState extends State<OrderCard> {
   String _toogleStateButton(String status) {
     if (status.contains('E')) {
       return 'P';
-    } else if (status.contains('P')) {
+    } else if (widget.config.reparto == "S" && status.contains('P')) {
+      return 'R';
+    } else if (widget.config.reparto == "N" && status.contains('P') ||
+        status.contains('R')) {
       return 'T';
-    } else if (status.contains('T')){
+    } else {
       return 'E';
-    }else{
-      return 'P';
     }
   }
+
 
   String total(Order order) {
     var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000);

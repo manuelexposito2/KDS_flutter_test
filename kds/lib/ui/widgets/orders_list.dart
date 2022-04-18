@@ -82,7 +82,7 @@ class _OrdersListState extends State<OrdersList> {
 
     //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
     //TODO: Animacion para la comanda que se borra
-     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
+    widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
 
       if (newStatus.status == "P") {
@@ -91,14 +91,14 @@ class _OrdersListState extends State<OrdersList> {
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
-      
-      if (newStatus.status == "T") {
 
+      if (newStatus.status == "T" || newStatus.status == "R" ) {
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
+
 
       if (filter == "T" && newStatus.status == "E") {
         setState(() {
@@ -318,6 +318,17 @@ class _OrdersListState extends State<OrdersList> {
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
         ),
+        
+        widget.config.reparto == "S" ? 
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              filter = recoger;
+            });
+          },
+          child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
+          style: Styles.buttonRecoger,
+        ) : Container(),
         ElevatedButton(
             onPressed: () {
               setState(() {

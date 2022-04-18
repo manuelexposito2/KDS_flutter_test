@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
@@ -9,10 +10,15 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class DetailCard extends StatefulWidget {
   DetailCard(
-      {Key? key, required this.details, required this.order, this.socket})
+      {Key? key,
+      required this.details,
+      required this.order,
+      this.socket,
+      required this.config})
       : super(key: key);
   final Details details;
   final Order order;
+  Config config;
   Socket? socket;
   @override
   State<DetailCard> createState() => _DetailCardState();
@@ -33,8 +39,6 @@ class _DetailCardState extends State<DetailCard> {
 
   @override
   Widget build(BuildContext context) {
-  
-
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     return _itemPedido(context, widget.order, widget.details);
   }
@@ -53,7 +57,6 @@ class _DetailCardState extends State<DetailCard> {
               idDetail: details.demId.toString(),
               status: _toogleStateButton(details.demEstado!));
 
-          
           statusDetailRepository.statusDetail(newStatus).then((value) {
             widget.socket!.emit(
                 WebSocketEvents.modifyDetail,
@@ -76,7 +79,10 @@ class _DetailCardState extends State<DetailCard> {
   String _toogleStateButton(String status) {
     if (status.contains('E')) {
       return 'P';
-    } else if (status.contains('P')) {
+    } else if (widget.config.reparto == "S" && status.contains('P')) {
+      return 'R';
+    } else if (widget.config.reparto == "N" && status.contains('P') ||
+        status.contains('R')) {
       return 'T';
     } else {
       return 'E';
@@ -93,6 +99,9 @@ class _DetailCardState extends State<DetailCard> {
 
       case "T":
         return Color(0xFFB0E1A0);
+
+      case "R":
+        return Color.fromARGB(255, 211, 161, 219);
 
       default:
         return Colors.white;
