@@ -9,7 +9,7 @@ class Styles {
   static const Color alertColor = Color(0xFFB85C5C);
   static final Color yellowBtn = Color(0xFFF0AD4E);
   static final Color greenBtn = Color(0xFF5CB85C);
-  static final Color whiteBtn = Colors.white;
+  static final Color whiteBtn = Color.fromARGB(255, 255, 255, 255);
   static final Color purpleBtn = Color.fromARGB(255, 149, 27, 170);
   static final Color blueBtnColor = Color(0xFF337AB7);
 
