@@ -1,14 +1,20 @@
 
 
 import 'package:http/http.dart' as http;
+import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
+import 'package:kds/repository/impl_repo/config_repository.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/utils/constants.dart';
 
 class StatusDetailRepositoryImpl extends StatusDetailRepository {
   @override
   Future<DetailDto> statusDetail(DetailDto detailDto) async {
-    String url = 'http://$apiBaseUrl:$puertoKDS/modifyDetailKDS';
+
+    String urlKDS = await ConfigRepository.getUrlKDS();
+
+    String url = '$urlKDS/modifyDetailKDS';
+    
     Map<String, String> headers = {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/x-www-form-urlencoded"
