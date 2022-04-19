@@ -16,6 +16,7 @@ import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/screens/waiting_screen.dart';
+import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
@@ -44,8 +45,8 @@ class _OrdersListState extends State<OrdersList> {
   bool showResumen = false;
 
   String? mensaje;
-
-  List<Order>? ordersList;
+  List<String> resumeList = [];
+  List<Order>? ordersList = [];
   Order? selectedOrder;
 
   //final _socketController = StreamController<List<Order?>>();
@@ -62,6 +63,7 @@ class _OrdersListState extends State<OrdersList> {
     // TODO: implement initState
 
     super.initState();
+    //resumeList = [];
     orderRepository = OrderRepositoryImpl();
     _audioCache = AudioCache(
       prefix: 'sounds/',
@@ -84,6 +86,10 @@ class _OrdersListState extends State<OrdersList> {
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
+
+      setState(() {
+        resumeList = _refillResumeList(ordersList!);
+      });
 
       if (newStatus.status!.contains("P")) {
         setState(() {
@@ -112,12 +118,20 @@ class _OrdersListState extends State<OrdersList> {
       //print(data);
 
       DetailDto detailDto = DetailDto.fromJson(data);
+      setState(() {
 
+          
+
+      });
       setState(() {
         ordersList!
             .where((element) => element.camId.toString() == detailDto.idOrder);
       });
     });
+
+    resumeList = _refillResumeList(ordersList!);
+
+    reordering(resumeList).forEach((element) => print(element));
 
     return Scaffold(
       body: Row(children: [
@@ -140,21 +154,35 @@ class _OrdersListState extends State<OrdersList> {
                     return ErrorScreen();
                   } else {
                     ordersList = snapshot.data as List<Order>;
+
                     return responsiveOrder();
                   }
                 })),
         showResumen
             ? Expanded(
                 flex: 1,
-                child: Text(
-                    "Resume") /*  ResumeOrdersWidget(
-                        lineasComandas: reordering(resumeList),
-                      ) */
-                )
+                child: ResumeOrdersWidget(
+                  lineasComandas: reordering(resumeList),
+                ))
             : Container()
       ]),
       bottomNavigationBar: bottomNavBar(context),
     );
+  }
+
+  List<String> _refillResumeList(List<Order> ordersList) {
+    resumeList.clear();
+
+    for (var comanda in ordersList) {
+      if (comanda.details.isNotEmpty) {
+        for (var d in comanda.details) {
+          if (d.demEstado!.contains("E")) {
+            resumeList.add(d.demTitulo!);
+          }
+        }
+      }
+    }
+    return resumeList;
   }
 
   Widget responsiveOrder() {

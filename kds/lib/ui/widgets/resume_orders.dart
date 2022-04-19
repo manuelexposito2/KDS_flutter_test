@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:kds/ui/styles/styles.dart';
 
 class ResumeOrdersWidget extends StatefulWidget {
-  ResumeOrdersWidget({Key? key, required this.lineasComandas})
+  ResumeOrdersWidget({Key? key, required this.lineasComandas, this.prueba})
       : super(key: key);
 
-  
+  int? prueba;
   final List<String>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();
@@ -17,6 +17,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   @override
   void initState() {
     // TODO: implement initState
+    widget.prueba ?? 0;
     super.initState();
   }
 
@@ -41,7 +42,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(color: Styles.black),
               child: Text(
-                "Resumen",
+                widget.prueba.toString(),
                 textAlign: TextAlign.center,
                 style: Styles.resumeTitle,
               ),
