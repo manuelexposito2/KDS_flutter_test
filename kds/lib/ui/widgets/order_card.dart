@@ -760,13 +760,6 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget ticket(BuildContext context, Order order) {
-    /*
-    final df = new DateFormat('dd-MM-yyyy hh:mm a');
-    String result = df.format(
-        DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000));
-    var date =
-        DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000);
-    */
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),

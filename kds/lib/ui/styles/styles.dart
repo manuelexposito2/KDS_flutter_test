@@ -55,6 +55,16 @@ class Styles {
             topLeft: Radius.circular(0), bottomLeft: Radius.circular(0))),
   );
 
+  static final buttonRecogerMin = ElevatedButton.styleFrom(
+    minimumSize: Size(250, 60),
+    maximumSize: Size(250, 60),
+    primary: purpleBtn,
+   padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5))),
+  );
+
 
 
   static final buttonTerminadas = ElevatedButton.styleFrom(
