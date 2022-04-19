@@ -220,7 +220,27 @@ class _ComandaCardState extends State<OrderCard> {
                         backgroundColor: Colors.white,
                         primary: Color.fromARGB(255, 87, 87, 87)),
                     child: Icon(Icons.print),
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            orderExtended = orderRepository.getOrderById(
+                                widget.order!.camId.toString(), widget.config);
+
+                            return AlertDialog(
+                              content: errorDialogOrder(),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Entendido'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                          barrierDismissible: true);
+                    },
                   ),
                 ),
               )
@@ -228,6 +248,17 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget errorDialogOrder() {
+    return SingleChildScrollView(
+      child: ListBody(
+        children: const <Widget>[
+          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text('No se ha podido guardar la comanda'),
+        ],
+      ),
     );
   }
 
@@ -385,7 +416,7 @@ class _ComandaCardState extends State<OrderCard> {
                         .emit(WebSocketEvents.modifyOrder, newStatus));
               } else {
                 //TODO: Gestionar alerta
-                
+
               }
             }).whenComplete(() => Navigator.pop(context));
           },
