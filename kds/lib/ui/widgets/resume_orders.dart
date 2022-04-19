@@ -58,7 +58,9 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               itemBuilder: (context, index) {
                 return OutlinedButton(
                   style: Styles.tileStyle,
-                  onPressed: () {},
+                  onPressed: () {
+                    print("Se ha seleccionado: ${widget.lineasComandas!.elementAt(index).split(" ")[2]}");
+                  },
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(vertical: 15.0),
                     dense: true,
