@@ -287,7 +287,6 @@ class _ComandaCardState extends State<OrderCard> {
       onPressed: () => showDialog(
           context: context,
           builder: (BuildContext context) {
-            
             listaOperarios = workersRepository.getWorkers(widget.config);
             return AlertDialog(
               content: _futureWorkers(context),
@@ -328,12 +327,12 @@ class _ComandaCardState extends State<OrderCard> {
             width: 800,
             height: 100,
             child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: operarios.length,
-              itemBuilder: (context, index) {
-                //TODO : Hacer un card seleccionable con cada worker y utilizar el método setDealer
-              return Text(operarios.elementAt(index).oprNombre);
-            }),
+                scrollDirection: Axis.horizontal,
+                itemCount: operarios.length,
+                itemBuilder: (context, index) {
+                  //TODO : Hacer un card seleccionable con cada worker y utilizar el método setDealer
+                  return _setDealerCard(operarios.elementAt(index));
+                }),
           ),
           Divider(thickness: 3.0),
           Align(
@@ -358,6 +357,16 @@ class _ComandaCardState extends State<OrderCard> {
         ],
       ),
     );
+  }
+
+  Widget _setDealerCard(GetWorkers worker) {
+    return Card(
+        child: InkWell(
+      onTap: () {
+        print("Seleccionando a ${worker.oprNombre}");
+      },
+      child: Center(child: Text(worker.oprNombre)),
+    ));
   }
 
   Widget _futureInfo(BuildContext context) {
