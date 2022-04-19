@@ -118,54 +118,48 @@ class _OrdersListState extends State<OrdersList> {
       //print(data);
 
       DetailDto detailDto = DetailDto.fromJson(data);
-      setState(() {
 
-          
-
-      });
       setState(() {
         ordersList!
             .where((element) => element.camId.toString() == detailDto.idOrder);
       });
     });
 
-    resumeList = _refillResumeList(ordersList!);
-
-    reordering(resumeList).forEach((element) => print(element));
-
     return Scaffold(
-      body: Row(children: [
-        Expanded(
-            flex: 3,
-            child: FutureBuilder(
-                future: orderRepository.getOrders(filter!, widget.config),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting &&
-                      !snapshot.hasData) {
-                    return LoadingScreen(message: "Cargando...");
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      !snapshot.hasData) {
-                    return WaitingScreen();
-                  }
+      body: FutureBuilder(
+          future: orderRepository.getOrders(filter!, widget.config),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
+              return LoadingScreen(message: "Cargando...");
+            }
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasData) {
+              return WaitingScreen();
+            }
 
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasError) {
-                    return ErrorScreen();
-                  } else {
-                    ordersList = snapshot.data as List<Order>;
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasError) {
+              return ErrorScreen();
+            } else {
+              ordersList = snapshot.data as List<Order>;
 
-                    return responsiveOrder();
-                  }
-                })),
-        showResumen
-            ? Expanded(
-                flex: 1,
-                child: ResumeOrdersWidget(
-                  lineasComandas: reordering(resumeList),
-                ))
-            : Container()
-      ]),
+              resumeList = _refillResumeList(ordersList!);
+
+              return Row(
+                children: [
+                  Expanded(flex: 3, child: responsiveOrder()),
+                  showResumen
+                      ? Expanded(
+                          flex: 1,
+                          child: ResumeOrdersWidget(
+                            lineasComandas: reordering(resumeList),
+                          ))
+                      : Container()
+                ],
+              );
+            }
+          }),
       bottomNavigationBar: bottomNavBar(context),
     );
   }
