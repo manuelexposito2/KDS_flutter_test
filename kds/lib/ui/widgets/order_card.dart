@@ -220,7 +220,9 @@ class _ComandaCardState extends State<OrderCard> {
                         backgroundColor: Colors.white,
                         primary: Color.fromARGB(255, 87, 87, 87)),
                     child: Icon(Icons.print),
-                    onPressed: () {},
+                    onPressed: () {
+                      
+                    },
                   ),
                 ),
               )
@@ -230,6 +232,8 @@ class _ComandaCardState extends State<OrderCard> {
       ],
     );
   }
+
+  
 
   Widget _buttonStates(Order order) {
     Text label = const Text('Preparar');
@@ -385,7 +389,7 @@ class _ComandaCardState extends State<OrderCard> {
                         .emit(WebSocketEvents.modifyOrder, newStatus));
               } else {
                 //TODO: Gestionar alerta
-                
+
               }
             }).whenComplete(() => Navigator.pop(context));
           },

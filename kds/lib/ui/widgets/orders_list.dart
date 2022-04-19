@@ -83,6 +83,43 @@ class _OrdersListState extends State<OrdersList> {
       });
     });
 
+    widget.socket!.on(WebSocketEvents.errorNotifyOrden, (data) => showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+
+                            return AlertDialog(
+                              content: errorDialogOrder(),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Entendido'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                          barrierDismissible: true));
+
+      widget.socket!.on(WebSocketEvents.errorNotifyDetail, (data) => showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+
+                            return AlertDialog(
+                              content: errorDialogDetail(),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Entendido'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                          barrierDismissible: true));                    
+
+
     //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
@@ -165,6 +202,27 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  Widget errorDialogOrder() {
+    return SingleChildScrollView(
+      child: ListBody(
+        children: const <Widget>[
+          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text('No se ha podido guardar la comanda'),
+        ],
+      ),
+    );
+  }
+
+  Widget errorDialogDetail() {
+    return SingleChildScrollView(
+      child: ListBody(
+        children: const <Widget>[
+          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text('No se ha podido guardar la comanda'),
+        ],
+      ),
+    );
+  }
   List<String> _refillResumeList(List<Order> ordersList) {
     resumeList.clear();
 
@@ -819,4 +877,6 @@ class _OrdersListState extends State<OrdersList> {
     //debugPrint(prueba.toString());
     return result;
   }
+
+  
 }
