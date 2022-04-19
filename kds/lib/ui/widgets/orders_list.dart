@@ -229,7 +229,7 @@ class _OrdersListState extends State<OrdersList> {
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
-          if (d.demEstado!.contains("E")) {
+          if (d.demEstado!.contains("E") || d.demEstado!.contains("P")) {
             resumeList.add(d.demTitulo!);
           }
         }

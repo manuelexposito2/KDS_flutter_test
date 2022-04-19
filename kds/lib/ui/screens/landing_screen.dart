@@ -34,10 +34,11 @@ class _LandingScreenState extends State<LandingScreen> {
         Socket socket = io(
             url,
             OptionBuilder()
+                
                 .setTransports(['websocket'])
                 .disableAutoConnect()
                 .build());
-        socket.connect();
+      
         socket.onConnect((_) {
           print("Connected");
 
@@ -58,6 +59,7 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           });
         });
+        socket.connect();
         socket.onDisconnect((_) => print('disconnect'));
       },
     );
