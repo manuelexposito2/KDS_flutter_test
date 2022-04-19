@@ -47,6 +47,10 @@ class WorkersRepositoryImpl implements WorkersRepository {
       return json.replaceAll('ï»¿', "");
     }
 
+    if (json.contains("'")) {
+      return json.replaceAll("'", '"');
+    }
+
     return json;
   }
 }

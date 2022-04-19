@@ -313,16 +313,17 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //TODO: MEJORAR ESTILOS
   Widget _dialogAsignarParaPedido(
       BuildContext context, List<GetWorkers> operarios) {
     return SizedBox(
-      height: 400,
+      height: 220,
       width: 800,
       child: Column(
         children: [
-          Text("Seleccione operario"),
+          const Align(
+              alignment: Alignment.topLeft, child: Text("Seleccione operario")),
           Divider(thickness: 3.0),
-          //TODO: OPERARIOS!!
           SizedBox(
             width: 800,
             height: 100,
@@ -330,7 +331,6 @@ class _ComandaCardState extends State<OrderCard> {
                 scrollDirection: Axis.horizontal,
                 itemCount: operarios.length,
                 itemBuilder: (context, index) {
-                  //TODO : Hacer un card seleccionable con cada worker y utilizar el método setDealer
                   return _setDealerCard(operarios.elementAt(index));
                 }),
           ),
@@ -342,13 +342,15 @@ class _ComandaCardState extends State<OrderCard> {
                   Navigator.pop(context);
                 },
                 child: RichText(
-                  text: TextSpan(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
                     children: [
                       WidgetSpan(
-                        child: Icon(Icons.close),
+                        child: Icon(Icons.close, size: 23.5),
                       ),
                       TextSpan(
                         text: "Cerrar",
+                        style: TextStyle(fontSize: 20.0),
                       ),
                     ],
                   ),
@@ -360,13 +362,36 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _setDealerCard(GetWorkers worker) {
-    return Card(
+    return Container(
+        margin: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            border: Border.all(color: Colors.grey)),
         child: InkWell(
-      onTap: () {
-        print("Seleccionando a ${worker.oprNombre}");
-      },
-      child: Center(child: Text(worker.oprNombre)),
-    ));
+          onTap: () {
+            //print("Seleccionando a ${worker.oprNombre}");
+            workersRepository
+                .setDealer(widget.config, widget.order!.camId.toString(),
+                    worker.oprCodigo)
+                .then((value) {
+              print(value.setDealer.status);
+
+              if (value.setDealer.status == "OK") {
+                OrderDto newStatus = OrderDto(
+                    idOrder: widget.order!.camId.toString(), status: "T");
+
+                statusOrderRepository.statusOrder(newStatus).then((value) =>
+                    widget.socket!
+                        .emit(WebSocketEvents.modifyOrder, newStatus));
+              } else {
+                //TODO: Gestionar alerta
+                
+              }
+            }).whenComplete(() => Navigator.pop(context));
+          },
+          child: SizedBox(
+              width: 200, child: Center(child: Text(worker.oprNombre))),
+        ));
   }
 
   Widget _futureInfo(BuildContext context) {

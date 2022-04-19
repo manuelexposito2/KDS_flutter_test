@@ -86,22 +86,22 @@ class _OrdersListState extends State<OrdersList> {
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
 
-      if (newStatus.status == "P") {
+      if (newStatus.status!.contains("P")) {
         setState(() {
           ordersList!.where(
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
 
-      if (newStatus.status == "T" || newStatus.status == "R" ) {
+      if (newStatus.status!.contains("T") || newStatus.status!.contains("R")) {
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
 
-
-      if (filter == "T" && newStatus.status == "E") {
+      if (filter!.contains(terminadas) && newStatus.status!.contains("E") ||
+          filter!.contains(recoger) && newStatus.status!.contains("T")) {
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
@@ -334,17 +334,17 @@ class _OrdersListState extends State<OrdersList> {
           child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
           style: Styles.buttonEnProceso,
         ),
-        
-        widget.config.reparto == "S" ? 
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              filter = recoger;
-            });
-          },
-          child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-          style: Styles.buttonRecoger,
-        ) : Container(),
+        widget.config.reparto == "S"
+            ? ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    filter = recoger;
+                  });
+                },
+                child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
+                style: Styles.buttonRecoger,
+              )
+            : Container(),
         ElevatedButton(
             onPressed: () {
               setState(() {
