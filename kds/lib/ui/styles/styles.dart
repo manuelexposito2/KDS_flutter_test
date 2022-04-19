@@ -9,7 +9,8 @@ class Styles {
   static const Color alertColor = Color(0xFFB85C5C);
   static final Color yellowBtn = Color(0xFFF0AD4E);
   static final Color greenBtn = Color(0xFF5CB85C);
-  static final Color whiteBtn = Colors.white;
+  static final Color whiteBtn = Color.fromARGB(255, 255, 255, 255);
+  static final Color purpleBtn = Color.fromARGB(255, 149, 27, 170);
   static final Color blueBtnColor = Color(0xFF337AB7);
 
   static final Color black = Color(0xFF3D3D3D);
@@ -31,6 +32,8 @@ class Styles {
 
   static double navbarHeight = 70.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
+
+
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -41,6 +44,19 @@ class Styles {
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))),
   );
+
+
+    static final buttonRecoger = ElevatedButton.styleFrom(
+    primary: purpleBtn,
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(0), bottomLeft: Radius.circular(0))),
+  );
+
+
+
   static final buttonTerminadas = ElevatedButton.styleFrom(
     primary: greenBtn,
     padding:

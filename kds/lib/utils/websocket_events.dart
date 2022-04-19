@@ -6,4 +6,5 @@ class WebSocketEvents{
   static const newOrder = "newOrder";
   static const errorNotifyDetail = "errorNotifyDetail";
   static const setUrgent = "setUrgent";
+  
 }

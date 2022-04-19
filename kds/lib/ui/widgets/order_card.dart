@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/order_dto.dart';
@@ -6,10 +8,12 @@ import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
+import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/repository/repository/urgent_repository.dart';
+import 'package:kds/repository/repository/workers_repository.dart';
 
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
@@ -18,10 +22,11 @@ import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class OrderCard extends StatefulWidget {
-  OrderCard({Key? key, required this.order, this.socket, this.config}) : super(key: key);
+  OrderCard({Key? key, required this.order, this.socket, required this.config})
+      : super(key: key);
 
   Socket? socket;
-  Config? config;
+  Config config;
   final Order? order;
 
   @override
@@ -34,14 +39,13 @@ class _ComandaCardState extends State<OrderCard> {
   Order? order;
 
   late OrderRepository orderRepository;
-
+  late WorkersRepository workersRepository;
   //Esta comanda es la misma que la principal pero existe para darle más datos
   Future<Order>? orderExtended;
-
+  Future<List<GetWorkers>>? listaOperarios;
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
-  //late String? showUrgente;
 
   @override
   void setState(fn) {
@@ -54,9 +58,9 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    workersRepository = WorkersRepositoryImpl();
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
-    //showUrgente = widget.order!.camUrgente!.toString();
     statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
@@ -79,15 +83,16 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
-
-  setColor(){
-    if(widget.order!.camEstado.toString() == "E" ){
+  setColor() {
+    if (widget.order!.camEstado.toString() == "E") {
       return Styles.baseColor;
-    }else if(widget.order!.camEstado.toString() == "P"){
+    } else if (widget.order!.camEstado.toString() == "P") {
       return Styles.mediumColor;
-    }else if(widget.order!.camEstado.toString() == "T"){
+    } else if (widget.order!.camEstado.toString() == "T") {
       return Styles.succesColor;
-    }else{
+    } else if (widget.order!.camEstado.toString() == "R") {
+      return Styles.purpleBtn;
+    } else {
       return Styles.baseColor;
     }
   }
@@ -124,7 +129,7 @@ class _ComandaCardState extends State<OrderCard> {
               ),
               Text(
                 //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                '${order.details.where((element) => element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
+                '${order.details.where((element) => element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
                 style: Styles.regularText,
               )
             ],
@@ -171,8 +176,8 @@ class _ComandaCardState extends State<OrderCard> {
                       onPressed: () => showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            orderExtended = orderRepository
-                                .getOrderById(widget.order!.camId.toString(), widget.config!);
+                            orderExtended = orderRepository.getOrderById(
+                                widget.order!.camId.toString(), widget.config);
 
                             return AlertDialog(
                               content: _futureInfo(context),
@@ -198,7 +203,11 @@ class _ComandaCardState extends State<OrderCard> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 1),
                   child: SizedBox(
-                      width: 195, height: 50, child: _buttonstate(order)),
+                      width: 195,
+                      height: 50,
+                      child: order.camEstado != 'R'
+                          ? _buttonStates(order)
+                          : _buttonAsignar(order)),
                 ),
               ),
               Expanded(
@@ -222,7 +231,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buttonstate(Order order) {
+  Widget _buttonStates(Order order) {
     Text label = const Text('Preparar');
     Icon icon = const Icon(
       Icons.play_arrow,
@@ -269,6 +278,97 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  Widget _buttonAsignar(Order order) {
+    return TextButton.icon(
+      style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          primary: Color.fromARGB(255, 87, 87, 87),
+          textStyle: TextStyle(fontSize: 18)),
+      onPressed: () => showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            listaOperarios = workersRepository.getWorkers(widget.config);
+            return AlertDialog(
+              content: _futureWorkers(context),
+            );
+          },
+          barrierDismissible: true),
+      icon: Icon(Icons.check_box),
+      label: const Text("Asignar"),
+    );
+  }
+
+  Widget _futureWorkers(BuildContext context) {
+    return FutureBuilder(
+      future: listaOperarios,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _dialogAsignarParaPedido(
+              context, snapshot.data as List<GetWorkers>);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  Widget _dialogAsignarParaPedido(
+      BuildContext context, List<GetWorkers> operarios) {
+    return SizedBox(
+      height: 400,
+      width: 800,
+      child: Column(
+        children: [
+          Text("Seleccione operario"),
+          Divider(thickness: 3.0),
+          //TODO: OPERARIOS!!
+          SizedBox(
+            width: 800,
+            height: 100,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: operarios.length,
+                itemBuilder: (context, index) {
+                  //TODO : Hacer un card seleccionable con cada worker y utilizar el método setDealer
+                  return _setDealerCard(operarios.elementAt(index));
+                }),
+          ),
+          Divider(thickness: 3.0),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Icon(Icons.close),
+                      ),
+                      TextSpan(
+                        text: "Cerrar",
+                      ),
+                    ],
+                  ),
+                )),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _setDealerCard(GetWorkers worker) {
+    return Card(
+        child: InkWell(
+      onTap: () {
+        print("Seleccionando a ${worker.oprNombre}");
+      },
+      child: Center(child: Text(worker.oprNombre)),
+    ));
+  }
+
   Widget _futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
@@ -294,6 +394,7 @@ class _ComandaCardState extends State<OrderCard> {
             details: d,
             order: order,
             socket: widget.socket,
+            config: widget.config,
           )
       ],
     );
@@ -318,12 +419,13 @@ class _ComandaCardState extends State<OrderCard> {
   String _toogleStateButton(String status) {
     if (status.contains('E')) {
       return 'P';
-    } else if (status.contains('P')) {
+    } else if (widget.config.reparto == "S" && status.contains('P')) {
+      return 'R';
+    } else if (widget.config.reparto == "N" && status.contains('P') ||
+        status.contains('R')) {
       return 'T';
-    } else if (status.contains('T')){
+    } else {
       return 'E';
-    }else{
-      return 'P';
     }
   }
 
@@ -659,4 +761,3 @@ class _ComandaCardState extends State<OrderCard> {
             )));
   }
 }
-
