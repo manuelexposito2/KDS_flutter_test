@@ -248,7 +248,7 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
-  //TODO: Hacer scrolleable la lista de comandas
+  
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
       alignment: Alignment.topLeft,
