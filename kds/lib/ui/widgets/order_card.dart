@@ -221,25 +221,7 @@ class _ComandaCardState extends State<OrderCard> {
                         primary: Color.fromARGB(255, 87, 87, 87)),
                     child: Icon(Icons.print),
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            orderExtended = orderRepository.getOrderById(
-                                widget.order!.camId.toString(), widget.config);
-
-                            return AlertDialog(
-                              content: errorDialogOrder(),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Entendido'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                          barrierDismissible: true);
+                      
                     },
                   ),
                 ),
@@ -251,16 +233,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget errorDialogOrder() {
-    return SingleChildScrollView(
-      child: ListBody(
-        children: const <Widget>[
-          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-          Text('No se ha podido guardar la comanda'),
-        ],
-      ),
-    );
-  }
+  
 
   Widget _buttonStates(Order order) {
     Text label = const Text('Preparar');

@@ -16,6 +16,7 @@ import 'package:kds/ui/styles/styles.dart';
 import "package:collection/collection.dart";
 import 'package:kds/ui/widgets/order_card.dart';
 import 'package:kds/ui/screens/waiting_screen.dart';
+import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
@@ -45,8 +46,8 @@ class _OrdersListState extends State<OrdersList> {
   bool showResumen = false;
 
   String? mensaje;
-
-  List<Order>? ordersList;
+  List<String> resumeList = [];
+  List<Order>? ordersList = [];
   Order? selectedOrder;
 
   //final _socketController = StreamController<List<Order?>>();
@@ -63,6 +64,7 @@ class _OrdersListState extends State<OrdersList> {
     // TODO: implement initState
 
     super.initState();
+    //resumeList = [];
     orderRepository = OrderRepositoryImpl();
     _audioCache = AudioCache(
       prefix: 'sounds/',
@@ -123,6 +125,10 @@ class _OrdersListState extends State<OrdersList> {
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
 
+      setState(() {
+        resumeList = _refillResumeList(ordersList!);
+      });
+
       if (newStatus.status!.contains("P")) {
         setState(() {
           ordersList!.where(
@@ -158,39 +164,40 @@ class _OrdersListState extends State<OrdersList> {
     });
 
     return Scaffold(
-      body: Row(children: [
-        Expanded(
-            flex: 3,
-            child: FutureBuilder(
-                future: orderRepository.getOrders(filter!, widget.config),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting &&
-                      !snapshot.hasData) {
-                    return LoadingScreen(message: "Cargando...");
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      !snapshot.hasData) {
-                    return WaitingScreen();
-                  }
+      body: FutureBuilder(
+          future: orderRepository.getOrders(filter!, widget.config),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
+              return LoadingScreen(message: "Cargando...");
+            }
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasData) {
+              return WaitingScreen();
+            }
 
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasError) {
-                    return ErrorScreen();
-                  } else {
-                    ordersList = snapshot.data as List<Order>;
-                    return responsiveOrder();
-                  }
-                })),
-        showResumen
-            ? Expanded(
-                flex: 1,
-                child: Text(
-                    "Resume") /*  ResumeOrdersWidget(
-                        lineasComandas: reordering(resumeList),
-                      ) */
-                )
-            : Container()
-      ]),
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasError) {
+              return ErrorScreen();
+            } else {
+              ordersList = snapshot.data as List<Order>;
+
+              resumeList = _refillResumeList(ordersList!);
+
+              return Row(
+                children: [
+                  Expanded(flex: 3, child: responsiveOrder()),
+                  showResumen
+                      ? Expanded(
+                          flex: 1,
+                          child: ResumeOrdersWidget(
+                            lineasComandas: reordering(resumeList),
+                          ))
+                      : Container()
+                ],
+              );
+            }
+          }),
       bottomNavigationBar: bottomNavBar(context),
     );
   }
@@ -215,6 +222,20 @@ class _OrdersListState extends State<OrdersList> {
         ],
       ),
     );
+  }
+  List<String> _refillResumeList(List<Order> ordersList) {
+    resumeList.clear();
+
+    for (var comanda in ordersList) {
+      if (comanda.details.isNotEmpty) {
+        for (var d in comanda.details) {
+          if (d.demEstado!.contains("E")) {
+            resumeList.add(d.demTitulo!);
+          }
+        }
+      }
+    }
+    return resumeList;
   }
 
   Widget responsiveOrder() {
@@ -285,7 +306,7 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
-  //TODO: Hacer scrolleable la lista de comandas
+  
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
       alignment: Alignment.topLeft,
