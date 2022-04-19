@@ -39,6 +39,7 @@ class _OrdersListState extends State<OrdersList> {
   String? filter = '';
 
   var navbarHeightmin = 280.0;
+  var navbarHeightminReparto = 400.0;
   var navbarHeightMedium = 150.0;
   var navbarHeight = 70.0;
 
@@ -272,6 +273,7 @@ class _OrdersListState extends State<OrdersList> {
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
+    
     double responsiveWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -307,7 +309,9 @@ class _OrdersListState extends State<OrdersList> {
               )),
         );
       } else {
-        return Container(
+        return
+        widget.config.reparto != "S" ?
+        Container(
             height: navbarHeightmin,
             color: Styles.bottomNavColor,
             child: Padding(
@@ -316,6 +320,18 @@ class _OrdersListState extends State<OrdersList> {
                   children: [
                     const TimerWidget(),
                     _buttonsFilterMin(context),
+                    _buttonsOptions()
+                  ],
+                ))) : 
+        Container(
+            height: navbarHeightminReparto,
+            color: Styles.bottomNavColor,
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                child: Column(
+                  children: [
+                    const TimerWidget(),
+                    _buttonsFilterMinReparto(context),
                     _buttonsOptions()
                   ],
                 )));
@@ -389,6 +405,55 @@ class _OrdersListState extends State<OrdersList> {
             child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
             style: Styles.buttonEnProcesomin,
           ),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  filter = terminadas;
+                });
+              },
+              child:
+                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
+              style: Styles.buttonTerminadasmin),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  filter = todas;
+                });
+              },
+              child: Text(
+                "Todas",
+                style: Styles.btnTextSize(Colors.black),
+              ),
+              style: Styles.buttonTodasmin)
+        ],
+      ),
+    );
+  }
+
+   Widget _buttonsFilterMinReparto(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(bottom: 10, top: 5),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                filter = enProceso;
+              });
+            },
+            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
+            style: Styles.buttonEnProcesomin,
+          ),
+          ElevatedButton(
+          onPressed: () {
+            setState(() {
+              filter = recoger;
+            });
+          },
+          child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
+          style: Styles.buttonRecogerMin,
+        ),
           ElevatedButton(
               onPressed: () {
                 setState(() {
