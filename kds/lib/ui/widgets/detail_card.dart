@@ -96,7 +96,7 @@ class _DetailCardState extends State<DetailCard> {
             style: Styles.textTitle,
           ),
           
-          subtitle: Text(details.demSubpro.toString()) 
+          subtitle: Row(children: [Icon(Icons.arrow_right, size: 30), Text(details.demSubpro.toString(), style: Styles.subTextTitle,)],) 
 
         ) : 
         ListTile(
@@ -106,16 +106,6 @@ class _DetailCardState extends State<DetailCard> {
           ),
 
         )
-
-        /*
-        ListTile(
-          title: Text(
-            details.demTitulo!,
-            style: Styles.textTitle,
-          ),
-          subtitle: Text(details.demSubpro.toString()),
-        ),
-        */
       ),
     );
   }
