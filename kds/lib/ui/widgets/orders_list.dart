@@ -51,7 +51,6 @@ class _OrdersListState extends State<OrdersList> {
   List<String> resumeList = [];
   List<Order>? ordersList = [];
   Order? selectedOrder;
-  //var player = Player.asset("sounds/bell_ring.mp3");
   @override
   void setState(fn) {
     if (mounted) {
@@ -65,11 +64,7 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    /* _audioCache = AudioCache(
-      prefix: 'sounds/',
-      fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
-    ); */
-    //player = Player.asset("sounds/bell_ring.mp3");
+ 
   }
 
   @override
