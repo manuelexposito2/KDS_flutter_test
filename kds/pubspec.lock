@@ -8,13 +8,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
-  audioplayers:
-    dependency: "direct main"
+  audio_session:
+    dependency: transitive
     description:
-      name: audioplayers
+      name: audio_session
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.20.1"
+    version: "0.1.6+1"
+  audio_video_progress_bar:
+    dependency: transitive
+    description:
+      name: audio_video_progress_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
   bloc:
     dependency: transitive
     description:
@@ -71,6 +78,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  dart_vlc:
+    dependency: transitive
+    description:
+      name: dart_vlc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.9"
+  dart_vlc_ffi:
+    dependency: transitive
+    description:
+      name: dart_vlc_ffi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5+1"
   dynamic_height_grid_view:
     dependency: "direct main"
     description:
@@ -132,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  flutter_platform_alert:
+    dependency: "direct main"
+    description:
+      name: flutter_platform_alert
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -198,6 +226,55 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3"
+  just_audio:
+    dependency: transitive
+    description:
+      name: just_audio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.20"
+  just_audio_platform_interface:
+    dependency: transitive
+    description:
+      name: just_audio_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
+  just_audio_web:
+    dependency: transitive
+    description:
+      name: just_audio_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.7"
+  kplayer:
+    dependency: "direct main"
+    description:
+      name: kplayer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.12"
+  kplayer_platform_interface:
+    dependency: transitive
+    description:
+      name: kplayer_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.7"
+  kplayer_with_dart_vlc:
+    dependency: transitive
+    description:
+      name: kplayer_with_dart_vlc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.8"
+  kplayer_with_just_audio:
+    dependency: transitive
+    description:
+      name: kplayer_with_just_audio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.8"
   lints:
     dependency: transitive
     description:
