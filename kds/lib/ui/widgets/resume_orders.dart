@@ -1,23 +1,33 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class ResumeOrdersWidget extends StatefulWidget {
-  ResumeOrdersWidget({Key? key, required this.lineasComandas})
+  ResumeOrdersWidget({Key? key, required this.lineasComandas, this.socket})
       : super(key: key);
 
-  
+  Socket? socket;
   final List<String>? lineasComandas;
   @override
   State<ResumeOrdersWidget> createState() => _ResumeOrdersWidgetState();
 }
 
 class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
+  String? lastSelected;
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    
+
     super.initState();
   }
 
@@ -48,7 +58,6 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
               ),
             ),
           ),
-          
           Expanded(
             flex: 20,
             child: ListView.builder(
@@ -59,7 +68,24 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                 return OutlinedButton(
                   style: Styles.tileStyle,
                   onPressed: () {
-                    print("Se ha seleccionado: ${widget.lineasComandas!.elementAt(index).split(" ")[2]}");
+                    var newValue = widget.lineasComandas!
+                        .elementAt(index)
+                        .split(" X ")
+                        .last;
+
+                    UserSharedPreferences.getResumeCall().then((value) {
+                      if (value == '' || value != newValue) {
+                        UserSharedPreferences.setResumeCall(newValue);
+                        lastSelected = newValue;
+                        print("Seleccionado : $lastSelected");
+                      } else if (value == lastSelected) {
+                        lastSelected = '';
+                        print("Borrado: $value");
+                        UserSharedPreferences.removeResumeCall();
+                      }
+                    });
+
+                    //print("Se ha seleccionado: ${widget.lineasComandas!.elementAt(index).split(" X ").last}");
                   },
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(vertical: 15.0),

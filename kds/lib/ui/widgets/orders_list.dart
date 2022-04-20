@@ -50,8 +50,6 @@ class _OrdersListState extends State<OrdersList> {
   List<Order>? ordersList = [];
   Order? selectedOrder;
 
-  //final _socketController = StreamController<List<Order?>>();
-
   @override
   void setState(fn) {
     if (mounted) {
@@ -192,6 +190,7 @@ class _OrdersListState extends State<OrdersList> {
                           flex: 1,
                           child: ResumeOrdersWidget(
                             lineasComandas: reordering(resumeList),
+                            socket: widget.socket,
                           ))
                       : Container()
                 ],
@@ -239,7 +238,7 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   Widget responsiveOrder() {
-    //double responsiveWidth = MediaQuery.of(context).size.width;
+    
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1700) {
@@ -306,7 +305,6 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
-  
   Widget _createOrdersView(BuildContext context, List<Order> orders) {
     return Align(
       alignment: Alignment.topLeft,
@@ -331,7 +329,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
-    
     double responsiveWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -367,32 +364,33 @@ class _OrdersListState extends State<OrdersList> {
               )),
         );
       } else {
-        return
-        widget.config.reparto != "S" ?
-        Container(
-            height: navbarHeightmin,
-            color: Styles.bottomNavColor,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                child: Column(
-                  children: [
-                    const TimerWidget(),
-                    _buttonsFilterMin(context),
-                    _buttonsOptions()
-                  ],
-                ))) : 
-        Container(
-            height: navbarHeightminReparto,
-            color: Styles.bottomNavColor,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                child: Column(
-                  children: [
-                    const TimerWidget(),
-                    _buttonsFilterMinReparto(context),
-                    _buttonsOptions()
-                  ],
-                )));
+        return widget.config.reparto != "S"
+            ? Container(
+                height: navbarHeightmin,
+                color: Styles.bottomNavColor,
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                    child: Column(
+                      children: [
+                        const TimerWidget(),
+                        _buttonsFilterMin(context),
+                        _buttonsOptions()
+                      ],
+                    )))
+            : Container(
+                height: navbarHeightminReparto,
+                color: Styles.bottomNavColor,
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                    child: Column(
+                      children: [
+                        const TimerWidget(),
+                        _buttonsFilterMinReparto(context),
+                        _buttonsOptions()
+                      ],
+                    )));
       }
     });
   }
@@ -488,7 +486,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-   Widget _buttonsFilterMinReparto(BuildContext context) {
+  Widget _buttonsFilterMinReparto(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(bottom: 10, top: 5),
       child: Column(
@@ -504,14 +502,14 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.buttonEnProcesomin,
           ),
           ElevatedButton(
-          onPressed: () {
-            setState(() {
-              filter = recoger;
-            });
-          },
-          child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-          style: Styles.buttonRecogerMin,
-        ),
+            onPressed: () {
+              setState(() {
+                filter = recoger;
+              });
+            },
+            child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
+            style: Styles.buttonRecogerMin,
+          ),
           ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -858,23 +856,22 @@ class _OrdersListState extends State<OrdersList> {
     var cantidad = 0;
     List<String> result = [];
     for (var item in titulos) {
-      titulosSplit.add(item.split(' '));
+      titulosSplit.add(item.split(' X '));
     }
 
-    var prueba = titulosSplit.groupListsBy((linea) => linea[2]).entries;
+    var prueba = titulosSplit.groupListsBy((linea) => linea[1]).entries;
 
     for (var item in prueba) {
       cantidad = 0;
       producto = item.key;
       for (var i in item.value) {
-        cantidad += int.parse(i[0]);
+        cantidad += int.parse(i.first);
       }
 
       result.add("$cantidad X $producto");
       //debugPrint('$producto : $cantidad');
 
     }
-    //debugPrint(prueba.toString());
     return result;
   }
 

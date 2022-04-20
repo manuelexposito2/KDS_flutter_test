@@ -5,6 +5,7 @@ import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -27,6 +28,14 @@ class DetailCard extends StatefulWidget {
 class _DetailCardState extends State<DetailCard> {
   late StatusDetailRepository statusDetailRepository;
   Color? colorDetailStatus;
+  var selectedDetail = "";
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   void initState() {
@@ -44,10 +53,23 @@ class _DetailCardState extends State<DetailCard> {
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
+    
+    //Setea el selectedDetail para ver si debe pintar este Detail o no
+    UserSharedPreferences.getResumeCall().then(((value) {
+      setState(() {
+        selectedDetail = value;
+      });
+    }));
+
     return Container(
       margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
       child: TextButton(
         style: TextButton.styleFrom(
+          side: details.demTitulo!.split(" X ").last == selectedDetail &&
+                  details.demEstado != "T" &&
+                  details.demEstado != "R"
+              ? BorderSide(color: Colors.red, width: 5.0)
+              : BorderSide.none,
           backgroundColor: colorDetailStatus,
           primary: Color.fromARGB(255, 87, 87, 87),
         ),
