@@ -133,6 +133,10 @@ class Styles {
       fontSize: 24,
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
+  
+  static TextStyle get subTextTitle => GoogleFonts.getFont('Roboto',
+      fontSize: 20,
+      color: Color.fromARGB(255, 87, 87, 87));
 
   static TextStyle get urgent => GoogleFonts.getFont('Roboto',
       fontSize: 27, color: Colors.white, fontWeight: FontWeight.w700);
