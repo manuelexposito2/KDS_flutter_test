@@ -66,8 +66,7 @@ class _DetailCardState extends State<DetailCard> {
       child: TextButton(
         style: TextButton.styleFrom(
           side: details.demTitulo!.split(" X ").last == selectedDetail &&
-                  details.demEstado != "T" &&
-                  details.demEstado != "R"
+                  details.demEstado != "T"
               ? BorderSide(color: Colors.red, width: 5.0)
               : BorderSide.none,
           backgroundColor: colorDetailStatus,

@@ -230,6 +230,8 @@ class _OrdersListState extends State<OrdersList> {
         for (var d in comanda.details) {
           if (d.demEstado!.contains("E") || d.demEstado!.contains("P")) {
             resumeList.add(d.demTitulo!);
+          }else if(filter == recoger && d.demEstado!.contains("R")){
+            resumeList.add(d.demTitulo!);
           }
         }
       }
