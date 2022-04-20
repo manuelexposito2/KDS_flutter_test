@@ -29,6 +29,14 @@ class _DetailCardState extends State<DetailCard> {
   late StatusDetailRepository statusDetailRepository;
   Color? colorDetailStatus;
   var selectedDetail = "";
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -45,14 +53,14 @@ class _DetailCardState extends State<DetailCard> {
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
-    //var selectedDetail = await UserSharedPreferences.getResumeCall();
+    
+    //Setea el selectedDetail para ver si debe pintar este Detail o no
     UserSharedPreferences.getResumeCall().then(((value) {
       setState(() {
         selectedDetail = value;
       });
     }));
 
-    
     return Container(
       margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
       child: TextButton(

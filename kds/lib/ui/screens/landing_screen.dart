@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kds/repository/impl_repo/config_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
-import 'package:kds/ui/widgets/orders_list.dart';
+
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
