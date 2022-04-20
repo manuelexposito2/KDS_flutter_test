@@ -87,12 +87,35 @@ class _DetailCardState extends State<DetailCard> {
                     status: value.status));
           });
         },
-        child: ListTile(
+        
+        child: 
+        details.demSubpro!.isNotEmpty ?
+        ListTile(
           title: Text(
             details.demTitulo!,
             style: Styles.textTitle,
           ),
+          
+          subtitle: Text(details.demSubpro.toString()) 
+
+        ) : 
+        ListTile(
+          title: Text(
+            details.demTitulo!,
+            style: Styles.textTitle,
+          ),
+
+        )
+
+        /*
+        ListTile(
+          title: Text(
+            details.demTitulo!,
+            style: Styles.textTitle,
+          ),
+          subtitle: Text(details.demSubpro.toString()),
         ),
+        */
       ),
     );
   }
