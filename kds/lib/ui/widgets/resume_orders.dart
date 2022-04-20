@@ -18,6 +18,13 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   String? lastSelected;
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
 
@@ -61,20 +68,19 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                 return OutlinedButton(
                   style: Styles.tileStyle,
                   onPressed: () {
+                    var newValue = widget.lineasComandas!
+                        .elementAt(index)
+                        .split(" X ")
+                        .last;
+
                     UserSharedPreferences.getResumeCall().then((value) {
-                      if (value == '') {
-                        UserSharedPreferences.setResumeCall(widget
-                            .lineasComandas!
-                            .elementAt(index)
-                            .split(" X ")
-                            .last);
-                        UserSharedPreferences.getResumeCall().then(((value) {
-                          lastSelected = value;
-                          print(value);
-                        }));
-                        
-                      } else {
-                        print("Borrado");
+                      if (value == '' || value != newValue) {
+                        UserSharedPreferences.setResumeCall(newValue);
+                        lastSelected = newValue;
+                        print("Seleccionado : $lastSelected");
+                      } else if (value == lastSelected) {
+                        lastSelected = '';
+                        print("Borrado: $value");
                         UserSharedPreferences.removeResumeCall();
                       }
                     });
