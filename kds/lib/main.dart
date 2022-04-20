@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kds/ui/screens/landing_screen.dart';
+//import 'package:kplayer/kplayer.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  //Player.boot();
   runApp(MyApp());
   
 }

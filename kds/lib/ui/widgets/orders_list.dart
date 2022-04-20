@@ -1,13 +1,12 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
-import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
-
+import 'package:kplayer/kplayer.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
@@ -21,7 +20,10 @@ import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-import 'package:show_up_animation/show_up_animation.dart';
+//import 'package:show_up_animation/show_up_animation.dart';
+import 'package:flutter_platform_alert/flutter_platform_alert.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -35,7 +37,7 @@ class _OrdersListState extends State<OrdersList> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
-  late final AudioCache _audioCache;
+  //late final AudioCache _audioCache;
   String? filter = '';
 
   var navbarHeightmin = 280.0;
@@ -49,7 +51,7 @@ class _OrdersListState extends State<OrdersList> {
   List<String> resumeList = [];
   List<Order>? ordersList = [];
   Order? selectedOrder;
-
+  //var player = Player.asset("sounds/bell_ring.mp3");
   @override
   void setState(fn) {
     if (mounted) {
@@ -62,12 +64,18 @@ class _OrdersListState extends State<OrdersList> {
     // TODO: implement initState
 
     super.initState();
-    //resumeList = [];
     orderRepository = OrderRepositoryImpl();
-    _audioCache = AudioCache(
+    /* _audioCache = AudioCache(
       prefix: 'sounds/',
       fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
-    );
+    ); */
+    //player = Player.asset("sounds/bell_ring.mp3");
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -75,48 +83,56 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      _audioCache.play('bell_ring.mp3');
+
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
+        FlutterPlatformAlert.playAlertSound();
+      }
+      if (kIsWeb) {
+        Player.asset("sounds/bell_ring.mp3").play();
+      }
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
     });
 
-    widget.socket!.on(WebSocketEvents.errorNotifyOrden, (data) => showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
+    widget.socket!.on(
+        WebSocketEvents.errorNotifyOrden,
+        (data) => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: errorDialogOrder(),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Entendido'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+            barrierDismissible: true));
 
-                            return AlertDialog(
-                              content: errorDialogOrder(),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Entendido'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                          barrierDismissible: true));
-
-      widget.socket!.on(WebSocketEvents.errorNotifyDetail, (data) => showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-
-                            return AlertDialog(
-                              content: errorDialogDetail(),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Entendido'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                          barrierDismissible: true));                    
-
+    widget.socket!.on(
+        WebSocketEvents.errorNotifyDetail,
+        (data) => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: errorDialogDetail(),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Entendido'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+            barrierDismissible: true));
 
     //ESCUCHA PARA BORRAR LA COMANDA CUANDO ESTÉ TERMINADA
     //TODO: Animacion para la comanda que se borra
@@ -205,7 +221,11 @@ class _OrdersListState extends State<OrdersList> {
     return SingleChildScrollView(
       child: ListBody(
         children: const <Widget>[
-          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text(
+            'ATENCIÓN',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Text('No se ha podido guardar la comanda'),
         ],
       ),
@@ -216,12 +236,17 @@ class _OrdersListState extends State<OrdersList> {
     return SingleChildScrollView(
       child: ListBody(
         children: const <Widget>[
-          Text('ATENCIÓN',textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+          Text(
+            'ATENCIÓN',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Text('No se ha podido guardar la comanda'),
         ],
       ),
     );
   }
+
   List<String> _refillResumeList(List<Order> ordersList) {
     resumeList.clear();
 
@@ -230,7 +255,7 @@ class _OrdersListState extends State<OrdersList> {
         for (var d in comanda.details) {
           if (d.demEstado!.contains("E") || d.demEstado!.contains("P")) {
             resumeList.add(d.demTitulo!);
-          }else if(filter == recoger && d.demEstado!.contains("R")){
+          } else if (filter == recoger && d.demEstado!.contains("R")) {
             resumeList.add(d.demTitulo!);
           }
         }
@@ -240,7 +265,6 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   Widget responsiveOrder() {
-    
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1700) {
@@ -876,6 +900,4 @@ class _OrdersListState extends State<OrdersList> {
     }
     return result;
   }
-
-  
 }
