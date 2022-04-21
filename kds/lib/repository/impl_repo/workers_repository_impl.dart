@@ -53,4 +53,17 @@ class WorkersRepositoryImpl implements WorkersRepository {
 
     return json;
   }
+
+  @override
+  Future<void> inicioTurno(Config config, String codigo, String isInicioTurno) async {
+    
+
+//{{UrlPDA}}/KDS/turnos.htm?callback=responseTurno&codigo=1010&isInicioTurno=0
+//0 si sale, 1 si entra
+String url ='${config.urlPDA}/KDS/turnos.htm?callback=responseTurno&codigo=$codigo&isInicioTurno=$isInicioTurno';
+
+    final request = await http.get(Uri.parse(url));
+
+    throw UnimplementedError();
+  }
 }

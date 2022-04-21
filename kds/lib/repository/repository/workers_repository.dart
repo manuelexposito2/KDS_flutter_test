@@ -11,4 +11,8 @@ abstract class WorkersRepository{
   //setDealer
   Future<SetDealersResponse> setDealer(Config config, String idOrder, String idWorker);
 //setDealer({'status':'OK'})
+
+Future<void> inicioTurno(Config config, String codigo, String isInicioTurno);
+
+
 }

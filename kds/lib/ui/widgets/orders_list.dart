@@ -587,7 +587,7 @@ class _OrdersListState extends State<OrdersList> {
                   height: 300,
                   child: Column(
                     children: [
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => showDialog(
                               barrierDismissible: false,
                               context: context,
@@ -646,14 +646,13 @@ class _OrdersListState extends State<OrdersList> {
                                               Container(
                                                 margin:
                                                     EdgeInsets.only(top: 30),
-                                                child: TextButton(
+                                                child: ElevatedButton(
                                                     onPressed: () {},
                                                     child: Container(
                                                       alignment:
                                                           Alignment.center,
                                                       width: 750,
                                                       height: 70,
-                                                      color: Colors.green,
                                                       child: Text(
                                                         'Continuar',
                                                         textAlign:
@@ -661,13 +660,13 @@ class _OrdersListState extends State<OrdersList> {
                                                         style: Styles
                                                             .textButtonCancelar,
                                                       ),
-                                                    )),
+                                                    ), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green))),
                                               ),
                                             ],
                                           ),
                                         )),
                                     actions: <Widget>[
-                                      TextButton(
+                                      ElevatedButton(
                                           onPressed: () {
                                             Navigator.of(m).pop();
                                           },
@@ -675,24 +674,22 @@ class _OrdersListState extends State<OrdersList> {
                                             alignment: Alignment.center,
                                             width: 300,
                                             height: 70,
-                                            color: Colors.red,
                                             child: Text(
                                               'Cancelar',
                                               textAlign: TextAlign.center,
                                               style: Styles.textButtonCancelar,
                                             ),
-                                          )),
+                                          ), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red))),
                                     ],
                                   )),
                           child: Container(
                               alignment: Alignment.center,
-                              width: 760,
+                              width: 730,
                               height: 120,
-                              color: const Color.fromARGB(255, 108, 189, 110),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.person,
                                     color: Colors.white,
                                     size: 40,
@@ -703,8 +700,8 @@ class _OrdersListState extends State<OrdersList> {
                                     style: Styles.textButtonOperario,
                                   ),
                                 ],
-                              ))),
-                      TextButton(
+                              )), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green))),
+                      ElevatedButton(
                           onPressed: () => showDialog(
                               barrierDismissible: false,
                               context: context,
@@ -763,14 +760,13 @@ class _OrdersListState extends State<OrdersList> {
                                               Container(
                                                 margin:
                                                     EdgeInsets.only(top: 30),
-                                                child: TextButton(
+                                                child: ElevatedButton(
                                                     onPressed: () {},
                                                     child: Container(
                                                       alignment:
                                                           Alignment.center,
                                                       width: 750,
                                                       height: 70,
-                                                      color: Colors.green,
                                                       child: Text(
                                                         'Continuar',
                                                         textAlign:
@@ -778,13 +774,13 @@ class _OrdersListState extends State<OrdersList> {
                                                         style: Styles
                                                             .textButtonCancelar,
                                                       ),
-                                                    )),
+                                                    ),style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)) ),
                                               ),
                                             ],
                                           ),
                                         )),
                                     actions: <Widget>[
-                                      TextButton(
+                                      ElevatedButton(
                                           onPressed: () {
                                             Navigator.of(m).pop();
                                           },
@@ -792,20 +788,18 @@ class _OrdersListState extends State<OrdersList> {
                                             alignment: Alignment.center,
                                             width: 300,
                                             height: 70,
-                                            color: Colors.red,
                                             child: Text(
                                               'Cancelar',
                                               textAlign: TextAlign.center,
                                               style: Styles.textButtonCancelar,
                                             ),
-                                          )),
+                                          ), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red))),
                                     ],
                                   )),
                           child: Container(
                               alignment: Alignment.center,
-                              width: 760,
+                              width: 730,
                               height: 120,
-                              color: Color.fromARGB(255, 241, 93, 82),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -820,12 +814,12 @@ class _OrdersListState extends State<OrdersList> {
                                     style: Styles.textButtonOperario,
                                   ),
                                 ],
-                              ))),
+                              )), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red))),
                     ],
                   ),
                 ),
                 actions: <Widget>[
-                  TextButton(
+                  ElevatedButton(
                       onPressed: () {
                         Navigator.of(ctx).pop();
                       },
@@ -833,13 +827,13 @@ class _OrdersListState extends State<OrdersList> {
                         alignment: Alignment.center,
                         width: 300,
                         height: 70,
-                        color: Colors.red,
                         child: Text(
                           'Cancelar',
                           textAlign: TextAlign.center,
                           style: Styles.textButtonCancelar,
                         ),
-                      )),
+                      ),
+                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red))),
                 ],
               ),
             ),
