@@ -51,7 +51,6 @@ class _OrdersListState extends State<OrdersList> {
   List<String> resumeList = [];
   List<Order>? ordersList = [];
   Order? selectedOrder;
-  //var player = Player.asset("sounds/bell_ring.mp3");
   @override
   void setState(fn) {
     if (mounted) {
@@ -65,11 +64,6 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
-    /* _audioCache = AudioCache(
-      prefix: 'sounds/',
-      fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
-    ); */
-    //player = Player.asset("sounds/bell_ring.mp3");
   }
 
   @override
@@ -83,7 +77,6 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-
       if (defaultTargetPlatform == TargetPlatform.android) {
         //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
         FlutterPlatformAlert.playAlertSound();
@@ -253,10 +246,14 @@ class _OrdersListState extends State<OrdersList> {
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
-          if (d.demEstado!.contains("E") || d.demEstado!.contains("P")) {
-            resumeList.add(d.demTitulo!);
-          } else if (filter == recoger && d.demEstado!.contains("R")) {
-            resumeList.add(d.demTitulo!);
+          
+          if (d.demEstado != "M") {
+            if (d.demTitulo != '' &&
+                (d.demEstado!.contains("E") || d.demEstado!.contains("P"))) {
+              resumeList.add(d.demTitulo!);
+            } else if (filter == recoger && d.demEstado!.contains("R")) {
+              resumeList.add(d.demTitulo!);
+            }
           }
         }
       }

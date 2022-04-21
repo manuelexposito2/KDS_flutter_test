@@ -13,6 +13,8 @@ class Styles {
   static final Color purpleBtn = Color.fromARGB(255, 149, 27, 170);
   static final Color blueBtnColor = Color(0xFF337AB7);
 
+  static final Color incidenciaColor = Color(0xFFf44336);
+
   static final Color black = Color(0xFF3D3D3D);
   static final Color bottomNavColor = Color.fromARGB(132, 0, 0, 0);
 
@@ -33,7 +35,6 @@ class Styles {
   static double navbarHeight = 70.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
 
-
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -45,8 +46,7 @@ class Styles {
             topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))),
   );
 
-
-    static final buttonRecoger = ElevatedButton.styleFrom(
+  static final buttonRecoger = ElevatedButton.styleFrom(
     primary: purpleBtn,
     padding:
         EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
@@ -59,13 +59,11 @@ class Styles {
     minimumSize: Size(250, 60),
     maximumSize: Size(250, 60),
     primary: purpleBtn,
-   padding:
+    padding:
         EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(5))),
   );
-
-
 
   static final buttonTerminadas = ElevatedButton.styleFrom(
     primary: greenBtn,
@@ -133,10 +131,9 @@ class Styles {
       fontSize: 24,
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
-  
+
   static TextStyle get subTextTitle => GoogleFonts.getFont('Roboto',
-      fontSize: 20,
-      color: Color.fromARGB(255, 87, 87, 87));
+      fontSize: 20, color: Color.fromARGB(255, 87, 87, 87));
 
   static TextStyle get urgent => GoogleFonts.getFont('Roboto',
       fontSize: 27, color: Colors.white, fontWeight: FontWeight.w700);
@@ -164,4 +161,11 @@ class Styles {
 
   static TextStyle get textButtonCancelar =>
       GoogleFonts.getFont('Roboto', fontSize: 35, color: Colors.white);
+
+  //UTILS
+
+  static Container separadorComanda = Container(
+    color: Colors.grey[800],
+    height: 6.0,
+  );
 }

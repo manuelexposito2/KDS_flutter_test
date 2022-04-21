@@ -93,7 +93,7 @@ class _ComandaCardState extends State<OrderCard> {
     } else if (widget.order!.camEstado.toString() == "R") {
       return Styles.purpleBtn;
     } else {
-      return Styles.baseColor;
+      return Styles.incidenciaColor;
     }
   }
 
@@ -127,11 +127,13 @@ class _ComandaCardState extends State<OrderCard> {
                 total(order) + ' min.',
                 style: Styles.regularText,
               ),
-              Text(
-                //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                '${order.details.where((element) => element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
-                style: Styles.regularText,
-              )
+              widget.order!.camEstado != "M"
+                  ? Text(
+                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                      '${order.details.where((element) => element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
+                      style: Styles.regularText,
+                    )
+                  : Container()
             ],
           ),
         ),
@@ -167,27 +169,30 @@ class _ComandaCardState extends State<OrderCard> {
                   )
                 ],
               ),
-              Container(
-                  alignment: Alignment.center,
-                  color: Colors.white,
-                  width: 40,
-                  height: 40,
-                  child: IconButton(
-                      onPressed: () => showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            orderExtended = orderRepository.getOrderById(
-                                widget.order!.camId.toString(), widget.config);
+              widget.order!.camEstado != "M"
+                  ? Container(
+                      alignment: Alignment.center,
+                      color: Colors.white,
+                      width: 40,
+                      height: 40,
+                      child: IconButton(
+                          onPressed: () => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                orderExtended = orderRepository.getOrderById(
+                                    widget.order!.camId.toString(),
+                                    widget.config);
 
-                            return AlertDialog(
-                              content: _futureInfo(context),
-                            );
-                          },
-                          barrierDismissible: true),
-                      icon: Icon(
-                        Icons.info,
-                        color: Color.fromARGB(255, 87, 87, 87),
-                      ))),
+                                return AlertDialog(
+                                  content: _futureInfo(context),
+                                );
+                              },
+                              barrierDismissible: true),
+                          icon: Icon(
+                            Icons.info,
+                            color: Color.fromARGB(255, 87, 87, 87),
+                          )))
+                  : Container(),
             ],
           ),
         ),
@@ -199,41 +204,42 @@ class _ComandaCardState extends State<OrderCard> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 1),
-                  child: SizedBox(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 1),
+                    child: SizedBox(
                       width: 195,
                       height: 50,
-                      child: order.camEstado != 'R'
-                          ? _buttonStates(order)
-                          : _buttonAsignar(order)),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  width: 95,
-                  height: 50,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        primary: Color.fromARGB(255, 87, 87, 87)),
-                    child: Icon(Icons.print),
-                    onPressed: () {
-                      
-                    },
-                  ),
-                ),
-              )
+                      child: SizedBox(
+                          width: 195,
+                          height: 50,
+                          child: order.camEstado != 'R'
+                              ? _buttonStates(order)
+                              : _buttonAsignar(order)),
+                    ),
+                  )),
+              widget.order!.camEstado != "M"
+                  ? Expanded(
+                      flex: 1,
+                      child: SizedBox(
+                        width: 95,
+                        height: 50,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              primary: Color.fromARGB(255, 87, 87, 87)),
+                          child: Icon(Icons.print),
+                          onPressed: () {},
+                        ),
+                      ),
+                    )
+                  : Container()
             ],
           ),
         ),
       ],
     );
   }
-
-  
 
   Widget _buttonStates(Order order) {
     Text label = const Text('Preparar');
@@ -242,6 +248,8 @@ class _ComandaCardState extends State<OrderCard> {
       color: Color(0xFF337AB7),
       size: 30,
     );
+
+    String status = _toogleStateButton(order.camEstado!);
 
     if (order.camEstado == 'T') {
       label = const Text('Recuperar');
@@ -257,7 +265,24 @@ class _ComandaCardState extends State<OrderCard> {
         color: Color.fromARGB(255, 19, 165, 19),
         size: 30,
       );
+    } else if(order.camEstado == 'M'){
+        label = const Text("Eliminar");
+        icon =  Icon(Icons.close, color: Styles.incidenciaColor);
+        status = "T";
     }
+
+    /*
+    TextButton.icon(
+        style: TextButton.styleFrom(
+            backgroundColor: Colors.white,
+            primary: Color.fromARGB(255, 87, 87, 87),
+            textStyle: TextStyle(fontSize: 18)),
+        onPressed: () {
+          print("Borrado");
+        },
+        icon: Icon(Icons.close, color: Styles.incidenciaColor),
+        label: Text("Eliminar"));
+      */
 
     return TextButton.icon(
       style: TextButton.styleFrom(
@@ -267,7 +292,7 @@ class _ComandaCardState extends State<OrderCard> {
       onPressed: () {
         OrderDto newStatus = OrderDto(
             idOrder: order.camId.toString(),
-            status: _toogleStateButton(order.camEstado!));
+            status: status);
 
         statusOrderRepository.statusOrder(newStatus).then((value) {
           widget.socket!.emit(WebSocketEvents.modifyOrder,

@@ -6,5 +6,5 @@ const dynamic terminadas = 'T';
 const dynamic todas = 'ALL';
 const dynamic recoger ='R';
 
-
+const String demArticuloSeparador = "*****";
 const queryParam = 'QUERY';

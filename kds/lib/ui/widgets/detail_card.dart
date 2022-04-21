@@ -5,6 +5,7 @@ import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -49,11 +50,10 @@ class _DetailCardState extends State<DetailCard> {
   @override
   Widget build(BuildContext context) {
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
-    return _itemPedido(context, widget.order, widget.details);
+    return widget.details.demArti != demArticuloSeparador ? _itemPedido(context, widget.order, widget.details) : Styles.separadorComanda;
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
-    
     //Setea el selectedDetail para ver si debe pintar este Detail o no
     UserSharedPreferences.getResumeCall().then(((value) {
       setState(() {
@@ -62,51 +62,56 @@ class _DetailCardState extends State<DetailCard> {
     }));
 
     return Container(
-      margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
+      margin: EdgeInsets.only(left: 2, right: 2, bottom: 1),
       child: TextButton(
-        style: TextButton.styleFrom(
-          side: details.demTitulo!.split(" X ").last == selectedDetail &&
-                  details.demEstado != "T"
-              ? BorderSide(color: Colors.red, width: 5.0)
-              : BorderSide.none,
-          backgroundColor: colorDetailStatus,
-          primary: Color.fromARGB(255, 87, 87, 87),
-        ),
-        onPressed: () {
-          DetailDto newStatus = DetailDto(
-              idOrder: order.camId.toString(),
-              idDetail: details.demId.toString(),
-              status: _toogleStateButton(details.demEstado!));
-
-          statusDetailRepository.statusDetail(newStatus).then((value) {
-            widget.socket!.emit(
-                WebSocketEvents.modifyDetail,
-                DetailDto(
-                    idOrder: value.idOrder,
-                    idDetail: value.idDetail,
-                    status: value.status));
-          });
-        },
-        
-        child: 
-        details.demSubpro!.isNotEmpty ?
-        ListTile(
-          title: Text(
-            details.demTitulo!,
-            style: Styles.textTitle,
+          style: TextButton.styleFrom(
+            side: details.demTitulo!.split(" X ").last == selectedDetail &&
+                    details.demEstado != "T" && details.demArti != demArticuloSeparador
+                ? BorderSide(color: Colors.red, width: 5.0)
+                : BorderSide.none,
+            backgroundColor: colorDetailStatus,
+            primary: Color.fromARGB(255, 87, 87, 87),
           ),
-          
-          subtitle: Row(children: [Icon(Icons.arrow_right, size: 30), Text(details.demSubpro.toString(), style: Styles.subTextTitle,)],) 
+          onPressed: () {
+            if (widget.details.demEstado != "M") {
+              DetailDto newStatus = DetailDto(
+                  idOrder: order.camId.toString(),
+                  idDetail: details.demId.toString(),
+                  status: _toogleStateButton(details.demEstado!));
 
-        ) : 
-        ListTile(
-          title: Text(
-            details.demTitulo!,
-            style: Styles.textTitle,
-          ),
-
-        )
-      ),
+              statusDetailRepository.statusDetail(newStatus).then((value) {
+                widget.socket!.emit(
+                    WebSocketEvents.modifyDetail,
+                    DetailDto(
+                        idOrder: value.idOrder,
+                        idDetail: value.idDetail,
+                        status: value.status));
+              });
+            } else {
+              print("No pasa nada");
+            }
+          },
+          child: details.demSubpro!.isNotEmpty
+              ? ListTile(
+                  title: Text(
+                    details.demTitulo!,
+                    style: Styles.textTitle,
+                  ),
+                  subtitle: Row(
+                    children: [
+                      Icon(Icons.arrow_right, size: 30),
+                      Text(
+                        details.demSubpro.toString(),
+                        style: Styles.subTextTitle,
+                      )
+                    ],
+                  ))
+              : ListTile(
+                  title: Text(
+                    details.demTitulo!,
+                    style: Styles.textTitle,
+                  ),
+                )),
     );
   }
 
