@@ -77,13 +77,16 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
-        FlutterPlatformAlert.playAlertSound();
+      //Si el sonido se activa en numierKDS.ini
+      if (widget.config.sonido!.contains("S")) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
+          FlutterPlatformAlert.playAlertSound();
+        } else if (kIsWeb) {
+          Player.asset("sounds/bell_ring.mp3").play();
+        }
       }
-      if (kIsWeb) {
-        Player.asset("sounds/bell_ring.mp3").play();
-      }
+
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
@@ -177,25 +180,32 @@ class _OrdersListState extends State<OrdersList> {
             debugPrint(snapshot.connectionState.name);
             debugPrint('hasData : ${snapshot.hasData.toString()}');
             debugPrint('hasError : ${snapshot.hasError.toString()}');
-            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasError && !snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasError &&
+                !snapshot.hasData) {
               return LoadingScreen(message: "Cargando...");
             }
             if (snapshot.connectionState == ConnectionState.done &&
-                !snapshot.hasError && !snapshot.hasData) {
+                !snapshot.hasError &&
+                !snapshot.hasData) {
               return WaitingScreen();
             }
-          
+
             if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError && !snapshot.hasData) {
+                snapshot.hasError &&
+                !snapshot.hasData) {
               return ErrorScreen(
                 config: widget.config,
                 socket: widget.socket!,
               );
-            } else if(snapshot.connectionState == ConnectionState.done && snapshot.hasData || snapshot.connectionState == ConnectionState.waiting && snapshot.hasData) {
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData ||
+                snapshot.connectionState == ConnectionState.waiting &&
+                    snapshot.hasData) {
               ordersList = snapshot.data as List<Order>;
 
               //ordersList!.sort();
-        /*       ordersList!.sort((a, b) {
+              /*       ordersList!.sort((a, b) {
                 if (a.camEstado!.contains("M")) {
                   return -1;
                 } else if (!b.camEstado!.contains("M")) {
@@ -265,10 +275,11 @@ class _OrdersListState extends State<OrdersList> {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
           if (d.demEstado != "M") {
-            if (d.demTitulo != '' &&
-                (d.demEstado!.contains("E") || d.demEstado!.contains("P"))) {
-              resumeList.add(d.demTitulo!);
-            } else if (filter == recoger && d.demEstado!.contains("R")) {
+            if (d.demTitulo!.split("X").length == 2 &&
+                d.demArti != demArticuloSeparador &&
+                (d.demEstado!.contains("E") ||
+                    d.demEstado!.contains("P") ||
+                    (filter == recoger && d.demEstado!.contains("R")))) {
               resumeList.add(d.demTitulo!);
             }
           }

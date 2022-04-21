@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
@@ -137,21 +138,23 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-              Text(
-                order.camOperario!,
-                style: Styles.regularText,
+        widget.config.muestraOperario!.contains("S")
+            ? Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      order.camOperario!,
+                      style: Styles.regularText,
+                    )
+                  ],
+                ),
               )
-            ],
-          ),
-        ),
+            : Container(),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
@@ -265,10 +268,10 @@ class _ComandaCardState extends State<OrderCard> {
         color: Color.fromARGB(255, 19, 165, 19),
         size: 30,
       );
-    } else if(order.camEstado == 'M'){
-        label = const Text("Eliminar");
-        icon =  Icon(Icons.close, color: Styles.incidenciaColor);
-        status = "T";
+    } else if (order.camEstado == 'M') {
+      label = const Text("Eliminar");
+      icon = Icon(Icons.close, color: Styles.incidenciaColor);
+      status = "T";
     }
     return TextButton.icon(
       style: TextButton.styleFrom(
@@ -276,9 +279,8 @@ class _ComandaCardState extends State<OrderCard> {
           primary: Color.fromARGB(255, 87, 87, 87),
           textStyle: TextStyle(fontSize: 18)),
       onPressed: () {
-        OrderDto newStatus = OrderDto(
-            idOrder: order.camId.toString(),
-            status: status);
+        OrderDto newStatus =
+            OrderDto(idOrder: order.camId.toString(), status: status);
 
         statusOrderRepository.statusOrder(newStatus).then((value) {
           widget.socket!.emit(WebSocketEvents.modifyOrder,
@@ -294,23 +296,47 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _buttonAsignar(Order order) {
-    return TextButton.icon(
-      style: TextButton.styleFrom(
-          backgroundColor: Colors.white,
-          primary: Color.fromARGB(255, 87, 87, 87),
-          textStyle: TextStyle(fontSize: 18)),
-      onPressed: () => showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            listaOperarios = workersRepository.getWorkers(widget.config);
-            return AlertDialog(
-              content: _futureWorkers(context),
-            );
-          },
-          barrierDismissible: true),
-      icon: Icon(Icons.check_box),
-      label: const Text("Asignar"),
-    );
+    var bgColor = Colors.white;
+    var primaryColor = Color.fromARGB(255, 87, 87, 87);
+    var txtStyle = TextStyle(fontSize: 18);
+
+    if (widget.config.seleccionarOperario!.contains("S")) {
+      return TextButton.icon(
+        style: TextButton.styleFrom(
+            backgroundColor: bgColor,
+            primary: primaryColor,
+            textStyle: txtStyle),
+        onPressed: () => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              listaOperarios = workersRepository.getWorkers(widget.config);
+              return AlertDialog(
+                content: _futureWorkers(context),
+              );
+            },
+            barrierDismissible: true),
+        icon: Icon(Icons.check_box),
+        label: const Text("Asignar"),
+      );
+    } else {
+      return TextButton.icon(
+        style: TextButton.styleFrom(
+            backgroundColor: bgColor,
+            primary: primaryColor,
+            textStyle: txtStyle),
+        onPressed: () {
+          OrderDto newStatus =
+              OrderDto(idOrder: order.camId.toString(), status: "T");
+
+          statusOrderRepository.statusOrder(newStatus).then((value) {
+            widget.socket!.emit(WebSocketEvents.modifyOrder,
+                OrderDto(idOrder: value.idOrder, status: value.status));
+          });
+        },
+        icon: Icon(Icons.check_box),
+        label: const Text("Entregar"),
+      );
+    }
   }
 
   Widget _futureWorkers(BuildContext context) {
@@ -343,6 +369,7 @@ class _ComandaCardState extends State<OrderCard> {
             width: 800,
             height: 100,
             child: ListView.builder(
+                
                 scrollDirection: Axis.horizontal,
                 itemCount: operarios.length,
                 itemBuilder: (context, index) {

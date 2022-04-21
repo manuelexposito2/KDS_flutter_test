@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -92,7 +93,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                     dense: true,
                     title: Text(
                       widget.lineasComandas!.elementAt(index),
-                      style: Styles.textTitle,
+                      style: Styles.textTitle(20),
                     ),
                   ),
                 );

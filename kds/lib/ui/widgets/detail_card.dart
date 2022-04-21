@@ -49,8 +49,12 @@ class _DetailCardState extends State<DetailCard> {
 
   @override
   Widget build(BuildContext context) {
-    colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
-    return widget.details.demArti != demArticuloSeparador ? _itemPedido(context, widget.order, widget.details) : Styles.separadorComanda;
+    colorDetailStatus = widget.config.comandaCompleta!.contains("S")
+        ? setColorWithStatus(widget.details.demEstado!)
+        : Colors.white;
+    return widget.details.demArti != demArticuloSeparador
+        ? _itemPedido(context, widget.order, widget.details)
+        : Styles.separadorComanda;
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
@@ -66,14 +70,17 @@ class _DetailCardState extends State<DetailCard> {
       child: TextButton(
           style: TextButton.styleFrom(
             side: details.demTitulo!.split(" X ").last == selectedDetail &&
-                    details.demEstado != "T" && details.demArti != demArticuloSeparador
+                    details.demEstado != "T" &&
+                    details.demArti != demArticuloSeparador
                 ? BorderSide(color: Colors.red, width: 5.0)
                 : BorderSide.none,
             backgroundColor: colorDetailStatus,
             primary: Color.fromARGB(255, 87, 87, 87),
           ),
           onPressed: () {
-            if (widget.details.demEstado != "M") {
+            //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
+            if (!widget.details.demEstado!.contains("M") ||
+                !widget.config.comandaCompleta!.contains("N")) {
               DetailDto newStatus = DetailDto(
                   idOrder: order.camId.toString(),
                   idDetail: details.demId.toString(),
@@ -95,21 +102,25 @@ class _DetailCardState extends State<DetailCard> {
               ? ListTile(
                   title: Text(
                     details.demTitulo!,
-                    style: Styles.textTitle,
+                    style: Styles.textTitle(
+                        double.parse(widget.config.letra!) * increaseFont),
                   ),
                   subtitle: Row(
                     children: [
-                      Icon(Icons.arrow_right, size: 30),
+                      Icon(Icons.arrow_right,
+                          size: double.parse(widget.config.letra!) * increaseFont),
                       Text(
                         details.demSubpro.toString(),
-                        style: Styles.subTextTitle,
+                        style: Styles.subTextTitle(
+                            double.parse(widget.config.letra!) * increaseFont),
                       )
                     ],
                   ))
               : ListTile(
                   title: Text(
                     details.demTitulo!,
-                    style: Styles.textTitle,
+                    style: Styles.textTitle(
+                        double.parse(widget.config.letra!) * increaseFont),
                   ),
                 )),
     );

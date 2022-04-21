@@ -8,3 +8,5 @@ const dynamic recoger ='R';
 
 const String demArticuloSeparador = "*****";
 const queryParam = 'QUERY';
+
+const double increaseFont = 16.0;

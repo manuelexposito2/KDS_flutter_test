@@ -36,7 +36,6 @@ class _LandingScreenState extends State<LandingScreen> {
             url,
             OptionBuilder()
                 .setTransports(['websocket'])
-                .disableReconnection()
                 .disableAutoConnect()
                 .build());
 
