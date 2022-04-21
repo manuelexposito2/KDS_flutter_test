@@ -5,6 +5,7 @@ import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -49,7 +50,7 @@ class _DetailCardState extends State<DetailCard> {
   @override
   Widget build(BuildContext context) {
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
-    return _itemPedido(context, widget.order, widget.details);
+    return widget.details.demArti != demArticuloSeparador ? _itemPedido(context, widget.order, widget.details) : Styles.separadorComanda;
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
@@ -61,11 +62,11 @@ class _DetailCardState extends State<DetailCard> {
     }));
 
     return Container(
-      margin: EdgeInsets.only(left: 2, right: 2, bottom: 2),
+      margin: EdgeInsets.only(left: 2, right: 2, bottom: 1),
       child: TextButton(
           style: TextButton.styleFrom(
             side: details.demTitulo!.split(" X ").last == selectedDetail &&
-                    details.demEstado != "T"
+                    details.demEstado != "T" && details.demArti != demArticuloSeparador
                 ? BorderSide(color: Colors.red, width: 5.0)
                 : BorderSide.none,
             backgroundColor: colorDetailStatus,
