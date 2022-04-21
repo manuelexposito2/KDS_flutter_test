@@ -270,20 +270,6 @@ class _ComandaCardState extends State<OrderCard> {
         icon =  Icon(Icons.close, color: Styles.incidenciaColor);
         status = "T";
     }
-
-    /*
-    TextButton.icon(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.white,
-            primary: Color.fromARGB(255, 87, 87, 87),
-            textStyle: TextStyle(fontSize: 18)),
-        onPressed: () {
-          print("Borrado");
-        },
-        icon: Icon(Icons.close, color: Styles.incidenciaColor),
-        label: Text("Eliminar"));
-      */
-
     return TextButton.icon(
       style: TextButton.styleFrom(
           backgroundColor: Colors.white,

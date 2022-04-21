@@ -35,11 +35,11 @@ class _LandingScreenState extends State<LandingScreen> {
         Socket socket = io(
             url,
             OptionBuilder()
-                
                 .setTransports(['websocket'])
+                .disableReconnection()
                 .disableAutoConnect()
                 .build());
-      
+
         socket.onConnect((_) {
           print("Connected");
 
@@ -52,15 +52,10 @@ class _LandingScreenState extends State<LandingScreen> {
                         config: config,
                       )),
             );
-          }).onError((error, stackTrace) {
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute<void>(
-                  builder: (BuildContext context) => ErrorScreen()),
-            );
           });
         });
         socket.connect();
+
         socket.onDisconnect((_) => print('disconnect'));
       },
     );

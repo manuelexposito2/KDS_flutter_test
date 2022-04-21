@@ -174,20 +174,36 @@ class _OrdersListState extends State<OrdersList> {
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting &&
-                !snapshot.hasData) {
+            debugPrint(snapshot.connectionState.name);
+            debugPrint('hasData : ${snapshot.hasData.toString()}');
+            debugPrint('hasError : ${snapshot.hasError.toString()}');
+            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasError && !snapshot.hasData) {
               return LoadingScreen(message: "Cargando...");
             }
             if (snapshot.connectionState == ConnectionState.done &&
-                !snapshot.hasData) {
+                !snapshot.hasError && !snapshot.hasData) {
               return WaitingScreen();
             }
-
+          
             if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError) {
-              return ErrorScreen();
-            } else {
+                snapshot.hasError && !snapshot.hasData) {
+              return ErrorScreen(
+                config: widget.config,
+                socket: widget.socket!,
+              );
+            } else if(snapshot.connectionState == ConnectionState.done && snapshot.hasData || snapshot.connectionState == ConnectionState.waiting && snapshot.hasData) {
               ordersList = snapshot.data as List<Order>;
+
+              //ordersList!.sort();
+        /*       ordersList!.sort((a, b) {
+                if (a.camEstado!.contains("M")) {
+                  return -1;
+                } else if (!b.camEstado!.contains("M")) {
+                  return 0;
+                } else {
+                  return 1;
+                }
+              }); */
 
               resumeList = _refillResumeList(ordersList!);
 
@@ -204,6 +220,8 @@ class _OrdersListState extends State<OrdersList> {
                       : Container()
                 ],
               );
+            } else {
+              return LoadingScreen(message: "Cargando...");
             }
           }),
       bottomNavigationBar: bottomNavBar(context),
@@ -246,7 +264,6 @@ class _OrdersListState extends State<OrdersList> {
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
-          
           if (d.demEstado != "M") {
             if (d.demTitulo != '' &&
                 (d.demEstado!.contains("E") || d.demEstado!.contains("P"))) {
@@ -264,67 +281,30 @@ class _OrdersListState extends State<OrdersList> {
   Widget responsiveOrder() {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+      var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 6,
-        );
+        responsiveCrossAxisCount = 6;
       } else if (constraints.minWidth > 1500) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 5,
-        );
+        responsiveCrossAxisCount = 5;
       } else if (constraints.minWidth > 1000) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 4,
-        );
+        responsiveCrossAxisCount = 4;
       } else if (constraints.minWidth > 900) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 3,
-        );
+        responsiveCrossAxisCount = 3;
       } else if (constraints.minWidth > 500) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 2,
-        );
+        responsiveCrossAxisCount = 2;
       } else {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 1,
-        );
+        responsiveCrossAxisCount = 1;
       }
+
+      return DynamicHeightGridView(
+        builder: (context, index) => OrderCard(
+          order: ordersList!.elementAt(index),
+          socket: widget.socket,
+          config: widget.config,
+        ),
+        itemCount: ordersList!.length,
+        crossAxisCount: responsiveCrossAxisCount,
+      );
     });
   }
 
