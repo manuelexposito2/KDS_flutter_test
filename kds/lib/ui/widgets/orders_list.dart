@@ -2,10 +2,13 @@ import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/response_turno.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
+import 'package:kds/repository/repository/workers_repository.dart';
 import 'package:kplayer/kplayer.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
@@ -37,6 +40,7 @@ class _OrdersListState extends State<OrdersList> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
+  late WorkersRepository workersRepository;
   //late final AudioCache _audioCache;
   String? filter = '';
 
@@ -46,11 +50,12 @@ class _OrdersListState extends State<OrdersList> {
   var navbarHeight = 70.0;
 
   bool showResumen = false;
-
+  bool showOperarioDialog = false;
   String? mensaje;
   List<String> resumeList = [];
   List<Order>? ordersList = [];
   Order? selectedOrder;
+  ResponseTurno? responseTurno;
   @override
   void setState(fn) {
     if (mounted) {
@@ -64,6 +69,7 @@ class _OrdersListState extends State<OrdersList> {
 
     super.initState();
     orderRepository = OrderRepositoryImpl();
+    workersRepository = WorkersRepositoryImpl();
   }
 
   @override
@@ -246,7 +252,6 @@ class _OrdersListState extends State<OrdersList> {
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
-          
           if (d.demEstado != "M") {
             if (d.demTitulo != '' &&
                 (d.demEstado!.contains("E") || d.demEstado!.contains("P"))) {
@@ -364,7 +369,7 @@ class _OrdersListState extends State<OrdersList> {
               children: [
                 const TimerWidget(),
                 _buttonsFilter(context),
-                _buttonsOptions()
+                _buttonsOptions(context)
               ],
             ));
       } else if (constraints.minWidth > 900) {
@@ -380,7 +385,7 @@ class _OrdersListState extends State<OrdersList> {
                     children: [
                       const TimerWidget(),
                       _buttonsFilter(context),
-                      _buttonsOptions()
+                      _buttonsOptions(context)
                     ],
                   )
                 ],
@@ -398,7 +403,7 @@ class _OrdersListState extends State<OrdersList> {
                       children: [
                         const TimerWidget(),
                         _buttonsFilterMin(context),
-                        _buttonsOptions()
+                        _buttonsOptions(context)
                       ],
                     )))
             : Container(
@@ -411,7 +416,7 @@ class _OrdersListState extends State<OrdersList> {
                       children: [
                         const TimerWidget(),
                         _buttonsFilterMinReparto(context),
-                        _buttonsOptions()
+                        _buttonsOptions(context)
                       ],
                     )));
       }
@@ -558,7 +563,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  Widget _buttonsOptions() {
+  Widget _buttonsOptions(BuildContext context) {
     return SizedBox(
       width: 280.0,
       child: Row(
@@ -575,274 +580,7 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () => showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Text(
-                  'Opciones',
-                  style: Styles.textTitleInfo,
-                  textAlign: TextAlign.center,
-                ),
-                content: Container(
-                  height: 300,
-                  child: Column(
-                    children: [
-                      TextButton(
-                          onPressed: () => showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (m) => AlertDialog(
-                                    title: Text(
-                                      'Iniciar turno',
-                                      style: Styles.textTitleInfo,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    content: Container(
-                                        width: 760,
-                                        height: 270,
-                                        child: Form(
-                                          key: _formKey,
-                                          child: Column(
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 20),
-                                                    child: Text(
-                                                      'Introduzca su código de operario:',
-                                                      style: Styles
-                                                          .textRegularInfo,
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 750,
-                                                    height: 70,
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .blueAccent)),
-                                                    child: TextFormField(
-                                                      controller:
-                                                          operarioController,
-                                                      style: const TextStyle(
-                                                          fontSize: 35),
-                                                      decoration: const InputDecoration(
-                                                          enabledBorder:
-                                                              UnderlineInputBorder(
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color:
-                                                                              Colors.white))),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 30),
-                                                child: TextButton(
-                                                    onPressed: () {},
-                                                    child: Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: 750,
-                                                      height: 70,
-                                                      color: Colors.green,
-                                                      child: Text(
-                                                        'Continuar',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Styles
-                                                            .textButtonCancelar,
-                                                      ),
-                                                    )),
-                                              ),
-                                            ],
-                                          ),
-                                        )),
-                                    actions: <Widget>[
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.of(m).pop();
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            width: 300,
-                                            height: 70,
-                                            color: Colors.red,
-                                            child: Text(
-                                              'Cancelar',
-                                              textAlign: TextAlign.center,
-                                              style: Styles.textButtonCancelar,
-                                            ),
-                                          )),
-                                    ],
-                                  )),
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 760,
-                              height: 120,
-                              color: const Color.fromARGB(255, 108, 189, 110),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    'Iniciar turno operario',
-                                    textAlign: TextAlign.center,
-                                    style: Styles.textButtonOperario,
-                                  ),
-                                ],
-                              ))),
-                      TextButton(
-                          onPressed: () => showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (m) => AlertDialog(
-                                    title: Text(
-                                      'Finalizar turno',
-                                      style: Styles.textTitleInfo,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    content: Container(
-                                        width: 760,
-                                        height: 270,
-                                        child: Form(
-                                          key: _formKey,
-                                          child: Column(
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 20),
-                                                    child: Text(
-                                                      'Introduzca su coódigo de operario:',
-                                                      style: Styles
-                                                          .textRegularInfo,
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 750,
-                                                    height: 70,
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .blueAccent)),
-                                                    child: TextFormField(
-                                                      controller:
-                                                          operarioController,
-                                                      style: const TextStyle(
-                                                          fontSize: 35),
-                                                      decoration: const InputDecoration(
-                                                          enabledBorder:
-                                                              UnderlineInputBorder(
-                                                                  borderSide:
-                                                                      BorderSide(
-                                                                          color:
-                                                                              Colors.white))),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 30),
-                                                child: TextButton(
-                                                    onPressed: () {},
-                                                    child: Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: 750,
-                                                      height: 70,
-                                                      color: Colors.green,
-                                                      child: Text(
-                                                        'Continuar',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Styles
-                                                            .textButtonCancelar,
-                                                      ),
-                                                    )),
-                                              ),
-                                            ],
-                                          ),
-                                        )),
-                                    actions: <Widget>[
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.of(m).pop();
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            width: 300,
-                                            height: 70,
-                                            color: Colors.red,
-                                            child: Text(
-                                              'Cancelar',
-                                              textAlign: TextAlign.center,
-                                              style: Styles.textButtonCancelar,
-                                            ),
-                                          )),
-                                    ],
-                                  )),
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 760,
-                              height: 120,
-                              color: Color.fromARGB(255, 241, 93, 82),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    'Finalizar turno operario',
-                                    textAlign: TextAlign.center,
-                                    style: Styles.textButtonOperario,
-                                  ),
-                                ],
-                              ))),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 300,
-                        height: 70,
-                        color: Colors.red,
-                        child: Text(
-                          'Cancelar',
-                          textAlign: TextAlign.center,
-                          style: Styles.textButtonCancelar,
-                        ),
-                      )),
-                ],
-              ),
-            ),
+            onPressed: () => dialogoOperario(),
             child: Icon(Icons.person),
             style: Styles.btnActionStyle,
           ),
@@ -870,8 +608,441 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  //GESTION DEL RESUMEN DE COMANDAS
-  //Agrupamos los "titulos" por nombre y sumamos las cantidades
+  dialogoOperario() {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          'Opciones',
+          style: Styles.textTitleInfo,
+          textAlign: TextAlign.center,
+        ),
+        content: Container(
+          height: 300,
+          child: Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    botonTurno("Iniciar turno operario", '1');
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      width: 730,
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          Text(
+                            'Iniciar turno operario',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonOperario,
+                          ),
+                        ],
+                      )),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.green))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    botonTurno("Finalizar turno operario", '0');
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      width: 730,
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          Text(
+                            'Finalizar turno operario',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonOperario,
+                          ),
+                        ],
+                      )),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red))),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                width: 300,
+                height: 70,
+                child: Text(
+                  'Cancelar',
+                  textAlign: TextAlign.center,
+                  style: Styles.textButtonCancelar,
+                ),
+              ),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red))),
+        ],
+      ),
+    );
+  }
+
+  botonTurno(String mensaje, String isInicioTurno) {
+    return showDialog(
+        context: context,
+        builder: (m) => AlertDialog(
+              title: Text(
+                mensaje,
+                style: Styles.textTitleInfo,
+                textAlign: TextAlign.center,
+              ),
+              content: Container(
+                  width: 760,
+                  height: 270,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                'Introduzca su código de operario:',
+                                style: Styles.textRegularInfo,
+                              ),
+                            ),
+                            Container(
+                              width: 750,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.blueAccent)),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Debe introducir un codigo de operario";
+                                  }
+                                  return null;
+                                },
+                                controller: operarioController,
+                                obscureText: true,
+                                style: const TextStyle(fontSize: 35),
+                                decoration: const InputDecoration(
+                                    enabledBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white))),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 30),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                opcionesTurno(isInicioTurno);
+                                setState(() {
+                                  operarioController.clear();
+                                });
+
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: 750,
+                                height: 70,
+                                child: Text(
+                                  'Continuar',
+                                  textAlign: TextAlign.center,
+                                  style: Styles.textButtonCancelar,
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(Colors.green))),
+                        ),
+                      ],
+                    ),
+                  )),
+              actions: <Widget>[
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                                  operarioController.clear();
+                                });
+                      Navigator.of(m).pop();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 300,
+                      height: 70,
+                      child: Text(
+                        'Cancelar',
+                        textAlign: TextAlign.center,
+                        style: Styles.textButtonCancelar,
+                      ),
+                    ),
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.red))),
+              ],
+            )).then((value) {
+              operarioController.clear();
+            });
+  }
+
+  opcionesTurno(String isInicioTurno) {
+    
+    Navigator.pop(context);
+    if (_formKey.currentState!.validate()) {
+      workersRepository
+          .inicioTurno(widget.config, operarioController.text, isInicioTurno)
+          .then(((value) {
+        responseTurno = value;
+
+        return showDialog(
+            context: context,
+            builder: (m) {
+              if (value.mod == "inicioTurno" && value.status == "OK") {
+                return AlertDialog(
+                  title: Text(
+                    'Opciones',
+                    style: Styles.textTitleInfo,
+                    textAlign: TextAlign.center,
+                  ),
+                  content: Container(
+                    width: 760,
+                    height: 270,
+                    child: Column(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 0),
+                                child: Icon(
+                                  Icons.done,
+                                  color: Colors.green,
+                                  size: 40,
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                value.message,
+                                style: Styles.textTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                "¡Hola ${value.operario}! Tu turno comienza a las ${value.hora}",
+                                style: Styles.textTitle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(m).pop();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 300,
+                          height: 70,
+                          child: Text(
+                            'Cerrar',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonCancelar,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.red))),
+                  ],
+                );
+              } else if (value.mod == "finTurno" && value.status == "OK") {
+                return AlertDialog(
+                  title: Text(
+                    'Opciones',
+                    style: Styles.textTitleInfo,
+                    textAlign: TextAlign.center,
+                  ),
+                  content: Container(
+                    width: 760,
+                    height: 270,
+                    child: Column(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 0),
+                                child: Icon(
+                                  Icons.done,
+                                  color: Colors.green,
+                                  size: 40,
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                value.message,
+                                style: Styles.textTitle,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                "¡Adiós ${value.operario}! Tu turno finaliza a las ${value.hora}",
+                                style: Styles.textTitle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(m).pop();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 300,
+                          height: 70,
+                          child: Text(
+                            'Cerrar',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonCancelar,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.red))),
+                  ],
+                );
+              } else {
+                return AlertDialog(
+                  title: Text(
+                    'Opciones',
+                    style: Styles.textTitleInfo,
+                    textAlign: TextAlign.center,
+                  ),
+                  content: Container(
+                    width: 760,
+                    height: 270,
+                    child: Column(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                  size: 50,
+                                )),
+                            Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                value.message,
+                                style: Styles.textTitle,
+                              ),
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  dialogoOperario();
+                                },
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    width: 750,
+                                    height: 70,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.replay_outlined,
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          size: 30,
+                                        ),
+                                        Text(
+                                          'Volver a intentar',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.textButtonCancelar,
+                                        ),
+                                      ],
+                                    )),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.amber))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(m).pop();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: 300,
+                          height: 70,
+                          child: Text(
+                            'Cerrar',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonCancelar,
+                          ),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.red))),
+                  ],
+                );
+              }
+            });
+        //opcionesTurno(value.mod, value.status);
+      }));
+    }
+
+    /*
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Introduce un código')),
+      );
+    }
+    */
+  }
+  //responseTurno!.mod == "inicioTurno" && responseTurno!.status == "OK" || responseTurno!.mod == "finTurno" && responseTurno!.status == "OK"
+
+//GESTION DEL RESUMEN DE COMANDAS
+//Agrupamos los "titulos" por nombre y sumamos las cantidades
   List<String> reordering(List<String> titulos) {
     List<List<String>> titulosSplit = [];
 
