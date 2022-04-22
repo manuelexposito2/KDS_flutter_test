@@ -86,7 +86,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                       }
                     });
 
-                    //print("Se ha seleccionado: ${widget.lineasComandas!.elementAt(index).split(" X ").last}");
+                   
                   },
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(vertical: 15.0),

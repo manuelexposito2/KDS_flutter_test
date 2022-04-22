@@ -140,7 +140,7 @@ class _OrdersListState extends State<OrdersList> {
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
-
+      print("Evento modifyOrder detectado desde la lista de comandas");
       setState(() {
         resumeList = _refillResumeList(ordersList!);
       });
@@ -183,9 +183,9 @@ class _OrdersListState extends State<OrdersList> {
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
           builder: (context, snapshot) {
-            debugPrint(snapshot.connectionState.name);
-            debugPrint('hasData : ${snapshot.hasData.toString()}');
-            debugPrint('hasError : ${snapshot.hasError.toString()}');
+            //debugPrint(snapshot.connectionState.name);
+            //debugPrint('hasData : ${snapshot.hasData.toString()}');
+            //debugPrint('hasError : ${snapshot.hasError.toString()}');
             if (snapshot.connectionState == ConnectionState.waiting &&
                 !snapshot.hasError &&
                 !snapshot.hasData) {
@@ -195,9 +195,7 @@ class _OrdersListState extends State<OrdersList> {
                 !snapshot.hasError &&
                 !snapshot.hasData) {
               return WaitingScreen();
-            }
-
-            else if (snapshot.connectionState == ConnectionState.done &&
+            } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasError &&
                 !snapshot.hasData) {
               return ErrorScreen(
@@ -223,22 +221,21 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return 
-              
-              ordersList!.isNotEmpty ?
-              Row(
-                children: [
-                  Expanded(flex: 3, child: responsiveOrder()),
-                  showResumen
-                      ? Expanded(
-                          flex: 1,
-                          child: ResumeOrdersWidget(
-                            lineasComandas: reordering(resumeList),
-                            socket: widget.socket,
-                          ))
-                      : Container()
-                ],
-              ) : WaitingScreen();
+              return ordersList!.isNotEmpty
+                  ? Row(
+                      children: [
+                        Expanded(flex: 3, child: responsiveOrder()),
+                        showResumen
+                            ? Expanded(
+                                flex: 1,
+                                child: ResumeOrdersWidget(
+                                  lineasComandas: reordering(resumeList),
+                                  socket: widget.socket,
+                                ))
+                            : Container()
+                      ],
+                    )
+                  : WaitingScreen();
             } else {
               return WaitingScreen();
             }
@@ -445,26 +442,32 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-
-  ElevatedButton _filterBtn(
+  Widget _filterBtn(
       String newFilter, String title, ButtonStyle btnStyle) {
     Color _btnColor = Colors.white;
 
     if (title.contains("Todas")) {
       _btnColor = Colors.black;
     }
+    //BoxDecoration(border: Border.all(color: Colors.red))
+    BoxDecoration selectedFilterStyle = BoxDecoration(border: Border(bottom: BorderSide(color: Styles.black, width: 4.0)));
 
-    return ElevatedButton(
-        onPressed: () {
-          setState(() {
-            filter = newFilter;
-          });
-        },
-        child: Text(
-          title,
-          style: Styles.btnTextSize(_btnColor),
-        ),
-        style: btnStyle);
+    return Container(
+      decoration: filter == newFilter ? selectedFilterStyle : null,
+      child: ElevatedButton(
+        
+          onPressed: () {
+            setState(() {
+              filter = newFilter;
+            });
+          },
+          child: Text(
+            title,
+            style: Styles.btnTextSize(_btnColor),
+          ),
+
+          style: btnStyle),
+    );
   }
 
   Widget _buttonsOptions() {
@@ -657,11 +660,12 @@ class _OrdersListState extends State<OrdersList> {
                           margin: EdgeInsets.only(top: 30),
                           child: ElevatedButton(
                               onPressed: () {
-                                opcionesTurno(isInicioTurno);
-                                setState(() {
-                                  operarioController.clear();
-                                });
-
+                                if (_formKey.currentState!.validate()) {
+                                  opcionesTurno(isInicioTurno);
+                                  setState(() {
+                                    operarioController.clear();
+                                  });
+                                }
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -684,8 +688,8 @@ class _OrdersListState extends State<OrdersList> {
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
-                                  operarioController.clear();
-                                });
+                        operarioController.clear();
+                      });
                       Navigator.of(m).pop();
                     },
                     child: Container(
@@ -703,12 +707,11 @@ class _OrdersListState extends State<OrdersList> {
                             MaterialStateProperty.all(Colors.red))),
               ],
             )).then((value) {
-              operarioController.clear();
-            });
+      operarioController.clear();
+    });
   }
 
   opcionesTurno(String isInicioTurno) {
-    
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {
       workersRepository
@@ -886,7 +889,8 @@ class _OrdersListState extends State<OrdersList> {
                                     width: 750,
                                     height: 70,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.replay_outlined,
@@ -933,9 +937,7 @@ class _OrdersListState extends State<OrdersList> {
             });
       }));
     }
-
   }
-
 
 //GESTION DEL RESUMEN DE COMANDAS
 //Agrupamos los "titulos" por nombre y sumamos las cantidades

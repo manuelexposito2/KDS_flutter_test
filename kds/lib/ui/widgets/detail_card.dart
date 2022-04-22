@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
+import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
+import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
+import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
@@ -28,6 +31,7 @@ class DetailCard extends StatefulWidget {
 
 class _DetailCardState extends State<DetailCard> {
   late StatusDetailRepository statusDetailRepository;
+  late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
   var selectedDetail = "";
 
@@ -45,6 +49,7 @@ class _DetailCardState extends State<DetailCard> {
 
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
+    statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
@@ -85,14 +90,13 @@ class _DetailCardState extends State<DetailCard> {
                   idOrder: order.camId.toString(),
                   idDetail: details.demId.toString(),
                   status: _toogleStateButton(details.demEstado!));
+              OrderDto newOrderStatus = OrderDto(
+                  idOrder: order.camId.toString(),
+                  status: _toogleStateButton(order.camEstado.toString()));
 
-              statusDetailRepository.statusDetail(newStatus).then((value) {
-                widget.socket!.emit(
-                    WebSocketEvents.modifyDetail,
-                    DetailDto(
-                        idOrder: value.idOrder,
-                        idDetail: value.idDetail,
-                        status: value.status));
+              statusDetailRepository.statusDetail(newStatus).whenComplete(() {
+                widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
+                
               });
             } else {
               print("No pasa nada");
@@ -108,7 +112,8 @@ class _DetailCardState extends State<DetailCard> {
                   subtitle: Row(
                     children: [
                       Icon(Icons.arrow_right,
-                          size: double.parse(widget.config.letra!) * increaseFont),
+                          size: double.parse(widget.config.letra!) *
+                              increaseFont),
                       Text(
                         details.demSubpro.toString(),
                         style: Styles.subTextTitle(

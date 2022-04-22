@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
+import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -67,7 +68,14 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    colorOrderStatus = setColor();
+    //print("Estado actual: ${widget.order!.camEstado}");
+    widget.socket!.on(WebSocketEvents.modifyOrder, (((data) {
+      OrderDto newStatus = OrderDto.fromJson(data);
+      print("Nuevo estado: ${newStatus.status}");
+    })));
+
+    colorOrderStatus = setColor(widget.order!.camEstado!);
+
     return ShowUpAnimation(
         delayStart: Duration(milliseconds: 200),
         animationDuration: Duration(milliseconds: 350),
@@ -84,16 +92,25 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
-  setColor() {
-    if (widget.order!.camEstado.toString() == "E") {
-      return Styles.baseColor;
-    } else if (widget.order!.camEstado.toString() == "P") {
+  setColor(String status) {
+  /*   if (
+        widget.order!.details.where((element) => !element.demEstado!.contains("P")).toList().isNotEmpty ) {
       return Styles.mediumColor;
-    } else if (widget.order!.camEstado.toString() == "T") {
+    } */
+
+    if (status == "E") {
+      return Styles.baseColor;
+    }
+    if (status == "P") {
+      return Styles.mediumColor;
+    }
+    if (status == "T") {
       return Styles.succesColor;
-    } else if (widget.order!.camEstado.toString() == "R") {
+    }
+    if (status == "R") {
       return Styles.purpleBtn;
-    } else {
+    }
+    if (status == "M") {
       return Styles.incidenciaColor;
     }
   }
@@ -252,7 +269,7 @@ class _ComandaCardState extends State<OrderCard> {
       size: 30,
     );
 
-    String status = _toogleStateButton(order.camEstado!);
+    String status = _toggleStateButton(order.camEstado!);
 
     if (order.camEstado == 'T') {
       label = const Text('Recuperar');
@@ -282,9 +299,8 @@ class _ComandaCardState extends State<OrderCard> {
         OrderDto newStatus =
             OrderDto(idOrder: order.camId.toString(), status: status);
 
-        statusOrderRepository.statusOrder(newStatus).then((value) {
-          widget.socket!.emit(WebSocketEvents.modifyOrder,
-              OrderDto(idOrder: value.idOrder, status: value.status));
+        statusOrderRepository.statusOrder(newStatus).whenComplete(() {
+          widget.socket!.emit(WebSocketEvents.modifyOrder, newStatus);
         });
 
         debugPrint(newStatus.idOrder);
@@ -369,7 +385,6 @@ class _ComandaCardState extends State<OrderCard> {
             width: 800,
             height: 100,
             child: ListView.builder(
-                
                 scrollDirection: Axis.horizontal,
                 itemCount: operarios.length,
                 itemBuilder: (context, index) {
@@ -483,7 +498,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  String _toogleStateButton(String status) {
+  String _toggleStateButton(String status) {
     if (status.contains('E')) {
       return 'P';
     } else if (widget.config.reparto == "S" && status.contains('P')) {

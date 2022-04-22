@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
-      routes: {
+      routes: { 
         '/': (context) => LandingScreen(),
       },
     );
