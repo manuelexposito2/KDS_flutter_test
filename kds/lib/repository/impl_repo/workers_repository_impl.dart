@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:kds/models/response_turno.dart';
+
 import './../../utils/string_extension.dart';
 import 'package:kds/models/set_dealers_response.dart';
 import 'package:kds/models/get_workers_response.dart';
@@ -52,5 +54,25 @@ class WorkersRepositoryImpl implements WorkersRepository {
     }
 
     return json;
+  }
+
+  @override
+  Future<ResponseTurno> inicioTurno(
+      Config config, String codigo, String isInicioTurno) async {
+//{{UrlPDA}}/KDS/turnos.htm?callback=responseTurno&codigo=1010&isInicioTurno=0
+//0 si sale, 1 si entra
+
+    String url =
+        '${config.urlPDA}/KDS/turnos.htm?callback=responseTurno&codigo=$codigo&isInicioTurno=$isInicioTurno';
+
+    final request = await http.get(Uri.parse(url));
+
+    if (request.statusCode == 200) {
+      return ResponseTurnoCallback.fromJson(
+              jsonDecode(_jsonpToJson(request, "responseTurno")))
+          .responseTurno;
+    } else {
+      throw Exception(request.statusCode);
+    }
   }
 }
