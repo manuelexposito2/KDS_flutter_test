@@ -564,7 +564,6 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   Widget _buttonsOptions(BuildContext context) {
-    
     return SizedBox(
       width: 280.0,
       child: Row(
@@ -581,7 +580,6 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            
             onPressed: () => dialogoOperario(),
             child: Icon(Icons.person),
             style: Styles.btnActionStyle,
@@ -610,101 +608,95 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  dialogoOperario(){
-    
+  dialogoOperario() {
     return showDialog(
-              
-              context: context,
-              
-              builder: (ctx) => AlertDialog(
-                
-                title: Text(
-                  'Opciones',
-                  style: Styles.textTitleInfo,
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          'Opciones',
+          style: Styles.textTitleInfo,
+          textAlign: TextAlign.center,
+        ),
+        content: Container(
+          height: 300,
+          child: Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    botonTurno("Iniciar turno operario", '1');
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      width: 730,
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          Text(
+                            'Iniciar turno operario',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonOperario,
+                          ),
+                        ],
+                      )),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.green))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    botonTurno("Finalizar turno operario", '0');
+                  },
+                  child: Container(
+                      alignment: Alignment.center,
+                      width: 730,
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          Text(
+                            'Finalizar turno operario',
+                            textAlign: TextAlign.center,
+                            style: Styles.textButtonOperario,
+                          ),
+                        ],
+                      )),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red))),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                width: 300,
+                height: 70,
+                child: Text(
+                  'Cancelar',
                   textAlign: TextAlign.center,
+                  style: Styles.textButtonCancelar,
                 ),
-                content: Container(
-                  height: 300,
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(ctx).pop();
-                            botonTurno("Iniciar turno operario", '1');
-                          },
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 730,
-                              height: 120,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    'Iniciar turno operario',
-                                    textAlign: TextAlign.center,
-                                    style: Styles.textButtonOperario,
-                                  ),
-                                ],
-                              )),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.green))),
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(ctx).pop();
-                            botonTurno("Finalizar turno operario", '0');
-                          },
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 730,
-                              height: 120,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    'Finalizar turno operario',
-                                    textAlign: TextAlign.center,
-                                    style: Styles.textButtonOperario,
-                                  ),
-                                ],
-                              )),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.red))),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 300,
-                        height: 70,
-                        child: Text(
-                          'Cancelar',
-                          textAlign: TextAlign.center,
-                          style: Styles.textButtonCancelar,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.red))),
-                ],
               ),
-            );
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red))),
+        ],
+      ),
+    );
   }
 
   botonTurno(String mensaje, String isInicioTurno) {
@@ -760,8 +752,13 @@ class _OrdersListState extends State<OrdersList> {
                         Container(
                           margin: EdgeInsets.only(top: 30),
                           child: ElevatedButton(
-                              onPressed: () => opcionesTurno(isInicioTurno),
-                              
+                              onPressed: () {
+                                opcionesTurno(isInicioTurno);
+                                setState(() {
+                                  operarioController.clear();
+                                });
+
+                              },
                               child: Container(
                                 alignment: Alignment.center,
                                 width: 750,
@@ -782,7 +779,9 @@ class _OrdersListState extends State<OrdersList> {
               actions: <Widget>[
                 ElevatedButton(
                     onPressed: () {
-                      operarioController.text = "";
+                      setState(() {
+                                  operarioController.clear();
+                                });
                       Navigator.of(m).pop();
                     },
                     child: Container(
@@ -799,10 +798,13 @@ class _OrdersListState extends State<OrdersList> {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.red))),
               ],
-            ));
+            )).then((value) {
+              operarioController.clear();
+            });
   }
 
   opcionesTurno(String isInicioTurno) {
+    
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {
       workersRepository
@@ -836,7 +838,6 @@ class _OrdersListState extends State<OrdersList> {
                                   Icons.done,
                                   color: Colors.green,
                                   size: 40,
-
                                 )),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -954,10 +955,10 @@ class _OrdersListState extends State<OrdersList> {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              alignment: Alignment.center,
+                                alignment: Alignment.center,
                                 child: Icon(
                                   Icons.clear,
                                   color: Colors.red,
@@ -971,23 +972,31 @@ class _OrdersListState extends State<OrdersList> {
                                 style: Styles.textTitle,
                               ),
                             ),
-                           
                             ElevatedButton(
-                                
-                                onPressed:() {Navigator.pop(context); dialogoOperario(); } 
-
-                                    
-                                ,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  dialogoOperario();
+                                },
                                 child: Container(
-                                  alignment: Alignment.center,
-                                  width: 700,
-                                  height: 70,
-                                  child: Text(
-                                    'Volver a intentar',
-                                    textAlign: TextAlign.center,
-                                    style: Styles.textButtonCancelar,
-                                  ),
-                                ),
+                                    alignment: Alignment.center,
+                                    width: 750,
+                                    height: 70,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.replay_outlined,
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          size: 30,
+                                        ),
+                                        Text(
+                                          'Volver a intentar',
+                                          textAlign: TextAlign.center,
+                                          style: Styles.textButtonCancelar,
+                                        ),
+                                      ],
+                                    )),
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
                                         Colors.amber))),
@@ -1060,4 +1069,3 @@ class _OrdersListState extends State<OrdersList> {
     return result;
   }
 }
-
