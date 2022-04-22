@@ -6,6 +6,7 @@ import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kplayer/kplayer.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
@@ -191,7 +192,7 @@ class _OrdersListState extends State<OrdersList> {
               return WaitingScreen();
             }
 
-            if (snapshot.connectionState == ConnectionState.done &&
+            else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasError &&
                 !snapshot.hasData) {
               return ErrorScreen(
@@ -217,7 +218,10 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return Row(
+              return 
+              
+              ordersList!.isNotEmpty ?
+              Row(
                 children: [
                   Expanded(flex: 3, child: responsiveOrder()),
                   showResumen
@@ -229,9 +233,9 @@ class _OrdersListState extends State<OrdersList> {
                           ))
                       : Container()
                 ],
-              );
+              ) : WaitingScreen();
             } else {
-              return LoadingScreen(message: "Cargando...");
+              return WaitingScreen();
             }
           }),
       bottomNavigationBar: bottomNavBar(context),
@@ -307,6 +311,7 @@ class _OrdersListState extends State<OrdersList> {
         responsiveCrossAxisCount = 1;
       }
 
+      (constraints.minWidth);
       return DynamicHeightGridView(
         builder: (context, index) => OrderCard(
           order: ordersList!.elementAt(index),
@@ -319,34 +324,12 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: SingleChildScrollView(
-        child: Wrap(
-          direction: Axis.horizontal,
-          alignment: WrapAlignment.start,
-          crossAxisAlignment: WrapCrossAlignment.start,
-          children: [
-            for (var o in orders)
-              OrderCard(
-                key: UniqueKey(),
-                order: o,
-                socket: widget.socket,
-                config: widget.config,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
     double responsiveWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      if (constraints.minWidth > 1250) {
+      if (constraints.minWidth > 1350) {
         return Container(
             height: Styles.navbarHeight,
             color: Styles.bottomNavColor,
@@ -365,15 +348,11 @@ class _OrdersListState extends State<OrdersList> {
           child: Padding(
               padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const TimerWidget(),
-                      _buttonsFilter(context),
-                      _buttonsOptions()
-                    ],
-                  )
+                  const TimerWidget(),
+                  _buttonsFilter(context),
+                  _buttonsOptions()
                 ],
               )),
         );
@@ -417,45 +396,12 @@ class _OrdersListState extends State<OrdersList> {
       mainAxisAlignment: MainAxisAlignment.center,
 
       children: [
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              filter = enProceso;
-            });
-          },
-          child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-          style: Styles.buttonEnProceso,
-        ),
+        _filterBtn(enProceso, "En proceso", Styles.buttonEnProceso),
         widget.config.reparto == "S"
-            ? ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    filter = recoger;
-                  });
-                },
-                child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-                style: Styles.buttonRecoger,
-              )
+            ? _filterBtn(recoger, "Recoger", Styles.buttonRecoger)
             : Container(),
-        ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = terminadas;
-              });
-            },
-            child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonTerminadas),
-        ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = todas;
-              });
-            },
-            child: Text(
-              "Todas",
-              style: Styles.btnTextSize(Colors.black),
-            ),
-            style: Styles.buttonTodas)
+        _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadas),
+        _filterBtn(todas, "Todas", Styles.buttonTodas)
       ],
     );
   }
@@ -466,35 +412,9 @@ class _OrdersListState extends State<OrdersList> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = enProceso;
-              });
-            },
-            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonEnProcesomin,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = terminadas;
-                });
-              },
-              child:
-                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-              style: Styles.buttonTerminadasmin),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = todas;
-                });
-              },
-              child: Text(
-                "Todas",
-                style: Styles.btnTextSize(Colors.black),
-              ),
-              style: Styles.buttonTodasmin)
+          _filterBtn(enProceso, "En proceso", Styles.buttonEnProcesomin),
+          _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadasmin),
+          _filterBtn(todas, "Todas", Styles.buttonTodasmin)
         ],
       ),
     );
@@ -506,52 +426,40 @@ class _OrdersListState extends State<OrdersList> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = enProceso;
-              });
-            },
-            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonEnProcesomin,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = recoger;
-              });
-            },
-            child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonRecogerMin,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = terminadas;
-                });
-              },
-              child:
-                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-              style: Styles.buttonTerminadasmin),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = todas;
-                });
-              },
-              child: Text(
-                "Todas",
-                style: Styles.btnTextSize(Colors.black),
-              ),
-              style: Styles.buttonTodasmin)
+          _filterBtn(enProceso, "En proceso", Styles.buttonEnProcesomin),
+          _filterBtn(recoger, "Recoger", Styles.buttonRecogerMin),
+          _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadasmin),
+          _filterBtn(todas, "Todas", Styles.buttonTodasmin)
         ],
       ),
     );
   }
 
+
+  ElevatedButton _filterBtn(
+      String newFilter, String title, ButtonStyle btnStyle) {
+    Color _btnColor = Colors.white;
+
+    if (title.contains("Todas")) {
+      _btnColor = Colors.black;
+    }
+
+    return ElevatedButton(
+        onPressed: () {
+          setState(() {
+            filter = newFilter;
+          });
+        },
+        child: Text(
+          title,
+          style: Styles.btnTextSize(_btnColor),
+        ),
+        style: btnStyle);
+  }
+
   Widget _buttonsOptions() {
     return SizedBox(
-      width: 280.0,
+      width: Styles.buttonsOptionsWidth,
       child: Row(
         ///// 4 OPCIONES
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -562,7 +470,7 @@ class _OrdersListState extends State<OrdersList> {
                 showResumen = !showResumen;
               });
             },
-            child: Icon(Icons.menu),
+            child: CustomIcons.menu,
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
@@ -834,7 +742,7 @@ class _OrdersListState extends State<OrdersList> {
                 ],
               ),
             ),
-            child: Icon(Icons.person),
+            child: CustomIcons.person,
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
@@ -848,12 +756,12 @@ class _OrdersListState extends State<OrdersList> {
                         )),
               );
             },
-            child: Icon(Icons.refresh),
+            child: CustomIcons.refresh,
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
             onPressed: () {},
-            child: Icon(Icons.fullscreen),
+            child: CustomIcons.fullscreen,
             style: Styles.btnActionStyle,
           )
         ],

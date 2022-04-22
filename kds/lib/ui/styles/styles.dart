@@ -34,6 +34,7 @@ class Styles {
 
   static double navbarHeight = 70.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
+  static double buttonsOptionsWidth = 280.0;
 
 //BUTTONS STYLE
 
