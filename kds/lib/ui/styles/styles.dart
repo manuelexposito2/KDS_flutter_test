@@ -34,6 +34,7 @@ class Styles {
 
   static double navbarHeight = 70.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
+  static double buttonsOptionsWidth = 280.0;
 
 //BUTTONS STYLE
 
@@ -127,13 +128,13 @@ class Styles {
   static TextStyle get productResumeLine => GoogleFonts.getFont('Roboto',
       fontSize: 20, color: Colors.black, fontWeight: FontWeight.w600);
 
-  static TextStyle get textTitle => GoogleFonts.getFont('Roboto',
-      fontSize: 24,
+  static TextStyle textTitle(double fontSize) => GoogleFonts.getFont('Roboto',
+      fontSize: fontSize,
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
 
-  static TextStyle get subTextTitle => GoogleFonts.getFont('Roboto',
-      fontSize: 20, color: Color.fromARGB(255, 87, 87, 87));
+  static TextStyle subTextTitle(double fontSize) => GoogleFonts.getFont('Roboto',
+      fontSize: fontSize, color: Color.fromARGB(255, 87, 87, 87));
 
   static TextStyle get urgent => GoogleFonts.getFont('Roboto',
       fontSize: 27, color: Colors.white, fontWeight: FontWeight.w700);

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:kds/models/status/config.dart';
 
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class ErrorScreen extends StatelessWidget {
-  const ErrorScreen({Key? key}) : super(key: key);
+  ErrorScreen({Key? key, required this.config, required this.socket})
+      : super(key: key);
+
+  Socket socket;
+  Config config;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +67,10 @@ class ErrorScreen extends StatelessWidget {
                     Navigator.pushReplacement<void, void>(
                       context,
                       MaterialPageRoute<void>(
-                          builder: (BuildContext context) => HomeScreen()),
+                          builder: (BuildContext context) => HomeScreen(
+                                socket: socket,
+                                config: config,
+                              )),
                     );
                   },
                   icon: Icon(Icons.replay_outlined),

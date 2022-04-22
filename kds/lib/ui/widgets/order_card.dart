@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
+import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -66,7 +68,14 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    colorOrderStatus = setColor();
+    //print("Estado actual: ${widget.order!.camEstado}");
+    widget.socket!.on(WebSocketEvents.modifyOrder, (((data) {
+      OrderDto newStatus = OrderDto.fromJson(data);
+      print("Nuevo estado: ${newStatus.status}");
+    })));
+
+    colorOrderStatus = setColor(widget.order!.camEstado!);
+
     return ShowUpAnimation(
         delayStart: Duration(milliseconds: 200),
         animationDuration: Duration(milliseconds: 350),
@@ -83,16 +92,25 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
-  setColor() {
-    if (widget.order!.camEstado.toString() == "E") {
-      return Styles.baseColor;
-    } else if (widget.order!.camEstado.toString() == "P") {
+  setColor(String status) {
+  /*   if (
+        widget.order!.details.where((element) => !element.demEstado!.contains("P")).toList().isNotEmpty ) {
       return Styles.mediumColor;
-    } else if (widget.order!.camEstado.toString() == "T") {
+    } */
+
+    if (status == "E") {
+      return Styles.baseColor;
+    }
+    if (status == "P") {
+      return Styles.mediumColor;
+    }
+    if (status == "T") {
       return Styles.succesColor;
-    } else if (widget.order!.camEstado.toString() == "R") {
+    }
+    if (status == "R") {
       return Styles.purpleBtn;
-    } else {
+    }
+    if (status == "M") {
       return Styles.incidenciaColor;
     }
   }
@@ -137,21 +155,23 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-              Text(
-                order.camOperario!,
-                style: Styles.regularText,
+        widget.config.muestraOperario!.contains("S")
+            ? Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      order.camOperario!,
+                      style: Styles.regularText,
+                    )
+                  ],
+                ),
               )
-            ],
-          ),
-        ),
+            : Container(),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
@@ -249,7 +269,7 @@ class _ComandaCardState extends State<OrderCard> {
       size: 30,
     );
 
-    String status = _toogleStateButton(order.camEstado!);
+    String status = _toggleStateButton(order.camEstado!);
 
     if (order.camEstado == 'T') {
       label = const Text('Recuperar');
@@ -265,38 +285,22 @@ class _ComandaCardState extends State<OrderCard> {
         color: Color.fromARGB(255, 19, 165, 19),
         size: 30,
       );
-    } else if(order.camEstado == 'M'){
-        label = const Text("Eliminar");
-        icon =  Icon(Icons.close, color: Styles.incidenciaColor);
-        status = "T";
+    } else if (order.camEstado == 'M') {
+      label = const Text("Eliminar");
+      icon = Icon(Icons.close, color: Styles.incidenciaColor);
+      status = "T";
     }
-
-    /*
-    TextButton.icon(
-        style: TextButton.styleFrom(
-            backgroundColor: Colors.white,
-            primary: Color.fromARGB(255, 87, 87, 87),
-            textStyle: TextStyle(fontSize: 18)),
-        onPressed: () {
-          print("Borrado");
-        },
-        icon: Icon(Icons.close, color: Styles.incidenciaColor),
-        label: Text("Eliminar"));
-      */
-
     return TextButton.icon(
       style: TextButton.styleFrom(
           backgroundColor: Colors.white,
           primary: Color.fromARGB(255, 87, 87, 87),
           textStyle: TextStyle(fontSize: 18)),
       onPressed: () {
-        OrderDto newStatus = OrderDto(
-            idOrder: order.camId.toString(),
-            status: status);
+        OrderDto newStatus =
+            OrderDto(idOrder: order.camId.toString(), status: status);
 
-        statusOrderRepository.statusOrder(newStatus).then((value) {
-          widget.socket!.emit(WebSocketEvents.modifyOrder,
-              OrderDto(idOrder: value.idOrder, status: value.status));
+        statusOrderRepository.statusOrder(newStatus).whenComplete(() {
+          widget.socket!.emit(WebSocketEvents.modifyOrder, newStatus);
         });
 
         debugPrint(newStatus.idOrder);
@@ -308,23 +312,47 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget _buttonAsignar(Order order) {
-    return TextButton.icon(
-      style: TextButton.styleFrom(
-          backgroundColor: Colors.white,
-          primary: Color.fromARGB(255, 87, 87, 87),
-          textStyle: TextStyle(fontSize: 18)),
-      onPressed: () => showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            listaOperarios = workersRepository.getWorkers(widget.config);
-            return AlertDialog(
-              content: _futureWorkers(context),
-            );
-          },
-          barrierDismissible: true),
-      icon: Icon(Icons.check_box),
-      label: const Text("Asignar"),
-    );
+    var bgColor = Colors.white;
+    var primaryColor = Color.fromARGB(255, 87, 87, 87);
+    var txtStyle = TextStyle(fontSize: 18);
+
+    if (widget.config.seleccionarOperario!.contains("S")) {
+      return TextButton.icon(
+        style: TextButton.styleFrom(
+            backgroundColor: bgColor,
+            primary: primaryColor,
+            textStyle: txtStyle),
+        onPressed: () => showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              listaOperarios = workersRepository.getWorkers(widget.config);
+              return AlertDialog(
+                content: _futureWorkers(context),
+              );
+            },
+            barrierDismissible: true),
+        icon: Icon(Icons.check_box),
+        label: const Text("Asignar"),
+      );
+    } else {
+      return TextButton.icon(
+        style: TextButton.styleFrom(
+            backgroundColor: bgColor,
+            primary: primaryColor,
+            textStyle: txtStyle),
+        onPressed: () {
+          OrderDto newStatus =
+              OrderDto(idOrder: order.camId.toString(), status: "T");
+
+          statusOrderRepository.statusOrder(newStatus).then((value) {
+            widget.socket!.emit(WebSocketEvents.modifyOrder,
+                OrderDto(idOrder: value.idOrder, status: value.status));
+          });
+        },
+        icon: Icon(Icons.check_box),
+        label: const Text("Entregar"),
+      );
+    }
   }
 
   Widget _futureWorkers(BuildContext context) {
@@ -470,7 +498,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  String _toogleStateButton(String status) {
+  String _toggleStateButton(String status) {
     if (status.contains('E')) {
       return 'P';
     } else if (widget.config.reparto == "S" && status.contains('P')) {

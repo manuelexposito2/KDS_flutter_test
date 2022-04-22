@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
+import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/status_detail_repository_impl.dart';
+import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
+import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
@@ -28,6 +31,7 @@ class DetailCard extends StatefulWidget {
 
 class _DetailCardState extends State<DetailCard> {
   late StatusDetailRepository statusDetailRepository;
+  late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
   var selectedDetail = "";
 
@@ -45,12 +49,17 @@ class _DetailCardState extends State<DetailCard> {
 
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
+    statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
   Widget build(BuildContext context) {
-    colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
-    return widget.details.demArti != demArticuloSeparador ? _itemPedido(context, widget.order, widget.details) : Styles.separadorComanda;
+    colorDetailStatus = widget.config.comandaCompleta!.contains("S")
+        ? setColorWithStatus(widget.details.demEstado!)
+        : Colors.white;
+    return widget.details.demArti != demArticuloSeparador
+        ? _itemPedido(context, widget.order, widget.details)
+        : Styles.separadorComanda;
   }
 
   Widget _itemPedido(BuildContext context, Order order, Details details) {
@@ -66,26 +75,28 @@ class _DetailCardState extends State<DetailCard> {
       child: TextButton(
           style: TextButton.styleFrom(
             side: details.demTitulo!.split(" X ").last == selectedDetail &&
-                    details.demEstado != "T" && details.demArti != demArticuloSeparador
+                    details.demEstado != "T" &&
+                    details.demArti != demArticuloSeparador
                 ? BorderSide(color: Colors.red, width: 5.0)
                 : BorderSide.none,
             backgroundColor: colorDetailStatus,
             primary: Color.fromARGB(255, 87, 87, 87),
           ),
           onPressed: () {
-            if (widget.details.demEstado != "M") {
+            //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
+            if (!widget.details.demEstado!.contains("M") &&
+                !widget.config.comandaCompleta!.contains("N")) {
               DetailDto newStatus = DetailDto(
                   idOrder: order.camId.toString(),
                   idDetail: details.demId.toString(),
                   status: _toogleStateButton(details.demEstado!));
+              OrderDto newOrderStatus = OrderDto(
+                  idOrder: order.camId.toString(),
+                  status: _toogleStateButton(order.camEstado.toString()));
 
-              statusDetailRepository.statusDetail(newStatus).then((value) {
-                widget.socket!.emit(
-                    WebSocketEvents.modifyDetail,
-                    DetailDto(
-                        idOrder: value.idOrder,
-                        idDetail: value.idDetail,
-                        status: value.status));
+              statusDetailRepository.statusDetail(newStatus).whenComplete(() {
+                widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
+                
               });
             } else {
               print("No pasa nada");
@@ -95,21 +106,26 @@ class _DetailCardState extends State<DetailCard> {
               ? ListTile(
                   title: Text(
                     details.demTitulo!,
-                    style: Styles.textTitle,
+                    style: Styles.textTitle(
+                        double.parse(widget.config.letra!) * increaseFont),
                   ),
                   subtitle: Row(
                     children: [
-                      Icon(Icons.arrow_right, size: 30),
+                      Icon(Icons.arrow_right,
+                          size: double.parse(widget.config.letra!) *
+                              increaseFont),
                       Text(
                         details.demSubpro.toString(),
-                        style: Styles.subTextTitle,
+                        style: Styles.subTextTitle(
+                            double.parse(widget.config.letra!) * increaseFont),
                       )
                     ],
                   ))
               : ListTile(
                   title: Text(
                     details.demTitulo!,
-                    style: Styles.textTitle,
+                    style: Styles.textTitle(
+                        double.parse(widget.config.letra!) * increaseFont),
                   ),
                 )),
     );

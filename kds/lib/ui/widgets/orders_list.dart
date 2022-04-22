@@ -7,6 +7,7 @@ import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
 import 'package:kplayer/kplayer.dart';
@@ -41,7 +42,6 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   late WorkersRepository workersRepository;
-  //late final AudioCache _audioCache;
   String? filter = '';
 
   var navbarHeightmin = 280.0;
@@ -83,13 +83,16 @@ class _OrdersListState extends State<OrdersList> {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
 
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
-        FlutterPlatformAlert.playAlertSound();
+      //Si el sonido se activa en numierKDS.ini
+      if (widget.config.sonido!.contains("S")) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
+          FlutterPlatformAlert.playAlertSound();
+        } else if (kIsWeb) {
+          Player.asset("sounds/bell_ring.mp3").play();
+        }
       }
-      if (kIsWeb) {
-        Player.asset("sounds/bell_ring.mp3").play();
-      }
+
       setState(() {
         ordersList!.add(Order.fromJson(data));
       });
@@ -137,7 +140,7 @@ class _OrdersListState extends State<OrdersList> {
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
-
+      print("Evento modifyOrder detectado desde la lista de comandas");
       setState(() {
         resumeList = _refillResumeList(ordersList!);
       });
@@ -180,36 +183,61 @@ class _OrdersListState extends State<OrdersList> {
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
           builder: (context, snapshot) {
+            //debugPrint(snapshot.connectionState.name);
+            //debugPrint('hasData : ${snapshot.hasData.toString()}');
+            //debugPrint('hasError : ${snapshot.hasError.toString()}');
             if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasError &&
                 !snapshot.hasData) {
               return LoadingScreen(message: "Cargando...");
             }
             if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasError &&
                 !snapshot.hasData) {
               return WaitingScreen();
-            }
-
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError) {
-              return ErrorScreen();
-            } else {
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasError &&
+                !snapshot.hasData) {
+              return ErrorScreen(
+                config: widget.config,
+                socket: widget.socket!,
+              );
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData ||
+                snapshot.connectionState == ConnectionState.waiting &&
+                    snapshot.hasData) {
               ordersList = snapshot.data as List<Order>;
+
+              //ordersList!.sort();
+              /*       ordersList!.sort((a, b) {
+                if (a.camEstado!.contains("M")) {
+                  return -1;
+                } else if (!b.camEstado!.contains("M")) {
+                  return 0;
+                } else {
+                  return 1;
+                }
+              }); */
 
               resumeList = _refillResumeList(ordersList!);
 
-              return Row(
-                children: [
-                  Expanded(flex: 3, child: responsiveOrder()),
-                  showResumen
-                      ? Expanded(
-                          flex: 1,
-                          child: ResumeOrdersWidget(
-                            lineasComandas: reordering(resumeList),
-                            socket: widget.socket,
-                          ))
-                      : Container()
-                ],
-              );
+              return ordersList!.isNotEmpty
+                  ? Row(
+                      children: [
+                        Expanded(flex: 3, child: responsiveOrder()),
+                        showResumen
+                            ? Expanded(
+                                flex: 1,
+                                child: ResumeOrdersWidget(
+                                  lineasComandas: reordering(resumeList),
+                                  socket: widget.socket,
+                                ))
+                            : Container()
+                      ],
+                    )
+                  : WaitingScreen();
+            } else {
+              return WaitingScreen();
             }
           }),
       bottomNavigationBar: bottomNavBar(context),
@@ -253,10 +281,11 @@ class _OrdersListState extends State<OrdersList> {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
           if (d.demEstado != "M") {
-            if (d.demTitulo != '' &&
-                (d.demEstado!.contains("E") || d.demEstado!.contains("P"))) {
-              resumeList.add(d.demTitulo!);
-            } else if (filter == recoger && d.demEstado!.contains("R")) {
+            if (d.demTitulo!.split("X").length == 2 &&
+                d.demArti != demArticuloSeparador &&
+                (d.demEstado!.contains("E") ||
+                    d.demEstado!.contains("P") ||
+                    (filter == recoger && d.demEstado!.contains("R")))) {
               resumeList.add(d.demTitulo!);
             }
           }
@@ -269,90 +298,32 @@ class _OrdersListState extends State<OrdersList> {
   Widget responsiveOrder() {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+      var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 6,
-        );
+        responsiveCrossAxisCount = 6;
       } else if (constraints.minWidth > 1500) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 5,
-        );
+        responsiveCrossAxisCount = 5;
       } else if (constraints.minWidth > 1000) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 4,
-        );
+        responsiveCrossAxisCount = 4;
       } else if (constraints.minWidth > 900) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 3,
-        );
+        responsiveCrossAxisCount = 3;
       } else if (constraints.minWidth > 500) {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 2,
-        );
+        responsiveCrossAxisCount = 2;
       } else {
-        return DynamicHeightGridView(
-          builder: (context, index) => OrderCard(
-            order: ordersList!.elementAt(index),
-            socket: widget.socket,
-            config: widget.config,
-          ),
-          itemCount: ordersList!.length,
-          crossAxisCount: 1,
-        );
+        responsiveCrossAxisCount = 1;
       }
-    });
-  }
 
-  Widget _createOrdersView(BuildContext context, List<Order> orders) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: SingleChildScrollView(
-        child: Wrap(
-          direction: Axis.horizontal,
-          alignment: WrapAlignment.start,
-          crossAxisAlignment: WrapCrossAlignment.start,
-          children: [
-            for (var o in orders)
-              OrderCard(
-                key: UniqueKey(),
-                order: o,
-                socket: widget.socket,
-                config: widget.config,
-              ),
-          ],
+      (constraints.minWidth);
+      return DynamicHeightGridView(
+        builder: (context, index) => OrderCard(
+          order: ordersList!.elementAt(index),
+          socket: widget.socket,
+          config: widget.config,
         ),
-      ),
-    );
+        itemCount: ordersList!.length,
+        crossAxisCount: responsiveCrossAxisCount,
+      );
+    });
   }
 
   //BOTTOMNAVBAR
@@ -360,7 +331,7 @@ class _OrdersListState extends State<OrdersList> {
     double responsiveWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      if (constraints.minWidth > 1250) {
+      if (constraints.minWidth > 1350) {
         return Container(
             height: Styles.navbarHeight,
             color: Styles.bottomNavColor,
@@ -369,23 +340,24 @@ class _OrdersListState extends State<OrdersList> {
               children: [
                 const TimerWidget(),
                 _buttonsFilter(context),
-                _buttonsOptions(context)
+                _buttonsOptions()
               ],
             ));
-      } else if (constraints.minWidth > 900) {
+      } else if (constraints.minWidth > 1000) {
         return Container(
           height: navbarHeightMedium,
           color: Styles.bottomNavColor,
           child: Padding(
               padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const TimerWidget(),
                       _buttonsFilter(context),
-                      _buttonsOptions(context)
+                      _buttonsOptions()
                     ],
                   )
                 ],
@@ -403,7 +375,7 @@ class _OrdersListState extends State<OrdersList> {
                       children: [
                         const TimerWidget(),
                         _buttonsFilterMin(context),
-                        _buttonsOptions(context)
+                        _buttonsOptions()
                       ],
                     )))
             : Container(
@@ -416,7 +388,7 @@ class _OrdersListState extends State<OrdersList> {
                       children: [
                         const TimerWidget(),
                         _buttonsFilterMinReparto(context),
-                        _buttonsOptions(context)
+                        _buttonsOptions()
                       ],
                     )));
       }
@@ -431,45 +403,12 @@ class _OrdersListState extends State<OrdersList> {
       mainAxisAlignment: MainAxisAlignment.center,
 
       children: [
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              filter = enProceso;
-            });
-          },
-          child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-          style: Styles.buttonEnProceso,
-        ),
+        _filterBtn(enProceso, "En proceso", Styles.buttonEnProceso),
         widget.config.reparto == "S"
-            ? ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    filter = recoger;
-                  });
-                },
-                child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-                style: Styles.buttonRecoger,
-              )
+            ? _filterBtn(recoger, "Recoger", Styles.buttonRecoger)
             : Container(),
-        ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = terminadas;
-              });
-            },
-            child: Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonTerminadas),
-        ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = todas;
-              });
-            },
-            child: Text(
-              "Todas",
-              style: Styles.btnTextSize(Colors.black),
-            ),
-            style: Styles.buttonTodas)
+        _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadas),
+        _filterBtn(todas, "Todas", Styles.buttonTodas)
       ],
     );
   }
@@ -480,35 +419,9 @@ class _OrdersListState extends State<OrdersList> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = enProceso;
-              });
-            },
-            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonEnProcesomin,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = terminadas;
-                });
-              },
-              child:
-                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-              style: Styles.buttonTerminadasmin),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = todas;
-                });
-              },
-              child: Text(
-                "Todas",
-                style: Styles.btnTextSize(Colors.black),
-              ),
-              style: Styles.buttonTodasmin)
+          _filterBtn(enProceso, "En proceso", Styles.buttonEnProcesomin),
+          _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadasmin),
+          _filterBtn(todas, "Todas", Styles.buttonTodasmin)
         ],
       ),
     );
@@ -520,52 +433,46 @@ class _OrdersListState extends State<OrdersList> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = enProceso;
-              });
-            },
-            child: Text("En proceso", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonEnProcesomin,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                filter = recoger;
-              });
-            },
-            child: Text("Recoger", style: Styles.btnTextSize(Colors.white)),
-            style: Styles.buttonRecogerMin,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = terminadas;
-                });
-              },
-              child:
-                  Text("Terminadas", style: Styles.btnTextSize(Colors.white)),
-              style: Styles.buttonTerminadasmin),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  filter = todas;
-                });
-              },
-              child: Text(
-                "Todas",
-                style: Styles.btnTextSize(Colors.black),
-              ),
-              style: Styles.buttonTodasmin)
+          _filterBtn(enProceso, "En proceso", Styles.buttonEnProcesomin),
+          _filterBtn(recoger, "Recoger", Styles.buttonRecogerMin),
+          _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadasmin),
+          _filterBtn(todas, "Todas", Styles.buttonTodasmin)
         ],
       ),
     );
   }
 
-  Widget _buttonsOptions(BuildContext context) {
+  Widget _filterBtn(
+      String newFilter, String title, ButtonStyle btnStyle) {
+    Color _btnColor = Colors.white;
+
+    if (title.contains("Todas")) {
+      _btnColor = Colors.black;
+    }
+    //BoxDecoration(border: Border.all(color: Colors.red))
+    BoxDecoration selectedFilterStyle = BoxDecoration(border: Border(bottom: BorderSide(color: Styles.black, width: 4.0)));
+
+    return Container(
+      decoration: filter == newFilter ? selectedFilterStyle : null,
+      child: ElevatedButton(
+        
+          onPressed: () {
+            setState(() {
+              filter = newFilter;
+            });
+          },
+          child: Text(
+            title,
+            style: Styles.btnTextSize(_btnColor),
+          ),
+
+          style: btnStyle),
+    );
+  }
+
+  Widget _buttonsOptions() {
     return SizedBox(
-      width: 280.0,
+      width: Styles.buttonsOptionsWidth,
       child: Row(
         ///// 4 OPCIONES
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -576,7 +483,7 @@ class _OrdersListState extends State<OrdersList> {
                 showResumen = !showResumen;
               });
             },
-            child: Icon(Icons.menu),
+            child: CustomIcons.menu,
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
@@ -595,12 +502,12 @@ class _OrdersListState extends State<OrdersList> {
                         )),
               );
             },
-            child: Icon(Icons.refresh),
+            child: CustomIcons.refresh,
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
             onPressed: () {},
-            child: Icon(Icons.fullscreen),
+            child: CustomIcons.fullscreen,
             style: Styles.btnActionStyle,
           )
         ],
@@ -753,11 +660,12 @@ class _OrdersListState extends State<OrdersList> {
                           margin: EdgeInsets.only(top: 30),
                           child: ElevatedButton(
                               onPressed: () {
-                                opcionesTurno(isInicioTurno);
-                                setState(() {
-                                  operarioController.clear();
-                                });
-
+                                if (_formKey.currentState!.validate()) {
+                                  opcionesTurno(isInicioTurno);
+                                  setState(() {
+                                    operarioController.clear();
+                                  });
+                                }
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -780,8 +688,8 @@ class _OrdersListState extends State<OrdersList> {
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
-                                  operarioController.clear();
-                                });
+                        operarioController.clear();
+                      });
                       Navigator.of(m).pop();
                     },
                     child: Container(
@@ -799,12 +707,11 @@ class _OrdersListState extends State<OrdersList> {
                             MaterialStateProperty.all(Colors.red))),
               ],
             )).then((value) {
-              operarioController.clear();
-            });
+      operarioController.clear();
+    });
   }
 
   opcionesTurno(String isInicioTurno) {
-    
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {
       workersRepository
@@ -843,14 +750,14 @@ class _OrdersListState extends State<OrdersList> {
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
                                 value.message,
-                                style: Styles.textTitle,
+                                style: Styles.textTitle(20),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
                                 "¡Hola ${value.operario}! Tu turno comienza a las ${value.hora}",
-                                style: Styles.textTitle,
+                                style: Styles.textTitle(20),
                               ),
                             ),
                           ],
@@ -906,14 +813,14 @@ class _OrdersListState extends State<OrdersList> {
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
                                 value.message,
-                                style: Styles.textTitle,
+                                style: Styles.textTitle(20),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
                                 "¡Adiós ${value.operario}! Tu turno finaliza a las ${value.hora}",
-                                style: Styles.textTitle,
+                                style: Styles.textTitle(20),
                               ),
                             ),
                           ],
@@ -969,7 +876,7 @@ class _OrdersListState extends State<OrdersList> {
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Text(
                                 value.message,
-                                style: Styles.textTitle,
+                                style: Styles.textTitle(20),
                               ),
                             ),
                             ElevatedButton(
@@ -982,7 +889,8 @@ class _OrdersListState extends State<OrdersList> {
                                     width: 750,
                                     height: 70,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.replay_outlined,
@@ -1027,19 +935,9 @@ class _OrdersListState extends State<OrdersList> {
                 );
               }
             });
-        //opcionesTurno(value.mod, value.status);
       }));
     }
-
-    /*
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Introduce un código')),
-      );
-    }
-    */
   }
-  //responseTurno!.mod == "inicioTurno" && responseTurno!.status == "OK" || responseTurno!.mod == "finTurno" && responseTurno!.status == "OK"
 
 //GESTION DEL RESUMEN DE COMANDAS
 //Agrupamos los "titulos" por nombre y sumamos las cantidades
