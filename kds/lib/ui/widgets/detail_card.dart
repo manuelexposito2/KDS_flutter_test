@@ -79,7 +79,7 @@ class _DetailCardState extends State<DetailCard> {
           ),
           onPressed: () {
             //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
-            if (!widget.details.demEstado!.contains("M") ||
+            if (!widget.details.demEstado!.contains("M") &&
                 !widget.config.comandaCompleta!.contains("N")) {
               DetailDto newStatus = DetailDto(
                   idOrder: order.camId.toString(),

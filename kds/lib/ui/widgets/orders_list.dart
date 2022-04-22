@@ -341,7 +341,7 @@ class _OrdersListState extends State<OrdersList> {
                 _buttonsOptions()
               ],
             ));
-      } else if (constraints.minWidth > 900) {
+      } else if (constraints.minWidth > 1000) {
         return Container(
           height: navbarHeightMedium,
           color: Styles.bottomNavColor,
