@@ -54,6 +54,7 @@ class _OrdersListState extends State<OrdersList> {
   String? mensaje;
   List<String> resumeList = [];
   List<Order>? ordersList = [];
+  List<Order>? mensajes = [];
   Order? selectedOrder;
   ResponseTurno? responseTurno;
   @override
@@ -89,20 +90,20 @@ class _OrdersListState extends State<OrdersList> {
           //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
           FlutterPlatformAlert.playAlertSound();
         } else if (kIsWeb) {
-          Player.asset("sounds/bell_ring.mp3").play();
+          //Player.asset("sounds/bell_ring.mp3").play();
         }
       }
       Order newOrder = Order.fromJson(data);
 
-    /*   if (newOrder.camEstado!.contains("M")) {
+      if (newOrder.camEstado == "M") {
         setState(() {
           ordersList!.insert(0, newOrder);
         });
-      } else { */
+      } else {
         setState(() {
-          ordersList!.add(Order.fromJson(data));
+          ordersList!.add(newOrder);
         });
-      //}
+      }
     });
 
     widget.socket!.on(
@@ -147,7 +148,7 @@ class _OrdersListState extends State<OrdersList> {
     //TODO: Animacion para la comanda que se borra
     widget.socket!.on(WebSocketEvents.modifyOrder, ((data) {
       OrderDto newStatus = OrderDto.fromJson(data);
-      print("Evento modifyOrder detectado desde la lista de comandas");
+
       setState(() {
         resumeList = _refillResumeList(ordersList!);
       });
@@ -176,8 +177,6 @@ class _OrdersListState extends State<OrdersList> {
     }));
 
     widget.socket!.on(WebSocketEvents.modifyDetail, (data) {
-      //print(data);
-
       DetailDto detailDto = DetailDto.fromJson(data);
 
       setState(() {
@@ -190,9 +189,9 @@ class _OrdersListState extends State<OrdersList> {
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
           builder: (context, snapshot) {
-            //debugPrint(snapshot.connectionState.name);
-            //debugPrint('hasData : ${snapshot.hasData.toString()}');
-            //debugPrint('hasError : ${snapshot.hasError.toString()}');
+            ////debugPrint(snapshot.connectionState.name);
+            ////debugPrint('hasData : ${snapshot.hasData.toString()}');
+            ////debugPrint('hasError : ${snapshot.hasError.toString()}');
             if (snapshot.connectionState == ConnectionState.waiting &&
                 !snapshot.hasError &&
                 !snapshot.hasData) {
@@ -213,18 +212,19 @@ class _OrdersListState extends State<OrdersList> {
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
                     snapshot.hasData) {
-             // List<Order>? mensajes = [];
+              mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
+
               //Meto en la variable de mensajes todos los Mensajes de la lista
-        /*       for (var element in ordersList!) {
-                if (element.camEstado!.contains("M")) {
-                  mensajes.add(element);
-                }
-              }
+              mensajes!.addAll(ordersList!
+                  .where((element) => element.camEstado!.contains("M")));
+
               //Elimino los mensajes de la lista original
-              ordersList!.removeWhere((element) => element.camEstado!.contains("M"));
-              
-              ordersList!.insertAll(0, mensajes.reversed); */
+              ordersList!
+                  .removeWhere((element) => element.camEstado!.contains("M"));
+
+              ordersList!.insertAll(0, mensajes!.reversed);
+              //debugPrint(mensajes.length.toString());
 
               resumeList = _refillResumeList(ordersList!);
 
@@ -966,7 +966,7 @@ class _OrdersListState extends State<OrdersList> {
       }
 
       result.add("$cantidad X $producto");
-      //debugPrint('$producto : $cantidad');
+      ////debugPrint('$producto : $cantidad');
 
     }
     return result;

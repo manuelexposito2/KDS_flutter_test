@@ -11,6 +11,7 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/utils/constants.dart';
 //import 'package:http/http.dart;
+import 'dart:convert' show utf8;
 
 class OrderRepositoryImpl implements OrderRepository {
   Map<String, String> headers = {
@@ -26,7 +27,7 @@ class OrderRepositoryImpl implements OrderRepository {
     String url = '${config.urlPDA}/KDS/getOrders.htm?state=$filter';
 
     final request = await http.get(Uri.parse(url), headers: headers);
-    debugPrint(request.statusCode.toString());
+    ////debugPrint(request.statusCode.toString());
     if (request.statusCode == 200) {
       return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
           .getLastOrders;
@@ -40,7 +41,6 @@ class OrderRepositoryImpl implements OrderRepository {
     //String url = 'http://$apiBaseUrl:$puertoPDA/KDS/getIdOrder.htm?id=$id';
     String url = '${config.urlPDA}/KDS/getIdOrder.htm?id=$id';
     final request = await http.get(Uri.parse(url), headers: headers);
-    
 
     if (request.statusCode == 200) {
       return LastOrdersResponse.fromJson(jsonDecode(_jsonpToJson(request)))
@@ -57,12 +57,11 @@ class OrderRepositoryImpl implements OrderRepository {
     var dataBody = request.body.strip("(").strip(")");
     var json = "{${dataBody.replaceAll(callback, '"$callback":')}}";
 
-    if(json.contains('ï»¿')) {
-
-     return json.replaceAll('ï»¿', "");
+    if (json.contains('ï»¿')) {
+      return json.replaceAll('ï»¿', "");
     }
-
-    return json;
+    //var encoded = utf8.encode(json);
+    
+    return utf8.decode(json.runes.toList());
   }
-
 }

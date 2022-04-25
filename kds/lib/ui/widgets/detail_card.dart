@@ -98,9 +98,7 @@ class _DetailCardState extends State<DetailCard> {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
                 
               });
-            } else {
-              print("No pasa nada");
-            }
+            } 
           },
           child: details.demSubpro!.isNotEmpty
               ? ListTile(
