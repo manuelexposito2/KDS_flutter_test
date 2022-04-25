@@ -92,10 +92,17 @@ class _OrdersListState extends State<OrdersList> {
           Player.asset("sounds/bell_ring.mp3").play();
         }
       }
+      Order newOrder = Order.fromJson(data);
 
-      setState(() {
-        ordersList!.add(Order.fromJson(data));
-      });
+    /*   if (newOrder.camEstado!.contains("M")) {
+        setState(() {
+          ordersList!.insert(0, newOrder);
+        });
+      } else { */
+        setState(() {
+          ordersList!.add(Order.fromJson(data));
+        });
+      //}
     });
 
     widget.socket!.on(
@@ -206,18 +213,18 @@ class _OrdersListState extends State<OrdersList> {
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
                     snapshot.hasData) {
+             // List<Order>? mensajes = [];
               ordersList = snapshot.data as List<Order>;
-
-              //ordersList!.sort();
-              /*       ordersList!.sort((a, b) {
-                if (a.camEstado!.contains("M")) {
-                  return -1;
-                } else if (!b.camEstado!.contains("M")) {
-                  return 0;
-                } else {
-                  return 1;
+              //Meto en la variable de mensajes todos los Mensajes de la lista
+        /*       for (var element in ordersList!) {
+                if (element.camEstado!.contains("M")) {
+                  mensajes.add(element);
                 }
-              }); */
+              }
+              //Elimino los mensajes de la lista original
+              ordersList!.removeWhere((element) => element.camEstado!.contains("M"));
+              
+              ordersList!.insertAll(0, mensajes.reversed); */
 
               resumeList = _refillResumeList(ordersList!);
 
@@ -442,20 +449,19 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  Widget _filterBtn(
-      String newFilter, String title, ButtonStyle btnStyle) {
+  Widget _filterBtn(String newFilter, String title, ButtonStyle btnStyle) {
     Color _btnColor = Colors.white;
 
     if (title.contains("Todas")) {
       _btnColor = Colors.black;
     }
     //BoxDecoration(border: Border.all(color: Colors.red))
-    BoxDecoration selectedFilterStyle = BoxDecoration(border: Border(bottom: BorderSide(color: Styles.black, width: 4.0)));
+    BoxDecoration selectedFilterStyle = BoxDecoration(
+        border: Border(bottom: BorderSide(color: Styles.black, width: 4.0)));
 
     return Container(
       decoration: filter == newFilter ? selectedFilterStyle : null,
       child: ElevatedButton(
-        
           onPressed: () {
             setState(() {
               filter = newFilter;
@@ -465,7 +471,6 @@ class _OrdersListState extends State<OrdersList> {
             title,
             style: Styles.btnTextSize(_btnColor),
           ),
-
           style: btnStyle),
     );
   }
