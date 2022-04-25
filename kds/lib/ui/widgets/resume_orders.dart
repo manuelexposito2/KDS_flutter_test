@@ -78,10 +78,10 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
                       if (value == '' || value != newValue) {
                         UserSharedPreferences.setResumeCall(newValue);
                         lastSelected = newValue;
-                        print("Seleccionado : $lastSelected");
+                        
                       } else if (value == lastSelected) {
                         lastSelected = '';
-                        print("Borrado: $value");
+                        
                         UserSharedPreferences.removeResumeCall();
                       }
                     });

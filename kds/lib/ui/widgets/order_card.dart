@@ -303,8 +303,8 @@ class _ComandaCardState extends State<OrderCard> {
           widget.socket!.emit(WebSocketEvents.modifyOrder, newStatus);
         });
 
-        debugPrint(newStatus.idOrder);
-        debugPrint(newStatus.status);
+        ////debugPrint(newStatus.idOrder);
+        ////debugPrint(newStatus.status);
       },
       icon: icon,
       label: label,
@@ -426,12 +426,12 @@ class _ComandaCardState extends State<OrderCard> {
             border: Border.all(color: Colors.grey)),
         child: InkWell(
           onTap: () {
-            //print("Seleccionando a ${worker.oprNombre}");
+            
             workersRepository
                 .setDealer(widget.config, widget.order!.camId.toString(),
                     worker.oprCodigo)
                 .then((value) {
-              print(value.setDealer.status);
+             // print(value.setDealer.status);
 
               if (value.setDealer.status == "OK") {
                 OrderDto newStatus = OrderDto(
