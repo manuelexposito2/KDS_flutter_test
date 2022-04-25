@@ -69,12 +69,15 @@ class _ComandaCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
     //print("Estado actual: ${widget.order!.camEstado}");
-    widget.socket!.on(WebSocketEvents.modifyOrder, (((data) {
-      OrderDto newStatus = OrderDto.fromJson(data);
-      print("Nuevo estado: ${newStatus.status}");
-    })));
 
-    colorOrderStatus = setColor(widget.order!.camEstado!);
+    if (widget.order!.camEstado == "E" &&
+        widget.order!.details
+            .where((element) => element.demEstado == "P")
+            .isNotEmpty) {
+      colorOrderStatus = Styles.mediumColor;
+    } else {
+      colorOrderStatus = setColor(widget.order!.camEstado!);
+    }
 
     return ShowUpAnimation(
         delayStart: Duration(milliseconds: 200),
@@ -93,11 +96,6 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   setColor(String status) {
-  /*   if (
-        widget.order!.details.where((element) => !element.demEstado!.contains("P")).toList().isNotEmpty ) {
-      return Styles.mediumColor;
-    } */
-
     if (status == "E") {
       return Styles.baseColor;
     }
@@ -426,12 +424,11 @@ class _ComandaCardState extends State<OrderCard> {
             border: Border.all(color: Colors.grey)),
         child: InkWell(
           onTap: () {
-            
             workersRepository
                 .setDealer(widget.config, widget.order!.camId.toString(),
                     worker.oprCodigo)
                 .then((value) {
-             // print(value.setDealer.status);
+              // print(value.setDealer.status);
 
               if (value.setDealer.status == "OK") {
                 OrderDto newStatus = OrderDto(
