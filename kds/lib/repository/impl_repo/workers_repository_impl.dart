@@ -7,6 +7,7 @@ import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert' show utf8;
 
 class WorkersRepositoryImpl implements WorkersRepository {
   @override
@@ -53,7 +54,7 @@ class WorkersRepositoryImpl implements WorkersRepository {
       return json.replaceAll("'", '"');
     }
 
-    return json;
+    return utf8.decode(json.runes.toList());
   }
 
   @override
@@ -68,6 +69,7 @@ class WorkersRepositoryImpl implements WorkersRepository {
     final request = await http.get(Uri.parse(url));
 
     if (request.statusCode == 200) {
+
       return ResponseTurnoCallback.fromJson(
               jsonDecode(_jsonpToJson(request, "responseTurno")))
           .responseTurno;
