@@ -60,7 +60,7 @@ class OrderRepositoryImpl implements OrderRepository {
     if (json.contains('ï»¿')) {
       return json.replaceAll('ï»¿', "");
     }
-    //var encoded = utf8.encode(json);
+    
     
     return utf8.decode(json.runes.toList());
   }

@@ -96,9 +96,18 @@ class _DetailCardState extends State<DetailCard> {
 
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
-                
+
+                if (
+                    widget.order.details
+                            .where((element) => element.demEstado == newOrderStatus.status && element.demArti != demArticuloSeparador)
+                            .length ==
+                        widget.order.details.where((element) => element.demArti != demArticuloSeparador).length -1) {
+                  print("Todas están clickadas");
+                  statusOrderRepository.statusOrder(newOrderStatus)
+                  .whenComplete(() => widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
+                }
               });
-            } 
+            }
           },
           child: details.demSubpro!.isNotEmpty
               ? ListTile(
