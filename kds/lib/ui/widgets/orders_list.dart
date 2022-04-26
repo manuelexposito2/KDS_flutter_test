@@ -49,7 +49,7 @@ class _OrdersListState extends State<OrdersList> {
 
   var navbarHeightmin = 280.0;
   var navbarHeightminReparto = 400.0;
-  var navbarHeightMedium = 150.0;
+  var navbarHeightMedium = 170.0;
   var navbarHeight = 70.0;
 
   bool showResumen = false;
@@ -344,67 +344,184 @@ class _OrdersListState extends State<OrdersList> {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1350) {
-        return Container(
-            height: Styles.navbarHeight,
-            color: Styles.bottomNavColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const TimerWidget(),
-                _buttonsFilter(context),
-                _buttonsOptions()
-              ],
-            ));
-      } else if (constraints.minWidth > 1000) {
-        return Container(
-          height: navbarHeightMedium,
-          color: Styles.bottomNavColor,
-          child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+        return widget.config.mostrarContadores =="N"
+            ? Container(
+                height: Styles.navbarHeight,
+                color: Styles.bottomNavColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const TimerWidget(),
+                    _buttonsFilter(context),
+                    _buttonsOptions()
+                  ],
+                ))
+            : Container(
+                padding: EdgeInsets.only(top: 10),
+                height: Styles.navbarHeightConfMax,
+                color: Styles.bottomNavColor,
+                child: Column(children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       const TimerWidget(),
                       _buttonsFilter(context),
                       _buttonsOptions()
                     ],
-                  )
-                ],
-              )),
-        );
-      } else {
-        return !widget.config.reparto!.contains("S")
+                  ),
+                  _contadores()
+                ]));
+      } else if (constraints.minWidth > 1000) {
+        return widget.config.mostrarContadores == "N"
             ? Container(
-                height: navbarHeightmin,
+                padding: EdgeInsets.only(top: 10),
+                height: navbarHeightMedium,
                 color: Styles.bottomNavColor,
                 child: Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const TimerWidget(),
-                        _buttonsFilterMin(context),
-                        _buttonsOptions()
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const TimerWidget(),
+                            _buttonsFilter(context),
+                            _buttonsOptions()
+                          ],
+                        ),
                       ],
-                    )))
+                    )),
+              )
             : Container(
-                height: navbarHeightminReparto,
+                padding: EdgeInsets.only(top: 10),
+                height: Styles.navbarHeightConfMed,
                 color: Styles.bottomNavColor,
                 child: Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const TimerWidget(),
-                        _buttonsFilterMinReparto(context),
-                        _buttonsOptions()
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const TimerWidget(),
+                            _buttonsFilter(context),
+                            _buttonsOptions()
+                          ],
+                        ),
+                        _contadores()
                       ],
-                    )));
+                    )),
+              );
+      } else {
+        if (widget.config.reparto != "S") {
+          return widget.config.mostrarContadores == "N"
+              ? Container(
+                  padding: EdgeInsets.only(top: 10),
+                  height: navbarHeightmin,
+                  color: Styles.bottomNavColor,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth / 40),
+                      child: Column(
+                        children: [
+                          const TimerWidget(),
+                          _buttonsFilterMin(context),
+                          _buttonsOptions()
+                        ],
+                      )))
+              : Container(
+                  padding: EdgeInsets.only(top: 10),
+                  height: Styles.navbarHeightConfMin,
+                  color: Styles.bottomNavColor,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth / 40),
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              const TimerWidget(),
+                              _buttonsFilterMin(context),
+                              _buttonsOptions()
+                            ],
+                          ),
+                          _contadores()
+                        ],
+                      )));
+        } else {
+          return widget.config.mostrarContadores == "N"
+              ? Container(
+                  height: navbarHeightminReparto,
+                  color: Styles.bottomNavColor,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth / 40),
+                      child: Column(
+                        children: [
+                          const TimerWidget(),
+                          _buttonsFilterMinReparto(context),
+                          _buttonsOptions()
+                        ],
+                      )))
+              : Container(
+                  height: Styles.navbarHeightConfMinReparto,
+                  color: Styles.bottomNavColor,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth / 40),
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              const TimerWidget(),
+                              _buttonsFilterMinReparto(context),
+                              _buttonsOptions()
+                            ],
+                          ),
+                          _contadores()
+                        ],
+                      )));
+        }
       }
     });
+  }
+
+  Widget _contadores() {
+    /*
+    String texto = ordersList!.where((element) => element.camEstado!.contains("M")).length.toString();
+    print("ESTA ES LA BUENA " + ordersList!.where((element) => element.camEstado!.contains("M")).length.toString());
+    */
+    return Container(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.push_pin,
+          color: Colors.white,
+        ),
+        Text(
+          "0",
+          style: Styles.textContadores,
+        ),
+        Text(
+          " | ",
+          style: Styles.urgent,
+        ),
+        Icon(
+          Icons.home,
+          color: Colors.white,
+        ),
+        Text(
+          "0",
+          style: Styles.textContadores,
+        )
+      ],
+    ));
   }
 
 //BUTTONS
