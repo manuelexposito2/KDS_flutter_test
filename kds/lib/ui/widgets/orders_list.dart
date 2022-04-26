@@ -532,7 +532,7 @@ class _OrdersListState extends State<OrdersList> {
 
       children: [
         _filterBtn(enProceso, "En proceso", Styles.buttonEnProceso),
-        widget.config.reparto == "S"
+        widget.config.reparto!.contains("S")
             ? _filterBtn(recoger, "Recoger", Styles.buttonRecoger)
             : Container(),
         _filterBtn(terminadas, "Terminadas", Styles.buttonTerminadas),
