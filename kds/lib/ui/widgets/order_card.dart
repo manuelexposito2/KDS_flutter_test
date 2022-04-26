@@ -167,7 +167,26 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-        widget.config.muestraOperario!.contains("S")
+        Column(children: [
+          widget.order!.camComensales! >= 1 ? 
+          Container(
+            padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      order.camComensales.toString(),
+                      style: Styles.regularText,
+                    )
+                  ],
+                ),
+              ) : Container(),
+
+          widget.config.muestraOperario!.contains("S")
             ? Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -184,6 +203,7 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
               )
             : Container(),
+        ],),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
