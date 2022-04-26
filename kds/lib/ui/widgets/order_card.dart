@@ -25,6 +25,7 @@ import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'dart:convert' show utf8;
 
 class OrderCard extends StatefulWidget {
   OrderCard({Key? key, required this.order, this.socket, required this.config})
@@ -647,7 +648,6 @@ class _ComandaCardState extends State<OrderCard> {
             ),
             Divider(),
             Wrap(
-             
               children: [
                 Container(
                   width: 400,
@@ -907,7 +907,7 @@ class _ComandaCardState extends State<OrderCard> {
         child: Padding(
             padding: EdgeInsets.all(15),
             child: Text(
-              order.camTicket!,
+              utf8.decode(order.camTicket!.runes.toList()),
               style: Styles.textTicketInfo,
             )));
   }
