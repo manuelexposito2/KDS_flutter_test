@@ -7,6 +7,8 @@ import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
+import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
@@ -42,6 +44,7 @@ class _OrdersListState extends State<OrdersList> {
   TextEditingController operarioController = TextEditingController();
   late OrderRepository orderRepository;
   late WorkersRepository workersRepository;
+  late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
   var navbarHeightmin = 280.0;
@@ -71,6 +74,7 @@ class _OrdersListState extends State<OrdersList> {
     super.initState();
     orderRepository = OrderRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
+    statusOrderRepository = StatusOrderRepositoryImpl();
   }
 
   @override
@@ -183,6 +187,7 @@ class _OrdersListState extends State<OrdersList> {
         ordersList!
             .where((element) => element.camId.toString() == detailDto.idOrder);
       });
+
     });
 
     return Scaffold(
@@ -371,7 +376,7 @@ class _OrdersListState extends State<OrdersList> {
               )),
         );
       } else {
-        return widget.config.reparto != "S"
+        return !widget.config.reparto!.contains("S")
             ? Container(
                 height: navbarHeightmin,
                 color: Styles.bottomNavColor,

@@ -30,6 +30,8 @@ class DetailCard extends StatefulWidget {
 }
 
 class _DetailCardState extends State<DetailCard> {
+  int timesClicked = 0;
+  late int clicksToChangeState;
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
@@ -46,7 +48,7 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    clicksToChangeState = widget.order.details.length;
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
@@ -89,23 +91,13 @@ class _DetailCardState extends State<DetailCard> {
               DetailDto newStatus = DetailDto(
                   idOrder: order.camId.toString(),
                   idDetail: details.demId.toString(),
-                  status: _toogleStateButton(details.demEstado!));
+                  status: _toggleStateButton(details.demEstado!));
+
               OrderDto newOrderStatus = OrderDto(
                   idOrder: order.camId.toString(),
-                  status: _toogleStateButton(order.camEstado.toString()));
-
+                  status: _toggleStateButton(order.camEstado!.toString()));
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
-
-                if (
-                    widget.order.details
-                            .where((element) => element.demEstado == newOrderStatus.status && element.demArti != demArticuloSeparador)
-                            .length ==
-                        widget.order.details.where((element) => element.demArti != demArticuloSeparador).length -1) {
-                  print("Todas están clickadas");
-                  statusOrderRepository.statusOrder(newOrderStatus)
-                  .whenComplete(() => widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
-                }
               });
             }
           },
@@ -138,35 +130,55 @@ class _DetailCardState extends State<DetailCard> {
     );
   }
 
-  String _toogleStateButton(String status) {
-    if (status.contains('E')) {
+  String _toggleStateButton(String status) {
+    switch (status) {
+      case "E":
+        return "P";
+      case "P":
+        if (widget.config.reparto!.contains("S")) {
+          return "R";
+        } else {
+          return "T";
+        }
+
+      case "T":
+        return "E";
+
+      case "R":
+        return "T";
+
+      default:
+        return "T";
+    }
+  }
+
+/*     if (status.contains('E')) {
       return 'P';
-    } else if (widget.config.reparto == "S" && status.contains('P')) {
+    } else if (widget.config.reparto!.contains("S") && status.contains('P')) {
       return 'R';
-    } else if (widget.config.reparto == "N" && status.contains('P') ||
+    } else if (widget.config.reparto!.contains("N") && status.contains('P') ||
         status.contains('R')) {
       return 'T';
     } else {
       return 'E';
-    }
-  }
+    } */
+}
 
-  setColorWithStatus(String status) {
-    switch (status) {
-      case "E":
-        return Colors.white;
+setColorWithStatus(String status) {
+  switch (status) {
+    case "E":
+      return Colors.white;
 
-      case "P":
-        return Color(0xFFF5CB8F);
+    case "P":
+      return Color(0xFFF5CB8F);
 
-      case "T":
-        return Color(0xFFB0E1A0);
+    case "T":
+      return Color(0xFFB0E1A0);
 
-      case "R":
-        return Color.fromARGB(255, 211, 161, 219);
+    case "R":
+      return Color.fromARGB(255, 211, 161, 219);
 
-      default:
-        return Colors.white;
-    }
+    default:
+      return Colors.white;
   }
 }
