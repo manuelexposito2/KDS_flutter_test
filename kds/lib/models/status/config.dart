@@ -47,28 +47,28 @@ class Config {
   late final String? modificarPeso;
   
   Config.fromJson(Map<String, dynamic> json){
-    urlPDA = json['UrlPDA'];
-    sonido = json['Sonido'];
-    reparto = json['Reparto'];
-    modo = json['Modo'];
-    comandaCompleta = json['Comanda_completa'];
-    muestraOperario = json['Muestra_operario'];
-    letra = json['Letra'];
-    pedidosRecoger = json['Pedidos_recoger'];
-    comandasRecoger = json['Comandas_recoger'];
-    mostrarContadores = json['Mostrar_contadores'];
-    mostrarMensajes = json['Mostrar_mensajes'];
-    seleccionarOperario = json['Seleccionar_operario'];
-    confirmarCerrar = json['Confirmar_cerrar'];
-    mostrarUltimoTiempo = json['Mostrar_ultimo_tiempo'];
-    soloUltimoPlato = json['Solo_ultimo_plato'];
-    comandasPreparar = json['Comandas_preparar'];
-    pedidosPreparar = json['Pedidos_preparar'];
-    imprimirPendienteCobro = json['Imprimir_pendiente_cobro'];
-    detallesRecoger = json['Detalles_recoger'];
-    opciones = List.castFrom<dynamic, dynamic>(json['Opciones']);
-    noImprimirCambioOperario = json['No_imprimir_cambio_operario'];
-    modificarPeso = json['Modificar_peso'];
+    urlPDA = json['UrlPDA'] ?? "";
+    sonido = json['Sonido'] ?? "";
+    reparto = json['Reparto'] ?? "";
+    modo = json['Modo'] ?? "";
+    comandaCompleta = json['Comanda_completa'] ?? "";
+    muestraOperario = json['Muestra_operario'] ?? "";
+    letra = json['Letra'] ?? "";
+    pedidosRecoger = json['Pedidos_recoger'] ?? "";
+    comandasRecoger = json['Comandas_recoger'] ?? "";
+    mostrarContadores = json['Mostrar_contadores'] ?? "";
+    mostrarMensajes = json['Mostrar_mensajes'] ?? "";
+    seleccionarOperario = json['Seleccionar_operario'] ?? "";
+    confirmarCerrar = json['Confirmar_cerrar'] ?? "";
+    mostrarUltimoTiempo = json['Mostrar_ultimo_tiempo'] ?? "";
+    soloUltimoPlato = json['Solo_ultimo_plato'] ?? "";
+    comandasPreparar = json['Comandas_preparar'] ?? "";
+    pedidosPreparar = json['Pedidos_preparar'] ?? "";
+    imprimirPendienteCobro = json['Imprimir_pendiente_cobro'] ?? "";
+    detallesRecoger = json['Detalles_recoger'] ?? "";
+    opciones = List.castFrom<dynamic, dynamic>(json['Opciones'] ?? "");
+    noImprimirCambioOperario = json['No_imprimir_cambio_operario'] ?? "";
+    modificarPeso = json['Modificar_peso'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
