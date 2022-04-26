@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -48,6 +50,7 @@ class _ComandaCardState extends State<OrderCard> {
   Color? colorOrderStatus;
   Color? color;
   OrderDto? status;
+  String? _timeString;
 
   @override
   void setState(fn) {
@@ -95,6 +98,7 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
+  //Dependiendo del estado del item imprimirá un color u otro
   setColor(String status) {
     if (status == "E") {
       return Styles.baseColor;
@@ -113,6 +117,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Si se pulsó el botón de urgente se imprimirá este item dentro de la comanda
   Widget _showUrgente(BuildContext context, Order order) {
     if (widget.order!.camUrgente.toString() == "1") {
       return _urgente(context);
@@ -121,6 +126,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Contenido de la comanda
   Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
@@ -131,7 +137,15 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Pinta la cabecera de las comandas
   Widget _comandaHeader(BuildContext context, Order order) {
+    //Actualiza el tiempo cada minuto del método total()
+    Timer.periodic(
+      Duration(minutes: 1),
+      (Timer t) => setState(() {
+        total(order);
+      }),
+    );
     return Column(
       children: [
         Container(
@@ -259,6 +273,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Dependiendo del estado de la orden cambiará el aspecto del botón 
   Widget _buttonStates(Order order) {
     Text label = const Text('Preparar');
     Icon icon = const Icon(
@@ -309,6 +324,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Botón para poder asignar repartidor 
   Widget _buttonAsignar(Order order) {
     var bgColor = Colors.white;
     var primaryColor = Color.fromARGB(255, 87, 87, 87);
@@ -353,6 +369,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Trae a los trabajadores para poder seleccionarlos
   Widget _futureWorkers(BuildContext context) {
     return FutureBuilder(
       future: listaOperarios,
@@ -368,7 +385,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  //TODO: MEJORAR ESTILOS
+  //Muestra lista de operarios para "Reparto"
   Widget _dialogAsignarParaPedido(
       BuildContext context, List<GetWorkers> operarios) {
     return SizedBox(
@@ -416,6 +433,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Muestra cada operario y lo setea
   Widget _setDealerCard(GetWorkers worker) {
     return Container(
         margin: EdgeInsets.all(10.0),
@@ -448,6 +466,7 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
+  //
   Widget _futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
@@ -508,6 +527,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Transforma el tiempo de alta de la orden de Datetime a minutos
   String total(Order order) {
     var date = DateTime.fromMillisecondsSinceEpoch(order.camFecini! * 1000);
     var date2 = DateTime.now();
@@ -515,6 +535,7 @@ class _ComandaCardState extends State<OrderCard> {
     return horatotal.inMinutes.toString();
   }
 
+  //Dependiendo de la inicial dada pinta el "estado" dentro del diálogo de información
   camEstado(Order order) {
     if (order.camEstado == 'E') {
       return Text('En espera', style: Styles.textRegularInfo);
@@ -527,6 +548,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Pinta el estado del cobro pintará el ícono correspondiente dentro del diálogo de información
   esPagado(Order order) {
     if (order.camEstadoCab == 'C') {
       return Row(
@@ -557,6 +579,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Diálogo que se muestra al pulsar el botón de información
   Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 20);
     return Container(
@@ -761,6 +784,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Cambia el estado de urgencia del botón que se encuentra dentro del diálogo de información
   Widget ticket_button(BuildContext context, Order order) {
     if (widget.order!.camUrgente.toString() == "0") {
       return TextButton(
@@ -813,6 +837,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
+  //Imprime el ticket
   Widget ticket(BuildContext context, Order order) {
     return Container(
         decoration: BoxDecoration(
