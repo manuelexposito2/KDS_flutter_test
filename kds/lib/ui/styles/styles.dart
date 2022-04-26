@@ -31,6 +31,10 @@ class Styles {
       TextStyle(fontSize: 18.0, color: color);
   static double btnPaddingV = 26.0;
   static double btnPaddingH = 70.0;
+  static double navbarHeightConfMax = 120.0;
+  static double navbarHeightConfMed = 210.0;
+  static double navbarHeightConfMin = 330.0;
+  static double navbarHeightConfMinReparto = 380;
 
   static double navbarHeight = 70.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
@@ -162,6 +166,9 @@ class Styles {
 
   static TextStyle get textButtonCancelar =>
       GoogleFonts.getFont('Roboto', fontSize: 35, color: Colors.white);
+
+      static TextStyle get textContadores =>
+      GoogleFonts.getFont('Roboto', fontSize: 32, color: Colors.green);
 
   //UTILS
 
