@@ -344,19 +344,8 @@ class _OrdersListState extends State<OrdersList> {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1350) {
-        return widget.config.mostrarContadores =="N"
-            ? Container(
-                height: Styles.navbarHeight,
-                color: Styles.bottomNavColor,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const TimerWidget(),
-                    _buttonsFilter(context),
-                    _buttonsOptions()
-                  ],
-                ))
-            : Container(
+        return widget.config.mostrarContadores!.contains("S")
+            ?  Container(
                 padding: EdgeInsets.only(top: 10),
                 height: Styles.navbarHeightConfMax,
                 color: Styles.bottomNavColor,
@@ -371,31 +360,22 @@ class _OrdersListState extends State<OrdersList> {
                   ),
                   _contadores()
                   
-                ]));
-      } else if (constraints.minWidth > 1000) {
-        return widget.config.mostrarContadores == "N"
-            ? Container(
-                padding: EdgeInsets.only(top: 10),
-                height: navbarHeightMedium,
+                ])) :
+                Container(
+                height: Styles.navbarHeight,
                 color: Styles.bottomNavColor,
-                child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const TimerWidget(),
-                            _buttonsFilter(context),
-                            _buttonsOptions()
-                          ],
-                        ),
-                      ],
-                    )),
-              )
-            : Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const TimerWidget(),
+                    _buttonsFilter(context),
+                    _buttonsOptions()
+                  ],
+                ));
+            
+      } else if (constraints.minWidth > 1000) {
+        return widget.config.mostrarContadores!.contains("S")
+            ? Container(
                 padding: EdgeInsets.only(top: 10),
                 height: Styles.navbarHeightConfMed,
                 color: Styles.bottomNavColor,
@@ -416,25 +396,31 @@ class _OrdersListState extends State<OrdersList> {
                         _contadores()
                       ],
                     )),
+              ) : Container(
+                padding: EdgeInsets.only(top: 10),
+                height: navbarHeightMedium,
+                color: Styles.bottomNavColor,
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const TimerWidget(),
+                            _buttonsFilter(context),
+                            _buttonsOptions()
+                          ],
+                        ),
+                      ],
+                    )),
               );
       } else {
         if (widget.config.reparto != "S") {
-          return widget.config.mostrarContadores == "N"
+          return widget.config.mostrarContadores!.contains("S")
               ? Container(
-                  padding: EdgeInsets.only(top: 10),
-                  height: navbarHeightmin,
-                  color: Styles.bottomNavColor,
-                  child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: responsiveWidth / 40),
-                      child: Column(
-                        children: [
-                          const TimerWidget(),
-                          _buttonsFilterMin(context),
-                          _buttonsOptions()
-                        ],
-                      )))
-              : Container(
                   padding: EdgeInsets.only(top: 10),
                   height: Styles.navbarHeightConfMin,
                   color: Styles.bottomNavColor,
@@ -452,11 +438,9 @@ class _OrdersListState extends State<OrdersList> {
                           ),
                           _contadores()
                         ],
-                      )));
-        } else {
-          return widget.config.mostrarContadores == "N"
-              ? Container(
-                  height: navbarHeightminReparto,
+                      ))) : Container(
+                  padding: EdgeInsets.only(top: 10),
+                  height: navbarHeightmin,
                   color: Styles.bottomNavColor,
                   child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -464,11 +448,13 @@ class _OrdersListState extends State<OrdersList> {
                       child: Column(
                         children: [
                           const TimerWidget(),
-                          _buttonsFilterMinReparto(context),
+                          _buttonsFilterMin(context),
                           _buttonsOptions()
                         ],
-                      )))
-              : Container(
+                      )));
+        } else {
+          return widget.config.mostrarContadores!.contains("S")
+              ? Container(
                   height: Styles.navbarHeightConfMinReparto,
                   color: Styles.bottomNavColor,
                   child: Padding(
@@ -484,6 +470,18 @@ class _OrdersListState extends State<OrdersList> {
                             ],
                           ),
                           _contadores()
+                        ],
+                      ))) : Container(
+                  height: navbarHeightminReparto,
+                  color: Styles.bottomNavColor,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: responsiveWidth / 40),
+                      child: Column(
+                        children: [
+                          const TimerWidget(),
+                          _buttonsFilterMinReparto(context),
+                          _buttonsOptions()
                         ],
                       )));
         }
