@@ -370,6 +370,7 @@ class _OrdersListState extends State<OrdersList> {
                     ],
                   ),
                   _contadores()
+                  
                 ]));
       } else if (constraints.minWidth > 1000) {
         return widget.config.mostrarContadores == "N"
