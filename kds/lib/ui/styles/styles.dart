@@ -155,7 +155,7 @@ class Styles {
       GoogleFonts.getFont('Roboto', fontSize: 25);
 
   static TextStyle get textTicketInfo =>
-      GoogleFonts.getFont('Red Hat Mono', fontSize: 18);
+      GoogleFonts.getFont('Red Hat Mono', fontSize: 14);
 
   static TextStyle get textButtonOperario =>
       GoogleFonts.getFont('Roboto', fontSize: 40, color: Colors.white);
