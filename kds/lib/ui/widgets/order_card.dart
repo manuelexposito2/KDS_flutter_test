@@ -21,6 +21,7 @@ import 'package:kds/repository/repository/workers_repository.dart';
 
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
+import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:show_up_animation/show_up_animation.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -72,6 +73,7 @@ class _ComandaCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
     //print("Estado actual: ${widget.order!.camEstado}");
+    _checkAllDetails(_toggleStateButton(widget.order!.camEstado!));
 
     if (widget.order!.camEstado == "E" &&
         widget.order!.details
@@ -160,7 +162,9 @@ class _ComandaCardState extends State<OrderCard> {
               widget.order!.camEstado != "M"
                   ? Text(
                       //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                      '${order.details.where((element) => element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P')).toList().length}/${order.details.toList().length}',
+                      '${order.details
+                      .where((element) => element.demArti != demArticuloSeparador && 
+                      (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
                       style: Styles.regularText,
                     )
                   : Container()
@@ -271,6 +275,26 @@ class _ComandaCardState extends State<OrderCard> {
         ),
       ],
     );
+  }
+
+  //Ve todos los detalles de la comanda y la setea en el estado correspondiente
+  _checkAllDetails(String status) {
+    if (widget.order!.details
+            .where((element) =>
+                element.demEstado == status &&
+                element.demArti != demArticuloSeparador)
+            .length ==
+        widget.order!.details
+            .where((element) => element.demArti != demArticuloSeparador)
+            .length) {
+      OrderDto newOrderStatus =
+          OrderDto(idOrder: widget.order!.camId.toString(), status: status);
+
+      statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
+          widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
+
+      
+    }
   }
 
   //Dependiendo del estado de la orden cambiará el aspecto del botón

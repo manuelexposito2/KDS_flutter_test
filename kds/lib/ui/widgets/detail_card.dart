@@ -30,6 +30,8 @@ class DetailCard extends StatefulWidget {
 }
 
 class _DetailCardState extends State<DetailCard> {
+  int timesClicked = 0;
+  late int clicksToChangeState;
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
@@ -46,7 +48,7 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    clicksToChangeState = widget.order.details.length;
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
@@ -90,35 +92,12 @@ class _DetailCardState extends State<DetailCard> {
                   idOrder: order.camId.toString(),
                   idDetail: details.demId.toString(),
                   status: _toggleStateButton(details.demEstado!));
+
               OrderDto newOrderStatus = OrderDto(
                   idOrder: order.camId.toString(),
-                  status: _toggleStateButton(order.camEstado.toString()));
-
+                  status: _toggleStateButton(order.camEstado!.toString()));
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
-
-/*
-widget.order.details
-                        .where((element) =>
-                            element.demEstado == newOrderStatus.status &&
-                            element.demArti != demArticuloSeparador)
-                        .length ==
-                    widget.order.details
-                            .where((element) =>
-                                element.demArti != demArticuloSeparador)
-                            .length -1
-*/
-
-                if (widget.order.details
-                        .where((element) =>
-                            element.demEstado == newOrderStatus.status &&
-                            element.demArti != demArticuloSeparador).length == widget.order.details.length) {
-                  print("Todas están clickadas");
-                  statusOrderRepository
-                      .statusOrder(newOrderStatus)
-                      .whenComplete(() => widget.socket!
-                          .emit(WebSocketEvents.modifyOrder, newOrderStatus));
-                }
               });
             }
           },
