@@ -43,6 +43,7 @@ class _LandingScreenState extends State<LandingScreen> {
           print("Connected");
 
           ConfigRepository.readConfig().then((config) {
+            print(config.toJson().toString());
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute<void>(

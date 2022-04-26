@@ -371,7 +371,7 @@ class _OrdersListState extends State<OrdersList> {
               )),
         );
       } else {
-        return widget.config.reparto != "S"
+        return !widget.config.reparto!.contains("S")
             ? Container(
                 height: navbarHeightmin,
                 color: Styles.bottomNavColor,
