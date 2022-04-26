@@ -93,9 +93,6 @@ class _DetailCardState extends State<DetailCard> {
                   idDetail: details.demId.toString(),
                   status: _toggleStateButton(details.demEstado!));
 
-              OrderDto newOrderStatus = OrderDto(
-                  idOrder: order.camId.toString(),
-                  status: _toggleStateButton(order.camEstado!.toString()));
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
               });
