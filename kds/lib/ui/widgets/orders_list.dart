@@ -187,7 +187,6 @@ class _OrdersListState extends State<OrdersList> {
         ordersList!
             .where((element) => element.camId.toString() == detailDto.idOrder);
       });
-
     });
 
     return Scaffold(
@@ -340,12 +339,13 @@ class _OrdersListState extends State<OrdersList> {
 
   //BOTTOMNAVBAR
   Widget bottomNavBar(BuildContext context) {
-    double responsiveWidth = MediaQuery.of(context).size.width;
+    double responsiveWidth = MediaQuery.of(context).size.width / 40;
+
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1350) {
         return widget.config.mostrarContadores!.contains("S")
-            ?  Container(
+            ? Container(
                 padding: EdgeInsets.only(top: 10),
                 height: Styles.navbarHeightConfMax,
                 color: Styles.bottomNavColor,
@@ -359,9 +359,8 @@ class _OrdersListState extends State<OrdersList> {
                     ],
                   ),
                   _contadores()
-                  
-                ])) :
-                Container(
+                ]))
+            : Container(
                 height: Styles.navbarHeight,
                 color: Styles.bottomNavColor,
                 child: Row(
@@ -372,7 +371,6 @@ class _OrdersListState extends State<OrdersList> {
                     _buttonsOptions()
                   ],
                 ));
-            
       } else if (constraints.minWidth > 1000) {
         return widget.config.mostrarContadores!.contains("S")
             ? Container(
@@ -380,8 +378,7 @@ class _OrdersListState extends State<OrdersList> {
                 height: Styles.navbarHeightConfMed,
                 color: Styles.bottomNavColor,
                 child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                    padding: EdgeInsets.symmetric(horizontal: responsiveWidth),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -396,13 +393,13 @@ class _OrdersListState extends State<OrdersList> {
                         _contadores()
                       ],
                     )),
-              ) : Container(
+              )
+            : Container(
                 padding: EdgeInsets.only(top: 10),
                 height: navbarHeightMedium,
                 color: Styles.bottomNavColor,
                 child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: responsiveWidth / 40),
+                    padding: EdgeInsets.symmetric(horizontal: responsiveWidth),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -425,8 +422,8 @@ class _OrdersListState extends State<OrdersList> {
                   height: Styles.navbarHeightConfMin,
                   color: Styles.bottomNavColor,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: responsiveWidth / 40),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: responsiveWidth),
                       child: Column(
                         children: [
                           Column(
@@ -438,13 +435,14 @@ class _OrdersListState extends State<OrdersList> {
                           ),
                           _contadores()
                         ],
-                      ))) : Container(
+                      )))
+              : Container(
                   padding: EdgeInsets.only(top: 10),
                   height: navbarHeightmin,
                   color: Styles.bottomNavColor,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: responsiveWidth / 40),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: responsiveWidth),
                       child: Column(
                         children: [
                           const TimerWidget(),
@@ -458,8 +456,8 @@ class _OrdersListState extends State<OrdersList> {
                   height: Styles.navbarHeightConfMinReparto,
                   color: Styles.bottomNavColor,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: responsiveWidth / 40),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: responsiveWidth),
                       child: Column(
                         children: [
                           Column(
@@ -471,12 +469,13 @@ class _OrdersListState extends State<OrdersList> {
                           ),
                           _contadores()
                         ],
-                      ))) : Container(
+                      )))
+              : Container(
                   height: navbarHeightminReparto,
                   color: Styles.bottomNavColor,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: responsiveWidth / 40),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: responsiveWidth),
                       child: Column(
                         children: [
                           const TimerWidget(),
@@ -1090,6 +1089,8 @@ class _OrdersListState extends State<OrdersList> {
       ////debugPrint('$producto : $cantidad');
 
     }
+    //ordena alfabéticamente
+    result.sort(((a, b) => a.split("X")[1].compareTo(b.split("X")[1])));
     return result;
   }
 }
