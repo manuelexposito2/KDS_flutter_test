@@ -74,11 +74,11 @@ class _ComandaCardState extends State<OrderCard> {
   @override
   Widget build(BuildContext context) {
     //print("Estado actual: ${widget.order!.camEstado}");
-    _checkAllDetails(_toggleStateButton(widget.order!.camEstado!));
+    _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
         widget.order!.details
-            .where((element) => element.demEstado == "P")
+            .where((element) => element.demEstado != "E")
             .isNotEmpty) {
       colorOrderStatus = Styles.mediumColor;
     } else {
@@ -300,16 +300,51 @@ class _ComandaCardState extends State<OrderCard> {
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
   _checkAllDetails(String status) {
+
+    //TODO: Optimizar este código 
+
+    String newStatus = _toggleStateButton(status);
+    String nextStatus = _toggleStateButton(newStatus);
+    String lastStatus = _toggleStateButton(nextStatus);
+
     if (widget.order!.details
             .where((element) =>
-                element.demEstado == status &&
+                element.demEstado == newStatus &&
                 element.demArti != demArticuloSeparador)
             .length ==
         widget.order!.details
             .where((element) => element.demArti != demArticuloSeparador)
             .length) {
       OrderDto newOrderStatus =
-          OrderDto(idOrder: widget.order!.camId.toString(), status: status);
+          OrderDto(idOrder: widget.order!.camId.toString(), status: newStatus);
+          
+      statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
+          widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
+    } else if (widget.order!.details
+            .where((element) =>
+                element.demEstado == nextStatus &&
+                element.demArti != demArticuloSeparador)
+            .length ==
+        widget.order!.details
+            .where((element) => element.demArti != demArticuloSeparador)
+            .length) {
+      OrderDto newOrderStatus =
+          OrderDto(idOrder: widget.order!.camId.toString(), status: nextStatus);
+
+      statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
+          widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
+    } else if (
+      widget.config.reparto!.contains("S") &&
+      widget.order!.details
+            .where((element) =>
+                element.demEstado == lastStatus &&
+                element.demArti != demArticuloSeparador)
+            .length ==
+        widget.order!.details
+            .where((element) => element.demArti != demArticuloSeparador)
+            .length) {
+      OrderDto newOrderStatus =
+          OrderDto(idOrder: widget.order!.camId.toString(), status: lastStatus);
 
       statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
           widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
