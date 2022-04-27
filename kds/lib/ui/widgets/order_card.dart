@@ -21,6 +21,7 @@ import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/repository/repository/urgent_repository.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
+import 'package:kds/ui/styles/custom_icons.dart';
 
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
@@ -112,12 +113,12 @@ class _ComandaCardState extends State<OrderCard> {
             )),
         ElevatedButton(
           onPressed: () async {
-            var json = await optionsRepository.readOpciones("246");
+            var json = await optionsRepository.readOpciones(widget.order!.camId.toString());
             //var readOptions = ReadOptionsDto(idOrder: widget.order!.camId.toString(), opcion1: 1, opcion2: 1, opcion3: 1, opcion4: 1, opcion5: 1, opcion6: 1, opcion7: 1, opcion8: 1);
             optionsRepository.writeOpciones(
-                widget.order!.camId.toString(), json!.toJson());
+                widget.order!.camId.toString(), json);
           },
-          child: Text("PRUEBA OP ${widget.order!.camId.toString()}"),
+          child: Text("PRUEBA OP ${widget.order!.camId}"),
         ),
       ],
     );
@@ -507,24 +508,7 @@ class _ComandaCardState extends State<OrderCard> {
           Divider(thickness: 3.0),
           Align(
             alignment: Alignment.bottomRight,
-            child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: [
-                      WidgetSpan(
-                        child: Icon(Icons.close, size: 23.5),
-                      ),
-                      TextSpan(
-                        text: "Cerrar",
-                        style: TextStyle(fontSize: 20.0),
-                      ),
-                    ],
-                  ),
-                )),
+            child: CustomIcons.closeBlueBtn(context),
           )
         ],
       ),
@@ -690,214 +674,231 @@ class _ComandaCardState extends State<OrderCard> {
   Widget information(BuildContext context, Order order) {
     var espaciado = EdgeInsets.only(bottom: 20);
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              child: Text(
-                'Información de comanda',
-                style: Styles.textTitleInfo,
-              ),
-            ),
-            Divider(),
-            Wrap(
+    return Stack(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            child: Column(
               children: [
                 Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          'General',
-                          style: Styles.textTitleInfo,
-                        ),
-                      ),
-                      Column(
+                  child: Text(
+                    'Información de comanda',
+                    style: Styles.textTitleInfo,
+                  ),
+                ),
+                Divider(),
+                Wrap(
+                  children: [
+                    Container(
+                      width: 400,
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.person),
-                                Text(
-                                  ' Cliente: ',
-                                  style: Styles.textBoldInfo,
+                          Container(
+                            margin: EdgeInsets.only(bottom: 30),
+                            child: Text(
+                              'General',
+                              style: Styles.textTitleInfo,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.person),
+                                    Text(
+                                      ' Cliente: ',
+                                      style: Styles.textBoldInfo,
+                                    ),
+                                    Text(
+                                      '',
+                                      style: Styles.textRegularInfo,
+                                    )
+                                  ],
                                 ),
-                                Text(
-                                  '',
-                                  style: Styles.textRegularInfo,
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.business_outlined),
-                                Text(' Agencia: ', style: Styles.textBoldInfo),
-                                Text(" ", style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.adjust_outlined),
-                                Text(' Operario: ', style: Styles.textBoldInfo),
-                                Text(order.camOperario!,
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.push_pin),
-                                Text(' Salón: ', style: Styles.textBoldInfo),
-                                Text(order.camSalon.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.query_stats_rounded),
-                                Text(' Estado: ', style: Styles.textBoldInfo),
-                                camEstado(order),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble),
-                                Text(' Notas: ', style: Styles.textBoldInfo),
-                                Text(order.camNota.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                          Padding(padding: espaciado, child: esPagado(order)),
-                          Divider()
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.business_outlined),
+                                    Text(' Agencia: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(" ", style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.adjust_outlined),
+                                    Text(' Operario: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.camOperario!,
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.push_pin),
+                                    Text(' Salón: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.camSalon.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.query_stats_rounded),
+                                    Text(' Estado: ',
+                                        style: Styles.textBoldInfo),
+                                    camEstado(order),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.chat_bubble),
+                                    Text(' Notas: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.camNota.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Divider(),
+                              Padding(
+                                  padding: espaciado, child: esPagado(order)),
+                              Divider()
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 400,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text('Cliente', style: Styles.textTitleInfo),
                       ),
-                      Column(
+                    ),
+                    Container(
+                      width: 400,
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.person),
-                                Text(' Nombre: ', style: Styles.textBoldInfo),
-                                Text(order.cliNombre.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 30),
+                            child: Text('Cliente', style: Styles.textTitleInfo),
                           ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.phone),
-                                Text(' Teléfono: ', style: Styles.textBoldInfo),
-                                Text(order.cliTelefono.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.place),
-                                Text(' Dirección:', style: Styles.textBoldInfo),
-                                Text(order.cliDireccion.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.zoom_in_map_rounded),
-                                Text(' Zona: ', style: Styles.textBoldInfo),
-                                Text(order.cliZona.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: espaciado,
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble),
-                                Text(' Notas:', style: Styles.textBoldInfo),
-                                Text(order.cliNotas.toString(),
-                                    style: Styles.textRegularInfo)
-                              ],
-                            ),
-                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.person),
+                                    Text(' Nombre: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.cliNombre.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.phone),
+                                    Text(' Teléfono: ',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.cliTelefono.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.place),
+                                    Text(' Dirección:',
+                                        style: Styles.textBoldInfo),
+                                    Text(order.cliDireccion.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.zoom_in_map_rounded),
+                                    Text(' Zona: ', style: Styles.textBoldInfo),
+                                    Text(order.cliZona.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: espaciado,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.chat_bubble),
+                                    Text(' Notas:', style: Styles.textBoldInfo),
+                                    Text(order.cliNotas.toString(),
+                                        style: Styles.textRegularInfo)
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        child: Text(
-                          'Ticket',
-                          style: Styles.textTitleInfo,
-                        ),
                       ),
-                      _ticketButton(context, order),
-                      _ticket(context, order)
-                    ],
-                  ),
-                ),
+                    ),
+                    Container(
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 30),
+                            child: Text(
+                              'Ticket',
+                              style: Styles.textTitleInfo,
+                            ),
+                          ),
+                          _ticketButton(context, order),
+                          _ticket(context, order)
+                        ],
+                      ),
+                    ),
 
-                //OPTIONS LIST INFO
-                widget.config.reparto!.contains("S")
-                    ? SizedBox(
-                        width: 500,
-                        height: 500,
-                        child: optionsFutureList(context))
-                    : Container()
+                    //OPTIONS LIST INFO
+                    widget.config.reparto!.contains("S") && widget.config.opciones.isNotEmpty
+                        ? SizedBox(
+                            width: 500,
+                            height: 500,
+                            child: optionsFutureList(context))
+                        : Container()
+                  ],
+                )
               ],
-            )
-          ],
+            ),
+          ),
         ),
-      ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: CustomIcons.closeBlueBtn(context))
+      ],
     );
   }
 
@@ -936,12 +937,13 @@ class _ComandaCardState extends State<OrderCard> {
             //TODO: Gestionar petición writeOpciones
           },
           child: Container(
-            padding: const EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              color: _getOptionValue(readOptionsDto, index) == 1 ? Color.fromARGB(255, 142, 224, 144) : Colors.white,
-              border: Border.all(color: Styles.black),
-              borderRadius: const BorderRadius.all(Radius.circular(5.0))
-            ),
+              padding: const EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  color: _getOptionValue(readOptionsDto, index) == 1
+                      ? Color.fromARGB(255, 142, 224, 144)
+                      : Colors.transparent,
+                  border: Border.all(color: Styles.black),
+                  borderRadius: const BorderRadius.all(Radius.circular(5.0))),
               margin: EdgeInsets.symmetric(vertical: 5.0),
               child: Row(
                 children: [
