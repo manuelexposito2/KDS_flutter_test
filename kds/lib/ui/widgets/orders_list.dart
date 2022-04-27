@@ -86,7 +86,7 @@ class _OrdersListState extends State<OrdersList> {
   @override
   Widget build(BuildContext context) {
     //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
-
+    //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
       //Si el sonido se activa en numierKDS.ini
       if (widget.config.sonido!.contains("S")) {
@@ -110,6 +110,7 @@ class _OrdersListState extends State<OrdersList> {
       }
     });
 
+    //Evento que ocurre al ocurrir un error en los estados de las comandas
     widget.socket!.on(
         WebSocketEvents.errorNotifyOrden,
         (data) => showDialog(
@@ -129,6 +130,7 @@ class _OrdersListState extends State<OrdersList> {
             },
             barrierDismissible: true));
 
+    //Evento que ocurre al ocurrir un error en los estados de los detalles
     widget.socket!.on(
         WebSocketEvents.errorNotifyDetail,
         (data) => showDialog(
@@ -193,9 +195,7 @@ class _OrdersListState extends State<OrdersList> {
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
           builder: (context, snapshot) {
-            ////debugPrint(snapshot.connectionState.name);
-            ////debugPrint('hasData : ${snapshot.hasData.toString()}');
-            ////debugPrint('hasError : ${snapshot.hasError.toString()}');
+            //Se gestionan los distintos estados cuando se carga el cuerpo
             if (snapshot.connectionState == ConnectionState.waiting &&
                 !snapshot.hasError &&
                 !snapshot.hasData) {
@@ -251,10 +251,12 @@ class _OrdersListState extends State<OrdersList> {
               return WaitingScreen();
             }
           }),
+          //Barra de navegación de abajo
       bottomNavigationBar: bottomNavBar(context),
     );
   }
 
+  //Widget de error de evento errorNotifyOrden
   Widget errorDialogOrder() {
     return SingleChildScrollView(
       child: ListBody(
@@ -270,6 +272,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Widget de error de evento errorNotifyDetail
   Widget errorDialogDetail() {
     return SingleChildScrollView(
       child: ListBody(
@@ -306,6 +309,7 @@ class _OrdersListState extends State<OrdersList> {
     return resumeList;
   }
 
+  //Imprime la lista de ordenes dependiendo del tamaño de la pantalla
   Widget responsiveOrder() {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -337,15 +341,15 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
-  //BOTTOMNAVBAR
+  //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      if (constraints.minWidth > 1350) {
-        return widget.config.mostrarContadores!.contains("S")
-            ? Container(
+      if (constraints.minWidth > 1350) { //Dependiendo del tamaño de la pantalla se ordenarán los elementos
+        return widget.config.mostrarContadores!.contains("S") //Se mostrará el widget si en configuración numierKDS.ini se encuentra activado "Mostrar_contadores"
+            ?  Container(
                 padding: EdgeInsets.only(top: 10),
                 height: Styles.navbarHeightConfMax,
                 color: Styles.bottomNavColor,
@@ -359,8 +363,9 @@ class _OrdersListState extends State<OrdersList> {
                     ],
                   ),
                   _contadores()
-                ]))
-            : Container(
+                  
+                ])) : //Si no se cumple la condición mostratá el widget de abajo
+                Container(
                 height: Styles.navbarHeight,
                 color: Styles.bottomNavColor,
                 child: Row(
@@ -488,6 +493,7 @@ class _OrdersListState extends State<OrdersList> {
     });
   }
 
+  //Widget que pinta la información de Mostrar_contadores del numierKDS.ini
   Widget _contadores() {
     /*
     String texto = ordersList!.where((element) => element.camEstado!.contains("M")).length.toString();
@@ -523,7 +529,7 @@ class _OrdersListState extends State<OrdersList> {
   }
 
 //BUTTONS
-
+  //Botón principal de la barra de navegación para acceder a los distintos filtros de las comandas
   Widget _buttonsFilter(BuildContext context) {
     return Row(
       //3 BOTONES
@@ -540,6 +546,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Widget que se muestra si el tamaño de la pantalla es pequeño (se usa para el responsive)
   Widget _buttonsFilterMin(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(bottom: 10, top: 5),
@@ -554,6 +561,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Widget que se muestra si el tamaño de la pantalla es pequeño (se usa para el responsive)
   Widget _buttonsFilterMinReparto(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(bottom: 10, top: 5),
@@ -595,6 +603,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  
   Widget _buttonsOptions() {
     return SizedBox(
       width: Styles.buttonsOptionsWidth,
@@ -640,6 +649,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Abre el primer dialogo para la selección de operario
   dialogoOperario() {
     return showDialog(
       context: context,
@@ -731,6 +741,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Segundo dialogo de selección de operario donde se debe introducir el código del mismo
   botonTurno(String mensaje, String isInicioTurno) {
     return showDialog(
         context: context,
@@ -832,10 +843,11 @@ class _OrdersListState extends State<OrdersList> {
                             MaterialStateProperty.all(Colors.red))),
               ],
             )).then((value) {
-      operarioController.clear();
+      operarioController.clear(); //Si el usuario no termina la acción e intenta salir sus datos desaparecen para mayor seguridad
     });
   }
 
+  //Dependiendo de si el código de operario es correcto mostrará un status "OK" o "ERROR" e imprimirá una respuesta
   opcionesTurno(String isInicioTurno) {
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {

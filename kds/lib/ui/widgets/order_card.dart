@@ -84,7 +84,7 @@ class _ComandaCardState extends State<OrderCard> {
     } else {
       colorOrderStatus = setColor(widget.order!.camEstado!);
     }
-
+    //Imprime la comanda mostrando una animación
     return ShowUpAnimation(
         delayStart: Duration(milliseconds: 200),
         animationDuration: Duration(milliseconds: 350),
@@ -884,7 +884,7 @@ class _ComandaCardState extends State<OrderCard> {
             alignment: Alignment.center,
             height: 50,
             child: Text(
-              '¡Marcar como NORMAL',
+              '¡Marcar como NO URGENTE',
               style: Styles.urgent,
             ),
           ));

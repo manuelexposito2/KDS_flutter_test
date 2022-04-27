@@ -4,6 +4,11 @@ import 'package:kds/models/status/config.dart';
 import 'package:kds/ui/screens/home_screen.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+/*
+*
+*
+Widget encargado de mostrar un mensaje de error si se tiene problemas al conectarse
+*/
 
 class ErrorScreen extends StatelessWidget {
   ErrorScreen({Key? key, required this.config, required this.socket})
