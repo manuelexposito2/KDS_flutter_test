@@ -1,3 +1,5 @@
+
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:kds/models/status/read_options_dto.dart';
@@ -7,11 +9,29 @@ import 'package:kds/repository/impl_repo/config_repository.dart';
 import 'package:kds/repository/repository/options_repository.dart';
 import 'package:path_provider/path_provider.dart';
 
-class OptionsRepositoryImpl implements OptionsRepository {
+class OptionsRepositoryImpl implements OptionsRepository{
+
   Map<String, String> headers = {
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/x-www-form-urlencoded"
   };
+
+
+  @override
+  Future<ReadOptionsDto> readOpciones(String id) async {
+    String urlKDS = await ConfigRepository.getUrlKDS();
+    String url = '$urlKDS/readOpciones?idOrder=$id';
+    final request = await http.get(Uri.parse(url));
+ 
+
+    if(request.statusCode == 200){
+      return ReadOptionsDto.fromJson(jsonDecode(request.body));
+    }else{
+      throw Exception(request.statusCode);
+    }
+
+  }
+  
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -24,12 +44,7 @@ class OptionsRepositoryImpl implements OptionsRepository {
     return File('$path/opciones');
   }
 
-  @override
-  Future<ReadOptionsDto> readOpciones(String id) {
-    throw UnimplementedError();
-  }
-
-  @override
+@override
   Future<void> writeOpciones(String idOrder) async {
     final file = await _localFile;
     

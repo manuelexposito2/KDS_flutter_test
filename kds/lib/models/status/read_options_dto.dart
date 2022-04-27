@@ -19,8 +19,8 @@ class ReadOptionsDto {
   late final int opcion6;
   late final int opcion7;
   late final int opcion8;
-
-  ReadOptionsDto.fromJson(Map<String, dynamic> json) {
+  
+  ReadOptionsDto.fromJson(Map<String, dynamic> json){
     idOrder = json['idOrder'];
     opcion1 = json['opcion1'];
     opcion2 = json['opcion2'];
