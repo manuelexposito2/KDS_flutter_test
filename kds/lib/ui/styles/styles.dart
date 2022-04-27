@@ -31,12 +31,12 @@ class Styles {
       TextStyle(fontSize: 18.0, color: color);
   static double btnPaddingV = 26.0;
   static double btnPaddingH = 70.0;
-  static double navbarHeightConfMax = 120.0;
-  static double navbarHeightConfMed = 210.0;
-  static double navbarHeightConfMin = 330.0;
-  static double navbarHeightConfMinReparto = 380;
+  static double navbarHeightConfMax = 130.0;
+  static double navbarHeightConfMed = 220.0;
+  static double navbarHeightConfMin = 340.0;
+  static double navbarHeightConfMinReparto = 390;
 
-  static double navbarHeight = 70.0;
+  static double navbarHeight = 100.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
   static double buttonsOptionsWidth = 280.0;
 

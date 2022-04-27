@@ -49,8 +49,9 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             flex: 1,
             child: Container(
               alignment: Alignment.topCenter,
+              
               width: respWidth,
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(15.0),
               decoration: BoxDecoration(color: Styles.black),
               child: Text(
                 "Resumen",
@@ -60,7 +61,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
             ),
           ),
           Expanded(
-            flex: 20,
+            flex: 15,
             child: ListView.builder(
               padding: Styles.zeroPadding,
               scrollDirection: Axis.vertical,
