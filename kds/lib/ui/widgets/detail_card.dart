@@ -64,6 +64,7 @@ class _DetailCardState extends State<DetailCard> {
         : Styles.separadorComanda;
   }
 
+//Estructura del item
   Widget _itemPedido(BuildContext context, Order order, Details details) {
     //Setea el selectedDetail para ver si debe pintar este Detail o no
     UserSharedPreferences.getResumeCall().then(((value) {
@@ -127,6 +128,7 @@ class _DetailCardState extends State<DetailCard> {
     );
   }
 
+  //Cambia el estado de los pedidos de la comanda
   String _toggleStateButton(String status) {
     switch (status) {
       case "E":
@@ -161,6 +163,7 @@ class _DetailCardState extends State<DetailCard> {
     } */
 }
 
+//Setea el color dependiendo del estado de los pedidos de cada comanda
 setColorWithStatus(String status) {
   switch (status) {
     case "E":
