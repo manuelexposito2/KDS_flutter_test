@@ -8,6 +8,7 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/read_options_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/options_repository_impl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
@@ -45,6 +46,8 @@ class _ComandaCardState extends State<OrderCard> {
   late OptionsRepository optionsRepository;
   late StatusOrderRepository statusOrderRepository;
   late UrgenteRepository urgenteRepository;
+  late Future<ReadOptionsDto?> futureOptions;
+
   Order? order;
 
   late OrderRepository orderRepository;
@@ -73,6 +76,8 @@ class _ComandaCardState extends State<OrderCard> {
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
+    futureOptions =
+        optionsRepository.readOpciones(widget.order!.camId.toString());
   }
 
   @override
@@ -106,11 +111,14 @@ class _ComandaCardState extends State<OrderCard> {
               child: _contentCard(context, widget.order!),
             )),
         ElevatedButton(
-            onPressed: () {
-              optionsRepository.writeOpciones(widget.order!.camId.toString());
-            },
-            child: Text("PRUEBA")),
-            //TODO: SOLUCIONAR FAIL TO LOAD
+          onPressed: () async {
+            var json = await optionsRepository.readOpciones("246");
+            //var readOptions = ReadOptionsDto(idOrder: widget.order!.camId.toString(), opcion1: 1, opcion2: 1, opcion3: 1, opcion4: 1, opcion5: 1, opcion6: 1, opcion7: 1, opcion8: 1);
+            optionsRepository.writeOpciones(
+                widget.order!.camId.toString(), json!.toJson());
+          },
+          child: Text("PRUEBA OP ${widget.order!.camId.toString()}"),
+        ),
       ],
     );
   }
@@ -877,8 +885,13 @@ class _ComandaCardState extends State<OrderCard> {
                     ],
                   ),
                 ),
+
+                //OPTIONS LIST INFO
                 widget.config.reparto!.contains("S")
-                    ? SizedBox(height: 400, width: 400, child: Text("Aparece"))
+                    ? SizedBox(
+                        width: 500,
+                        height: 500,
+                        child: optionsFutureList(context))
                     : Container()
               ],
             )
@@ -886,6 +899,94 @@ class _ComandaCardState extends State<OrderCard> {
         ),
       ),
     );
+  }
+
+  Widget optionsFutureList(BuildContext context) {
+    return FutureBuilder<ReadOptionsDto?>(
+      future: futureOptions,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return optionsCheckboxesList(snapshot.data!);
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
+  Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
+    Color getColor(Set<MaterialState> states) {
+      const Set<MaterialState> interactiveStates = <MaterialState>{
+        MaterialState.pressed,
+        MaterialState.hovered,
+        MaterialState.focused,
+      };
+      if (states.any(interactiveStates.contains)) {
+        return Styles.blueBtnColor;
+      }
+      return Styles.blueBtnColor;
+    }
+
+    return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: widget.config.opciones.length,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () {
+            //TODO: Gestionar petición writeOpciones
+          },
+          child: Container(
+            padding: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+              color: _getOptionValue(readOptionsDto, index) == 1 ? Color.fromARGB(255, 142, 224, 144) : Colors.white,
+              border: Border.all(color: Styles.black),
+              borderRadius: const BorderRadius.all(Radius.circular(5.0))
+            ),
+              margin: EdgeInsets.symmetric(vertical: 5.0),
+              child: Row(
+                children: [
+                  Checkbox(
+                    checkColor: Colors.white,
+                    fillColor: MaterialStateProperty.resolveWith(getColor),
+                    value: _getOptionValue(readOptionsDto, index) == 1
+                        ? true
+                        : false,
+                    onChanged: (bool? value) {
+                      //TODO: Gestionar cambio de estado
+                    },
+                  ),
+                  Text(
+                    widget.config.opciones.elementAt(index),
+                    style: Styles.textBoldInfo,
+                  )
+                ],
+              )),
+        );
+      },
+    );
+  }
+
+  _getOptionValue(ReadOptionsDto option, int index) {
+    switch (index) {
+      case 0:
+        return option.opcion1;
+      case 1:
+        return option.opcion2;
+      case 2:
+        return option.opcion3;
+      case 3:
+        return option.opcion4;
+      case 4:
+        return option.opcion5;
+      case 5:
+        return option.opcion6;
+      case 6:
+        return option.opcion7;
+      case 7:
+        return option.opcion8;
+      default:
+        return -1;
+    }
   }
 
   //Cambia el estado de urgencia del botón que se encuentra dentro del diálogo de información
