@@ -122,7 +122,14 @@ class _OrdersListState extends State<OrdersList> {
                   TextButton(
                     child: const Text('Entendido'),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushReplacement<void, void>(
+                        context,
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => HomeScreen(
+                                  socket: widget.socket,
+                                  config: widget.config,
+                                )),
+                      );
                     },
                   ),
                 ],
@@ -142,7 +149,14 @@ class _OrdersListState extends State<OrdersList> {
                   TextButton(
                     child: const Text('Entendido'),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushReplacement<void, void>(
+                        context,
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => HomeScreen(
+                                  socket: widget.socket,
+                                  config: widget.config,
+                                )),
+                      );
                     },
                   ),
                 ],
@@ -251,7 +265,7 @@ class _OrdersListState extends State<OrdersList> {
               return WaitingScreen();
             }
           }),
-          //Barra de navegación de abajo
+      //Barra de navegación de abajo
       bottomNavigationBar: bottomNavBar(context),
     );
   }
@@ -347,9 +361,11 @@ class _OrdersListState extends State<OrdersList> {
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      if (constraints.minWidth > 1350) { //Dependiendo del tamaño de la pantalla se ordenarán los elementos
-        return widget.config.mostrarContadores!.contains("S") //Se mostrará el widget si en configuración numierKDS.ini se encuentra activado "Mostrar_contadores"
-            ?  Container(
+      if (constraints.minWidth > 1350) {
+        //Dependiendo del tamaño de la pantalla se ordenarán los elementos
+        return widget.config.mostrarContadores!.contains(
+                "S") //Se mostrará el widget si en configuración numierKDS.ini se encuentra activado "Mostrar_contadores"
+            ? Container(
                 padding: EdgeInsets.only(top: 10),
                 height: Styles.navbarHeightConfMax,
                 color: Styles.bottomNavColor,
@@ -363,9 +379,9 @@ class _OrdersListState extends State<OrdersList> {
                     ],
                   ),
                   _contadores()
-                  
-                ])) : //Si no se cumple la condición mostratá el widget de abajo
-                Container(
+                ]))
+            : //Si no se cumple la condición mostratá el widget de abajo
+            Container(
                 height: Styles.navbarHeight,
                 color: Styles.bottomNavColor,
                 child: Row(
@@ -603,7 +619,6 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  
   Widget _buttonsOptions() {
     return SizedBox(
       width: Styles.buttonsOptionsWidth,
@@ -843,7 +858,8 @@ class _OrdersListState extends State<OrdersList> {
                             MaterialStateProperty.all(Colors.red))),
               ],
             )).then((value) {
-      operarioController.clear(); //Si el usuario no termina la acción e intenta salir sus datos desaparecen para mayor seguridad
+      operarioController
+          .clear(); //Si el usuario no termina la acción e intenta salir sus datos desaparecen para mayor seguridad
     });
   }
 
