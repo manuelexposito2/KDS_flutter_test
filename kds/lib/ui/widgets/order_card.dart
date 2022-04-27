@@ -9,10 +9,12 @@ import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
+import 'package:kds/repository/impl_repo/options_repository_impl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
+import 'package:kds/repository/repository/options_repository.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
@@ -40,6 +42,7 @@ class OrderCard extends StatefulWidget {
 }
 
 class _ComandaCardState extends State<OrderCard> {
+  late OptionsRepository optionsRepository;
   late StatusOrderRepository statusOrderRepository;
   late UrgenteRepository urgenteRepository;
   Order? order;
@@ -65,6 +68,7 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    optionsRepository = OptionsRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
@@ -85,20 +89,30 @@ class _ComandaCardState extends State<OrderCard> {
       colorOrderStatus = setColor(widget.order!.camEstado!);
     }
     //Imprime la comanda mostrando una animación
-    return ShowUpAnimation(
-        delayStart: Duration(milliseconds: 200),
-        animationDuration: Duration(milliseconds: 350),
-        curve: Curves.bounceIn,
-        direction: Direction.vertical,
-        offset: 0.5,
-        child: Container(
-          decoration: BoxDecoration(
-              color: colorOrderStatus,
-              borderRadius: BorderRadius.all(Radius.circular(5))),
-          margin: EdgeInsets.all(10),
-          width: 300,
-          child: _contentCard(context, widget.order!),
-        ));
+    return Stack(
+      children: [
+        ShowUpAnimation(
+            delayStart: Duration(milliseconds: 200),
+            animationDuration: Duration(milliseconds: 350),
+            curve: Curves.bounceIn,
+            direction: Direction.vertical,
+            offset: 0.5,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: colorOrderStatus,
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              margin: EdgeInsets.all(10),
+              width: 300,
+              child: _contentCard(context, widget.order!),
+            )),
+        ElevatedButton(
+            onPressed: () {
+              optionsRepository.writeOpciones(widget.order!.camId.toString());
+            },
+            child: Text("PRUEBA")),
+            //TODO: SOLUCIONAR FAIL TO LOAD
+      ],
+    );
   }
 
   //Dependiendo del estado del item imprimirá un color u otro
@@ -300,8 +314,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
   _checkAllDetails(String status) {
-
-    //TODO: Optimizar este código 
+    //TODO: Optimizar este código
 
     String newStatus = _toggleStateButton(status);
     String nextStatus = _toggleStateButton(newStatus);
@@ -317,7 +330,7 @@ class _ComandaCardState extends State<OrderCard> {
             .length) {
       OrderDto newOrderStatus =
           OrderDto(idOrder: widget.order!.camId.toString(), status: newStatus);
-          
+
       statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
           widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
     } else if (widget.order!.details
@@ -333,16 +346,15 @@ class _ComandaCardState extends State<OrderCard> {
 
       statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
           widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
-    } else if (
-      widget.config.reparto!.contains("S") &&
-      widget.order!.details
-            .where((element) =>
-                element.demEstado == lastStatus &&
-                element.demArti != demArticuloSeparador)
-            .length ==
+    } else if (widget.config.reparto!.contains("S") &&
         widget.order!.details
-            .where((element) => element.demArti != demArticuloSeparador)
-            .length) {
+                .where((element) =>
+                    element.demEstado == lastStatus &&
+                    element.demArti != demArticuloSeparador)
+                .length ==
+            widget.order!.details
+                .where((element) => element.demArti != demArticuloSeparador)
+                .length) {
       OrderDto newOrderStatus =
           OrderDto(idOrder: widget.order!.camId.toString(), status: lastStatus);
 
@@ -865,6 +877,9 @@ class _ComandaCardState extends State<OrderCard> {
                     ],
                   ),
                 ),
+                widget.config.reparto!.contains("S")
+                    ? SizedBox(height: 400, width: 400, child: Text("Aparece"))
+                    : Container()
               ],
             )
           ],
