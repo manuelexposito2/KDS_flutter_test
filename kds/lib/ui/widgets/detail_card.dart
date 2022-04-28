@@ -33,7 +33,7 @@ class DetailCard extends StatefulWidget {
 
 class _DetailCardState extends State<DetailCard> {
   int timesClicked = 0;
-  late int clicksToChangeState;
+
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
@@ -41,6 +41,7 @@ class _DetailCardState extends State<DetailCard> {
   int seconds = 0;
   int minutes = 0;
   int hours = 0;
+  bool ultimoPlato = false;
 
   @override
   void setState(fn) {
@@ -53,14 +54,25 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    clicksToChangeState = widget.order.details.length;
+
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
 
     //Inicializamos el temporizador si está activado el modo "mostrar ultimo tiempo"
 
-    if (widget.config.mostrarUltimoTiempo!.contains("S")) {
+    if (widget.config.soloUltimoPlato!.contains("S")) {
+      UserSharedPreferences.getLastDetailSelected().then((value) {
+        value == widget.details.demId.toString()
+            ? ultimoPlato = true
+            : ultimoPlato = false;
+
+        
+      });
+    }
+
+    if (widget.config.mostrarUltimoTiempo!.contains("S") ||
+        (widget.config.soloUltimoPlato!.contains("S") && ultimoPlato)) {
       UserSharedPreferences.getDetailTimer(widget.details.demId.toString())
           .then((value) {
         var timer = value.split(":");
@@ -115,9 +127,18 @@ class _DetailCardState extends State<DetailCard> {
             primary: Color.fromARGB(255, 87, 87, 87),
           ),
           onPressed: () {
+
+            if (widget.config.soloUltimoPlato!.contains("S")) {
+              UserSharedPreferences.setLastDetailSelected(
+                      widget.details.demId.toString())
+                  .whenComplete(() => ultimoPlato = true);
+            }
+
             //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
             if (widget.details.demEstado != "T" &&
-                widget.config.mostrarUltimoTiempo!.contains("S")) {
+                (widget.config.mostrarUltimoTiempo!.contains("S") ||
+                    (widget.config.soloUltimoPlato!.contains("S") &&
+                        ultimoPlato))) {
               setState(() {
                 hours = 0;
                 minutes = 0;
@@ -125,6 +146,7 @@ class _DetailCardState extends State<DetailCard> {
               });
               UserSharedPreferences.removeDetailTimer(
                   widget.details.demId.toString());
+              UserSharedPreferences.removeLastDetailSelected().whenComplete(() => ultimoPlato = false);
             }
             //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
             if (!widget.details.demEstado!.contains("M") &&
@@ -138,6 +160,10 @@ class _DetailCardState extends State<DetailCard> {
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
               });
             }
+
+
+        //TODO: GESTIONAR LAS CONDICIONES DE SOLO_ULTIMO_PLATO.
+
           },
           child: ListTile(
             title: Wrap(
@@ -148,7 +174,9 @@ class _DetailCardState extends State<DetailCard> {
                   style: Styles.textTitle(
                       double.parse(widget.config.letra!) * increaseFont),
                 ),
-                widget.config.mostrarUltimoTiempo!.contains("S") &&
+                (widget.config.mostrarUltimoTiempo!.contains("S") ||
+                            (widget.config.soloUltimoPlato!.contains("S") &&
+                                ultimoPlato)) &&
                         widget.details.demEstado == "T" &&
                         widget.order.camEstado != "T"
                     ? Text(
