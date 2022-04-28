@@ -69,7 +69,6 @@ class _ComandaCardState extends State<OrderCard> {
   int opcion7 = 0;
   int opcion8 = 0;
 
-
   
 
   
@@ -201,8 +200,7 @@ class _ComandaCardState extends State<OrderCard> {
                   )
                 : Container(),
               widget.order!.camEstado != "M"
-                  ? Container(
-                    margin: EdgeInsets.only(left: 40), 
+                  ? Container( 
                     child: Text(
                       //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
                       '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
@@ -390,7 +388,6 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget toggleButton2(String imagen1, String imagen2) {
-    
     return IconButton(
       iconSize: 35,
         padding: EdgeInsets.all(0),
@@ -408,13 +405,14 @@ class _ComandaCardState extends State<OrderCard> {
         },
         icon: opcion2 == 1
             ? Image.asset(
-                imagen1,
+                'assets/images/8.png',
                 width: 30,
               )
             : Image.asset(imagen2, width: 30));
   }
 
-  
+
+
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
   _checkAllDetails(String status) {
