@@ -8,11 +8,14 @@ import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/read_options_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
+import 'package:kds/repository/impl_repo/options_repository_impl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
+import 'package:kds/repository/repository/options_repository.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
@@ -42,6 +45,7 @@ class OrderCard extends StatefulWidget {
 class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
   late UrgenteRepository urgenteRepository;
+  late OptionsRepository optionsRepository;
   Order? order;
 
   late OrderRepository orderRepository;
@@ -54,6 +58,21 @@ class _ComandaCardState extends State<OrderCard> {
   OrderDto? status;
   String? _timeString;
 
+  ReadOptionsDto? optionsDto;
+
+  int opcion1 = 0;
+  int opcion2 = 0;
+  int opcion3 = 0;
+  int opcion4 = 0;
+  int opcion5 = 0;
+  int opcion6 = 0;
+  int opcion7 = 0;
+  int opcion8 = 0;
+
+
+  
+
+  
   @override
   void setState(fn) {
     if (mounted) {
@@ -65,6 +84,7 @@ class _ComandaCardState extends State<OrderCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    optionsRepository = OptionsRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
@@ -156,24 +176,14 @@ class _ComandaCardState extends State<OrderCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              Container(
+                child: Text(
                 total(order) + ' min.',
                 style: Styles.regularText,
-              ),
-              widget.order!.camEstado != "M"
-                  ? Text(
-                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                      '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
-                      style: Styles.regularText,
-                    )
-                  : Container()
-            ],
-          ),
-        ),
-        Column(
-          children: [
-            widget.order!.camComensales! >= 1
+              ),),
+              widget.order!.camComensales! >= 1
                 ? Container(
+                  alignment: Alignment.bottomLeft,
                     padding: EdgeInsets.all(10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -190,6 +200,18 @@ class _ComandaCardState extends State<OrderCard> {
                     ),
                   )
                 : Container(),
+              widget.order!.camEstado != "M"
+                  ? Container(
+                    margin: EdgeInsets.only(left: 40), 
+                    child: Text(
+                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                      '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
+                      style: Styles.regularText,
+                    ),)
+                  : Container()
+            ],
+          ),
+        ),
             widget.config.muestraOperario!.contains("S")
                 ? Container(
                     child: Row(
@@ -207,8 +229,6 @@ class _ComandaCardState extends State<OrderCard> {
                     ),
                   )
                 : Container(),
-          ],
-        ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
@@ -253,6 +273,7 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
+        readOpciones(),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -298,10 +319,106 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  Widget readOpciones() {
+    return Container(
+      color: Colors.white,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Row(
+          children: [
+            Flexible(
+                flex: 1,
+                child: toggleButton1(
+                     opcion1, 'assets/images/1.png', 'assets/images/10.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton2(
+                     'assets/images/2.png', 'assets/images/20.png')),
+            /*
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion3, 'assets/images/3.png', 'assets/images/30.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion4, 'assets/images/4.png', 'assets/images/40.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion5, 'assets/images/5.png', 'assets/images/50.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion6, 'assets/images/6.png', 'assets/images/60.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion7, 'assets/images/7.png', 'assets/images/70.png')),
+            Flexible(
+                flex: 1,
+                child: toggleButton(
+                    opcion8, 'assets/images/8.png', 'assets/images/80.png')),
+            */
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget toggleButton1(int valor, String imagen1, String imagen2) {
+    return IconButton(
+      iconSize: 35,
+        splashRadius: 0.1,
+        onPressed: () {
+          valor == 1
+              ? setState(() {
+                  valor = 0;
+                })
+              : setState(() {
+                  valor = 1;
+                });
+
+          print(valor);
+        },
+        icon: valor == 1
+            ? Image.asset(
+                imagen1,
+                width: 30,
+              )
+            : Image.asset(imagen2, width: 40));
+  }
+
+  Widget toggleButton2(String imagen1, String imagen2) {
+    
+    return IconButton(
+      iconSize: 35,
+        padding: EdgeInsets.all(0),
+        splashRadius: 0.1,
+        onPressed: () {
+          opcion2 == 1
+              ? setState(() {
+                  opcion2 = 0;
+                })
+              : setState(() {
+                  opcion2= 1;
+                });
+
+          print(opcion2);
+        },
+        icon: opcion2 == 1
+            ? Image.asset(
+                imagen1,
+                width: 30,
+              )
+            : Image.asset(imagen2, width: 30));
+  }
+
+  
+
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
   _checkAllDetails(String status) {
-
-    //TODO: Optimizar este código 
+    //TODO: Optimizar este código
 
     String newStatus = _toggleStateButton(status);
     String nextStatus = _toggleStateButton(newStatus);
@@ -317,7 +434,7 @@ class _ComandaCardState extends State<OrderCard> {
             .length) {
       OrderDto newOrderStatus =
           OrderDto(idOrder: widget.order!.camId.toString(), status: newStatus);
-          
+
       statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
           widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
     } else if (widget.order!.details
@@ -333,16 +450,15 @@ class _ComandaCardState extends State<OrderCard> {
 
       statusOrderRepository.statusOrder(newOrderStatus).whenComplete(() =>
           widget.socket!.emit(WebSocketEvents.modifyOrder, newOrderStatus));
-    } else if (
-      widget.config.reparto!.contains("S") &&
-      widget.order!.details
-            .where((element) =>
-                element.demEstado == lastStatus &&
-                element.demArti != demArticuloSeparador)
-            .length ==
+    } else if (widget.config.reparto!.contains("S") &&
         widget.order!.details
-            .where((element) => element.demArti != demArticuloSeparador)
-            .length) {
+                .where((element) =>
+                    element.demEstado == lastStatus &&
+                    element.demArti != demArticuloSeparador)
+                .length ==
+            widget.order!.details
+                .where((element) => element.demArti != demArticuloSeparador)
+                .length) {
       OrderDto newOrderStatus =
           OrderDto(idOrder: widget.order!.camId.toString(), status: lastStatus);
 
