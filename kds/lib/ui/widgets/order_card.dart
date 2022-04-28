@@ -562,6 +562,7 @@ class _ComandaCardState extends State<OrderCard> {
             order: order,
             socket: widget.socket,
             config: widget.config,
+            key: ValueKey(d.demId),
           )
       ],
     );
@@ -869,7 +870,8 @@ class _ComandaCardState extends State<OrderCard> {
                     ),
 
                     //OPTIONS LIST INFO
-                    widget.config.reparto!.contains("S") && widget.config.opciones.isNotEmpty
+                    widget.config.reparto!.contains("S") &&
+                            widget.config.opciones.isNotEmpty
                         ? SizedBox(
                             width: 500,
                             height: 500,
@@ -882,9 +884,7 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
-          child: CustomIcons.closeBlueBtn(context))
+            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
       ],
     );
   }
@@ -1051,4 +1051,6 @@ class _ComandaCardState extends State<OrderCard> {
               style: Styles.textTicketInfo,
             )));
   }
+
+ 
 }

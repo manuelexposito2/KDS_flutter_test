@@ -12,6 +12,7 @@ import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kplayer/kplayer.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
@@ -94,7 +95,7 @@ class _OrdersListState extends State<OrdersList> {
           //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
           FlutterPlatformAlert.playAlertSound();
         } else if (kIsWeb) {
-          //Player.asset("sounds/bell_ring.mp3").play();
+          Player.asset("sounds/bell_ring.mp3").play();
         }
       }
       Order newOrder = Order.fromJson(data);
