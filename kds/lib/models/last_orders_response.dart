@@ -55,7 +55,7 @@ class Order {
     required this.cliZona,
     required this.details,
   });
-  late final int? camId;
+  late final int camId;
   late final int? camUrgente;
   late final int? camIdCab;
   late final int? camFecini;
