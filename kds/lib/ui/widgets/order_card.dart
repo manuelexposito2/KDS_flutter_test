@@ -95,33 +95,20 @@ class _ComandaCardState extends State<OrderCard> {
       colorOrderStatus = setColor(widget.order!.camEstado!);
     }
     //Imprime la comanda mostrando una animación
-    return Stack(
-      children: [
-        ShowUpAnimation(
-            delayStart: Duration(milliseconds: 200),
-            animationDuration: Duration(milliseconds: 350),
-            curve: Curves.bounceIn,
-            direction: Direction.vertical,
-            offset: 0.5,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: colorOrderStatus,
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              margin: EdgeInsets.all(10),
-              width: 300,
-              child: _contentCard(context, widget.order!),
-            )),
-        ElevatedButton(
-          onPressed: () async {
-            var json = await optionsRepository.readOpciones(widget.order!.camId.toString());
-            //var readOptions = ReadOptionsDto(idOrder: widget.order!.camId.toString(), opcion1: 1, opcion2: 1, opcion3: 1, opcion4: 1, opcion5: 1, opcion6: 1, opcion7: 1, opcion8: 1);
-            optionsRepository.writeOpciones(
-                widget.order!.camId.toString(), json);
-          },
-          child: Text("PRUEBA OP ${widget.order!.camId}"),
-        ),
-      ],
-    );
+    return ShowUpAnimation(
+        delayStart: Duration(milliseconds: 200),
+        animationDuration: Duration(milliseconds: 350),
+        curve: Curves.bounceIn,
+        direction: Direction.vertical,
+        offset: 0.5,
+        child: Container(
+          decoration: BoxDecoration(
+              color: colorOrderStatus,
+              borderRadius: BorderRadius.all(Radius.circular(5))),
+          margin: EdgeInsets.all(10),
+          width: 300,
+          child: _contentCard(context, widget.order!),
+        ));
   }
 
   //Dependiendo del estado del item imprimirá un color u otro
