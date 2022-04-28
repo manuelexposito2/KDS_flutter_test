@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
-import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/read_options_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
@@ -72,9 +70,6 @@ class _ComandaCardState extends State<OrderCard> {
   int opcion7 = 0;
   int opcion8 = 0;
 
-  
-
-  
   @override
   void setState(fn) {
     if (mounted) {
@@ -182,56 +177,58 @@ class _ComandaCardState extends State<OrderCard> {
             children: [
               Container(
                 child: Text(
-                total(order) + ' min.',
-                style: Styles.regularText,
-              ),),
+                  total(order) + ' min.',
+                  style: Styles.regularText,
+                ),
+              ),
               widget.order!.camComensales! >= 1
-                ? Container(
-                  alignment: Alignment.bottomLeft,
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          order.camComensales.toString(),
-                          style: Styles.regularText,
-                        )
-                      ],
-                    ),
-                  )
-                : Container(),
+                  ? Container(
+                      alignment: Alignment.bottomLeft,
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            order.camComensales.toString(),
+                            style: Styles.regularText,
+                          )
+                        ],
+                      ),
+                    )
+                  : Container(),
               widget.order!.camEstado != "M"
-                  ? Container( 
-                    child: Text(
-                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                      '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
-                      style: Styles.regularText,
-                    ),)
+                  ? Container(
+                      child: Text(
+                        //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                        '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
+                        style: Styles.regularText,
+                      ),
+                    )
                   : Container()
             ],
           ),
         ),
-            widget.config.muestraOperario!.contains("S")
-                ? Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          order.camOperario!,
-                          style: Styles.regularText,
-                        )
-                      ],
+        widget.config.muestraOperario!.contains("S")
+            ? Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
                     ),
-                  )
-                : Container(),
+                    Text(
+                      order.camOperario!,
+                      style: Styles.regularText,
+                    )
+                  ],
+                ),
+              )
+            : Container(),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
@@ -276,7 +273,19 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
-        readOpciones(),
+        Container(
+          height: 50,
+          color: Colors.white,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(children: [Flexible(
+                flex: 1,
+                child: optionsFutureImageList(context))]),
+                
+          ),
+        ),
+        //readOpciones(),
+        //optionsFutureImageList(context),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -310,7 +319,8 @@ class _ComandaCardState extends State<OrderCard> {
                               backgroundColor: Colors.white,
                               primary: Color.fromARGB(255, 87, 87, 87)),
                           child: Icon(Icons.print),
-                          onPressed: () {},
+                          onPressed: () {
+                          },
                         ),
                       ),
                     )
@@ -332,11 +342,11 @@ class _ComandaCardState extends State<OrderCard> {
             Flexible(
                 flex: 1,
                 child: toggleButton1(
-                     opcion1, 'assets/images/1.png', 'assets/images/10.png')),
+                    opcion1, 'assets/images/1.png', 'assets/images/10.png')),
             Flexible(
                 flex: 1,
                 child: toggleButton2(
-                     'assets/images/2.png', 'assets/images/20.png')),
+                    'assets/images/2.png', 'assets/images/20.png')),
             /*
             Flexible(
                 flex: 1,
@@ -369,9 +379,109 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  /*
+  Container(
+          color: Colors.white,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Row(children: [Flexible(
+                flex: 1,
+                child: optionsFutureImageList(context))]),
+                
+          ),
+        );
+  */ 
+
+  Widget optionsFutureImageList(BuildContext context) {
+    return FutureBuilder<ReadOptionsDto?>(
+      future: futureOptions,
+      builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return 
+        optionsImageList(snapshot.data!);
+      } else {
+        return CircularProgressIndicator.adaptive();
+      }
+    });
+  }
+
+  Widget optionsImageList(ReadOptionsDto readOptionsDto) {
+    return GridView.builder(
+      
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        mainAxisSpacing: 40,
+        mainAxisExtent: 40,
+        crossAxisCount: 8,
+      ),
+      
+      shrinkWrap: true,
+      itemCount: widget.config.opciones.length,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          //Ignoramos el primer index ya que es el id
+          index = index+1;
+          if (index > 8) {
+            return Container();
+          }
+          return IconButton(
+        iconSize: 40,
+        
+        splashRadius: 0.1,
+        onPressed: () {
+          _getOptionValue(readOptionsDto, index) == 1
+              ? setState(() {
+                  //1
+                  
+                })
+              : setState(() {
+                  //0
+                });
+
+          print(index);
+        },
+        icon: _getOptionValue(readOptionsDto, index) >= 1
+            ? Image.asset(
+                'assets/images/${index.toString()}.png',
+                width: 40, 
+              )
+            : Image.asset('assets/images/${index.toString()}0.png', width: 40));
+        });
+  }
+/* 
+  Widget imageList(ReadOptionsDto readOptionsDto){
+    return Wrap(
+      direction: Axis.horizontal,
+      children: [
+        for (var index in readOptionsDto.toJson().values)
+
+           IconButton(
+        iconSize: 35,
+        splashRadius: 0.1,
+        onPressed: () {
+          _getOptionValue(readOptionsDto, index) == 1
+              ? setState(() {
+                  //1
+                  
+                })
+              : setState(() {
+                  //0
+                });
+
+          print(index);
+        },
+        icon: _getOptionValue(readOptionsDto, index) >= 1
+            ? Image.asset(
+                'assets/images/${index.toString()}.png',
+                width: 30,
+              )
+            : Image.asset('assets/images/${index.toString()}0.png', width: 40))
+      ],
+    );
+  }
+ */
   Widget toggleButton1(int valor, String imagen1, String imagen2) {
     return IconButton(
-      iconSize: 35,
+        iconSize: 35,
         splashRadius: 0.1,
         onPressed: () {
           valor == 1
@@ -394,7 +504,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget toggleButton2(String imagen1, String imagen2) {
     return IconButton(
-      iconSize: 35,
+        iconSize: 35,
         padding: EdgeInsets.all(0),
         splashRadius: 0.1,
         onPressed: () {
@@ -403,21 +513,18 @@ class _ComandaCardState extends State<OrderCard> {
                   opcion2 = 0;
                 })
               : setState(() {
-                  opcion2= 1;
+                  opcion2 = 1;
                 });
 
           print(opcion2);
         },
         icon: opcion2 == 1
             ? Image.asset(
-                'assets/images/8.png',
+                imagen1,
                 width: 30,
               )
             : Image.asset(imagen2, width: 30));
   }
-
-
-
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
   _checkAllDetails(String status) {
@@ -980,7 +1087,8 @@ class _ComandaCardState extends State<OrderCard> {
                     ),
 
                     //OPTIONS LIST INFO
-                    widget.config.reparto!.contains("S") && widget.config.opciones.isNotEmpty
+                    widget.config.reparto!.contains("S") &&
+                            widget.config.opciones.isNotEmpty
                         ? SizedBox(
                             width: 500,
                             height: 500,
@@ -993,9 +1101,7 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
-          child: CustomIcons.closeBlueBtn(context))
+            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
       ],
     );
   }
@@ -1068,24 +1174,24 @@ class _ComandaCardState extends State<OrderCard> {
 
   _getOptionValue(ReadOptionsDto option, int index) {
     switch (index) {
-      case 0:
-        return option.opcion1;
       case 1:
-        return option.opcion2;
+        return option.opcion1;
       case 2:
-        return option.opcion3;
+        return option.opcion2;
       case 3:
-        return option.opcion4;
+        return option.opcion3;
       case 4:
-        return option.opcion5;
+        return option.opcion4;
       case 5:
-        return option.opcion6;
+        return option.opcion5;
       case 6:
-        return option.opcion7;
+        return option.opcion6;
       case 7:
+        return option.opcion7;
+      case 8:
         return option.opcion8;
       default:
-        return -1;
+        return 0;
     }
   }
 
