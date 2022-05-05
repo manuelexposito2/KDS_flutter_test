@@ -86,8 +86,7 @@ class _ComandaCardState extends State<OrderCard> {
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
-    futureOptions =
-        optionsRepository.readOpciones(widget.order!.camId.toString());
+    
   }
 
   @override
@@ -273,17 +272,18 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
+        widget.config.reparto!.contains("S") &&
+                            widget.config.opciones.isNotEmpty && order.camEstado!.contains('R') ?
         Container(
           height: 50,
           color: Colors.white,
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
-            child: Row(children: [Flexible(
-                flex: 1,
-                child: optionsFutureImageList(context))]),
-                
+            child: Row(children: [
+              Flexible(flex: 1, child: optionsFutureImageList(context))
+            ]),
           ),
-        ),
+        ) : Container(),
         //readOpciones(),
         //optionsFutureImageList(context),
         Container(
@@ -319,8 +319,7 @@ class _ComandaCardState extends State<OrderCard> {
                               backgroundColor: Colors.white,
                               primary: Color.fromARGB(255, 87, 87, 87)),
                           child: Icon(Icons.print),
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                         ),
                       ),
                     )
@@ -332,198 +331,60 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  Widget readOpciones() {
-    return Container(
-      color: Colors.white,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Row(
-          children: [
-            Flexible(
-                flex: 1,
-                child: toggleButton1(
-                    opcion1, 'assets/images/1.png', 'assets/images/10.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton2(
-                    'assets/images/2.png', 'assets/images/20.png')),
-            /*
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion3, 'assets/images/3.png', 'assets/images/30.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion4, 'assets/images/4.png', 'assets/images/40.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion5, 'assets/images/5.png', 'assets/images/50.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion6, 'assets/images/6.png', 'assets/images/60.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion7, 'assets/images/7.png', 'assets/images/70.png')),
-            Flexible(
-                flex: 1,
-                child: toggleButton(
-                    opcion8, 'assets/images/8.png', 'assets/images/80.png')),
-            */
-          ],
-        ),
-      ),
-    );
-  }
-
-  /*
-  Container(
-          color: Colors.white,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Row(children: [Flexible(
-                flex: 1,
-                child: optionsFutureImageList(context))]),
-                
-          ),
-        );
-  */ 
+  
 
   Widget optionsFutureImageList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
-      future: futureOptions,
-      builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return 
-        optionsImageList(snapshot.data!);
-      } else {
-        return CircularProgressIndicator.adaptive();
-      }
-    });
+        future: futureOptions =
+        optionsRepository.readOpciones(widget.order!.camId.toString()),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return optionsImageList(snapshot.data!);
+          } else {
+            return const CircularProgressIndicator.adaptive();
+          }
+        });
   }
 
   Widget optionsImageList(ReadOptionsDto readOptionsDto) {
     return GridView.builder(
-      
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        mainAxisSpacing: 40,
-        mainAxisExtent: 40,
-        crossAxisCount: 8,
-      ),
-      
-      shrinkWrap: true,
-      itemCount: widget.config.opciones.length,
-        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 40,
+          mainAxisExtent: 50,
+          crossAxisCount: 8,
+        ),
+        shrinkWrap: true,
+        itemCount: widget.config.opciones.length,
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           //Ignoramos el primer index ya que es el id
-          index = index+1;
+          //widget.order!.camId.toString()
+          index = index + 1;
           if (index > 8) {
             return Container();
           }
           return IconButton(
-        iconSize: 40,
-        
-        splashRadius: 0.1,
-        onPressed: () {
-          _getOptionValue(readOptionsDto, index) == 1
-              ? setState(() {
-                  //1
-                  
-                })
-              : setState(() {
-                  //0
-                });
+              iconSize: 40,
+              splashRadius: 0.1,
+              onPressed: () {
+                _getOptionValue(readOptionsDto, index-1) == 1
+                    ? setState(() {
+                        //1
+                      })
+                    : setState(() {
+                        //0
+                      });
 
-          print(index);
-        },
-        icon: _getOptionValue(readOptionsDto, index) >= 1
-            ? Image.asset(
-                'assets/images/${index.toString()}.png',
-                width: 40, 
-              )
-            : Image.asset('assets/images/${index.toString()}0.png', width: 40));
+                print(index);
+              },
+              icon: _getOptionValue(readOptionsDto, index-1) >= 1
+                  ? Image.asset(
+                      'assets/images/${index.toString()}.png',
+                      width: 40,
+                    )
+                  : Image.asset('assets/images/${index.toString()}0.png',
+                      width: 40));
         });
-  }
-/* 
-  Widget imageList(ReadOptionsDto readOptionsDto){
-    return Wrap(
-      direction: Axis.horizontal,
-      children: [
-        for (var index in readOptionsDto.toJson().values)
-
-           IconButton(
-        iconSize: 35,
-        splashRadius: 0.1,
-        onPressed: () {
-          _getOptionValue(readOptionsDto, index) == 1
-              ? setState(() {
-                  //1
-                  
-                })
-              : setState(() {
-                  //0
-                });
-
-          print(index);
-        },
-        icon: _getOptionValue(readOptionsDto, index) >= 1
-            ? Image.asset(
-                'assets/images/${index.toString()}.png',
-                width: 30,
-              )
-            : Image.asset('assets/images/${index.toString()}0.png', width: 40))
-      ],
-    );
-  }
- */
-  Widget toggleButton1(int valor, String imagen1, String imagen2) {
-    return IconButton(
-        iconSize: 35,
-        splashRadius: 0.1,
-        onPressed: () {
-          valor == 1
-              ? setState(() {
-                  valor = 0;
-                })
-              : setState(() {
-                  valor = 1;
-                });
-
-          print(valor);
-        },
-        icon: valor == 1
-            ? Image.asset(
-                imagen1,
-                width: 30,
-              )
-            : Image.asset(imagen2, width: 40));
-  }
-
-  Widget toggleButton2(String imagen1, String imagen2) {
-    return IconButton(
-        iconSize: 35,
-        padding: EdgeInsets.all(0),
-        splashRadius: 0.1,
-        onPressed: () {
-          opcion2 == 1
-              ? setState(() {
-                  opcion2 = 0;
-                })
-              : setState(() {
-                  opcion2 = 1;
-                });
-
-          print(opcion2);
-        },
-        icon: opcion2 == 1
-            ? Image.asset(
-                imagen1,
-                width: 30,
-              )
-            : Image.asset(imagen2, width: 30));
   }
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
@@ -1085,7 +946,6 @@ class _ComandaCardState extends State<OrderCard> {
                         ],
                       ),
                     ),
-
                     //OPTIONS LIST INFO
                     widget.config.reparto!.contains("S") &&
                             widget.config.opciones.isNotEmpty
@@ -1136,6 +996,11 @@ class _ComandaCardState extends State<OrderCard> {
       physics: NeverScrollableScrollPhysics(),
       itemCount: widget.config.opciones.length,
       itemBuilder: (context, index) {
+        //TODO: Ver el estado antes
+        bool isChecked = _getOptionValue(readOptionsDto, index) == 1
+                        ? true
+                        : false;
+
         return InkWell(
           onTap: () {
             //TODO: Gestionar petición writeOpciones
@@ -1154,11 +1019,10 @@ class _ComandaCardState extends State<OrderCard> {
                   Checkbox(
                     checkColor: Colors.white,
                     fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: _getOptionValue(readOptionsDto, index) == 1
-                        ? true
-                        : false,
+                    value: isChecked,
                     onChanged: (bool? value) {
                       //TODO: Gestionar cambio de estado
+                      isChecked = !value!;
                     },
                   ),
                   Text(
@@ -1174,24 +1038,24 @@ class _ComandaCardState extends State<OrderCard> {
 
   _getOptionValue(ReadOptionsDto option, int index) {
     switch (index) {
-      case 1:
+      case 0:
         return option.opcion1;
-      case 2:
+      case 1:
         return option.opcion2;
-      case 3:
+      case 2:
         return option.opcion3;
-      case 4:
+      case 3:
         return option.opcion4;
-      case 5:
+      case 4:
         return option.opcion5;
-      case 6:
+      case 5:
         return option.opcion6;
-      case 7:
+      case 6:
         return option.opcion7;
-      case 8:
+      case 7:
         return option.opcion8;
       default:
-        return 0;
+        return 1;
     }
   }
 
