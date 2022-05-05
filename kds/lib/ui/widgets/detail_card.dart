@@ -33,11 +33,12 @@ class DetailCard extends StatefulWidget {
 
 class _DetailCardState extends State<DetailCard> {
   int timesClicked = 0;
-  late int clicksToChangeState;
+
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
   var selectedDetail = "";
+  var lastTerminatedDetail = "";
   int seconds = 0;
   int minutes = 0;
   int hours = 0;
@@ -53,14 +54,16 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    clicksToChangeState = widget.order.details.length;
+
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
 
     //Inicializamos el temporizador si está activado el modo "mostrar ultimo tiempo"
 
-    if (widget.config.mostrarUltimoTiempo!.contains("S")) {
+    if (widget.config.mostrarUltimoTiempo!.contains("S") ||
+        (widget.config.soloUltimoPlato != "N" &&
+            lastTerminatedDetail == widget.details.demId.toString())) {
       UserSharedPreferences.getDetailTimer(widget.details.demId.toString())
           .then((value) {
         var timer = value.split(":");
@@ -102,6 +105,14 @@ class _DetailCardState extends State<DetailCard> {
       });
     }));
 
+    if (widget.config.soloUltimoPlato != "N") {
+      UserSharedPreferences.getLastDetailSelected().then((value) {
+        setState(() {
+          lastTerminatedDetail = value;
+        });
+      });
+    }
+
     return Container(
       margin: EdgeInsets.only(left: 2, right: 2, bottom: 1),
       child: TextButton(
@@ -117,7 +128,7 @@ class _DetailCardState extends State<DetailCard> {
           onPressed: () {
             //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
             if (widget.details.demEstado != "T" &&
-                widget.config.mostrarUltimoTiempo!.contains("S")) {
+                (widget.config.mostrarUltimoTiempo!.contains("S"))) {
               setState(() {
                 hours = 0;
                 minutes = 0;
@@ -135,9 +146,22 @@ class _DetailCardState extends State<DetailCard> {
                   status: _toggleStateButton(details.demEstado!));
 
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
+                if (widget.config.soloUltimoPlato != "N" &&
+                    newStatus.status == "T") {
+                  UserSharedPreferences.removeLastDetailSelected();
+                  UserSharedPreferences.setLastDetailSelected(
+                      widget.details.demId.toString());
+                }
+
+                /*   if (details.demEstado == "T") {
+                  UserSharedPreferences.removeLastDetailSelected();
+                } */
+
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
               });
             }
+
+            //TODO: GESTIONAR LAS CONDICIONES DE SOLO_ULTIMO_PLATO.
           },
           child: ListTile(
             title: Wrap(
@@ -148,12 +172,16 @@ class _DetailCardState extends State<DetailCard> {
                   style: Styles.textTitle(
                       double.parse(widget.config.letra!) * increaseFont),
                 ),
-                widget.config.mostrarUltimoTiempo!.contains("S") &&
+                (widget.config.mostrarUltimoTiempo!.contains("S") &&
+                                widget.config.soloUltimoPlato!.contains("N") ||
+                            (widget.config.soloUltimoPlato != "N" &&
+                                lastTerminatedDetail ==
+                                    widget.details.demId.toString())) &&
                         widget.details.demEstado == "T" &&
                         widget.order.camEstado != "T"
                     ? Text(
                         _checkTimerDetail(),
-                        style: TextStyle(color: Colors.red),
+                        style: Styles.timerDetailStyle(double.parse(widget.config.letra!) * increaseFont),
                       )
                     : Container()
               ],
@@ -199,6 +227,7 @@ class _DetailCardState extends State<DetailCard> {
     }
   }
 
+//Temporizador de los details terminados
   _checkTimerDetail() {
     _writeNumber(int value) {
       if (value < 10) {
@@ -225,6 +254,7 @@ class _DetailCardState extends State<DetailCard> {
     return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
   }
 
+//Setea el color dependiendo del estado de los pedidos de cada comanda
   setColorWithStatus(String status) {
     switch (status) {
       case "E":
@@ -244,6 +274,3 @@ class _DetailCardState extends State<DetailCard> {
     }
   }
 }
-
-//Setea el color dependiendo del estado de los pedidos de cada comanda
-
