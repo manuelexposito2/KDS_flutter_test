@@ -25,7 +25,7 @@ class CustomIcons{
                       ),
                       TextSpan(
                         text: "Cerrar",
-                        style: TextStyle(fontSize: 20.0),
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
                       ),
                     ],
                   ),

@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
-import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
 import 'package:kds/models/status/read_options_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
@@ -61,6 +59,17 @@ class _ComandaCardState extends State<OrderCard> {
   OrderDto? status;
   String? _timeString;
 
+  ReadOptionsDto? optionsDto;
+
+  int opcion1 = 0;
+  int opcion2 = 0;
+  int opcion3 = 0;
+  int opcion4 = 0;
+  int opcion5 = 0;
+  int opcion6 = 0;
+  int opcion7 = 0;
+  int opcion8 = 0;
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -77,13 +86,15 @@ class _ComandaCardState extends State<OrderCard> {
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
-    futureOptions =
-        optionsRepository.readOpciones(widget.order!.camId.toString());
+
+    //futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    //print("Estado actual: ${widget.order!.camEstado}");
+    
+    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).whenComplete(() => print(widget.order!.camId.toString()));
+    
     _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
@@ -166,59 +177,60 @@ class _ComandaCardState extends State<OrderCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                total(order) + ' min.',
-                style: Styles.regularText,
+              Container(
+                child: Text(
+                  total(order) + ' min.',
+                  style: Styles.regularText,
+                ),
               ),
+              widget.order!.camComensales! >= 1
+                  ? Container(
+                      alignment: Alignment.bottomLeft,
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            order.camComensales.toString(),
+                            style: Styles.regularText,
+                          )
+                        ],
+                      ),
+                    )
+                  : Container(),
               widget.order!.camEstado != "M"
-                  ? Text(
-                      //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
-                      '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
-                      style: Styles.regularText,
+                  ? Container(
+                      child: Text(
+                        //CONTADOR LINEAS ---> Si estan terminadas o en preparandose
+                        '${order.details.where((element) => element.demArti != demArticuloSeparador && (element.demEstado!.contains('R') || element.demEstado!.contains('T') || element.demEstado!.contains('P'))).toList().length}/${order.details.where((element) => element.demArti != demArticuloSeparador).toList().length}',
+                        style: Styles.regularText,
+                      ),
                     )
                   : Container()
             ],
           ),
         ),
-        Column(
-          children: [
-            widget.order!.camComensales! >= 1
-                ? Container(
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          order.camComensales.toString(),
-                          style: Styles.regularText,
-                        )
-                      ],
+        widget.config.muestraOperario!.contains("S")
+            ? Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: Colors.white,
                     ),
-                  )
-                : Container(),
-            widget.config.muestraOperario!.contains("S")
-                ? Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          order.camOperario!,
-                          style: Styles.regularText,
-                        )
-                      ],
-                    ),
-                  )
-                : Container(),
-          ],
-        ),
+                    Text(
+                      order.camOperario!,
+                      style: Styles.regularText,
+                    )
+                  ],
+                ),
+              )
+            : Container(),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
@@ -249,7 +261,7 @@ class _ComandaCardState extends State<OrderCard> {
                                 orderExtended = orderRepository.getOrderById(
                                     widget.order!.camId.toString(),
                                     widget.config);
-
+                              
                                 return AlertDialog(
                                   content: _futureInfo(context),
                                 );
@@ -263,6 +275,22 @@ class _ComandaCardState extends State<OrderCard> {
             ],
           ),
         ),
+        widget.config.reparto!.contains("S") &&
+                widget.config.opciones.isNotEmpty &&
+                order.camEstado!.contains('R')
+            ? Container(
+                height: 50,
+                color: Colors.white,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(children: [
+                    Flexible(flex: 1, child: optionsFutureImageList(context))
+                  ]),
+                ),
+              )
+            : Container(),
+        //readOpciones(),
+        //optionsFutureImageList(context),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -306,6 +334,59 @@ class _ComandaCardState extends State<OrderCard> {
         ),
       ],
     );
+  }
+
+  Widget optionsFutureImageList(BuildContext context) {
+    return FutureBuilder<ReadOptionsDto?>(
+        future: futureOptions,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return optionsImageList(snapshot.data!);
+          } else {
+            return const CircularProgressIndicator.adaptive();
+          }
+        });
+  }
+
+  Widget optionsImageList(ReadOptionsDto readOptionsDto) {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 40,
+          mainAxisExtent: 50,
+          crossAxisCount: 8,
+        ),
+        shrinkWrap: true,
+        itemCount: widget.config.opciones.length,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          //Ignoramos el primer index ya que es el id
+          //widget.order!.camId.toString()
+          index = index + 1;
+          if (index > 8) {
+            return Container();
+          }
+          return IconButton(
+              iconSize: 40,
+              splashRadius: 0.1,
+              onPressed: () {
+                _getOptionValue(readOptionsDto, index - 1) == 1
+                    ? setState(() {
+                        //1
+                      })
+                    : setState(() {
+                        //0
+                      });
+
+                print(index);
+              },
+              icon: _getOptionValue(readOptionsDto, index - 1) >= 1
+                  ? Image.asset(
+                      'assets/images/${index.toString()}.png',
+                      width: 40,
+                    )
+                  : Image.asset('assets/images/${index.toString()}0.png',
+                      width: 40));
+        });
   }
 
   //Ve todos los detalles de la comanda y la setea en el estado correspondiente
@@ -868,7 +949,6 @@ class _ComandaCardState extends State<OrderCard> {
                         ],
                       ),
                     ),
-
                     //OPTIONS LIST INFO
                     widget.config.reparto!.contains("S") &&
                             widget.config.opciones.isNotEmpty
@@ -919,6 +999,10 @@ class _ComandaCardState extends State<OrderCard> {
       physics: NeverScrollableScrollPhysics(),
       itemCount: widget.config.opciones.length,
       itemBuilder: (context, index) {
+        //TODO: Ver el estado antes
+        bool isChecked =
+            _getOptionValue(readOptionsDto, index) == 1 ? true : false;
+
         return InkWell(
           onTap: () {
             //TODO: Gestionar petición writeOpciones
@@ -937,11 +1021,10 @@ class _ComandaCardState extends State<OrderCard> {
                   Checkbox(
                     checkColor: Colors.white,
                     fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: _getOptionValue(readOptionsDto, index) == 1
-                        ? true
-                        : false,
+                    value: isChecked,
                     onChanged: (bool? value) {
                       //TODO: Gestionar cambio de estado
+                      isChecked = !value!;
                     },
                   ),
                   Text(
@@ -974,7 +1057,7 @@ class _ComandaCardState extends State<OrderCard> {
       case 7:
         return option.opcion8;
       default:
-        return -1;
+        return 1;
     }
   }
 
