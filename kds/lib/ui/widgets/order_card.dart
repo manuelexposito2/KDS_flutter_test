@@ -334,7 +334,6 @@ class _ComandaCardState extends State<OrderCard> {
                               primary: Color.fromARGB(255, 87, 87, 87)),
                           child: Icon(Icons.print),
                           onPressed: () {
-                            //probar con ponerlo directamente en vez de desde un método, puede que la forma de llamarlo no sea la idonea
                             imprimirTicket();
                           },
                         ),
@@ -354,8 +353,7 @@ class _ComandaCardState extends State<OrderCard> {
         idOrder: widget.order!.camId.toString());
 
     return widget.config.imprimirPendienteCobro!.contains("S") &&
-            widget.config.seleccionarOperario!.contains("S")
-      //Si no funciona puede que el problema sea que le estoy pasando dos datos en el dto cuando en el original solo debo pasarle uno por peticion
+            widget.config.seleccionarOperario!.contains("S") && widget.order!.camEstado == "R"
         ? printOrderRepository.printAccount(newPrintOrder)
         : printOrderRepository.printOrder(newPrintOrder);
   }
@@ -616,6 +614,7 @@ class _ComandaCardState extends State<OrderCard> {
             border: Border.all(color: Colors.grey)),
         child: InkWell(
           onTap: () {
+            imprimirTicket();
             workersRepository
                 .setDealer(widget.config, widget.order!.camId.toString(),
                     worker.oprCodigo)
