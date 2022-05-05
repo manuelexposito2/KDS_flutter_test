@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
@@ -31,11 +33,15 @@ class DetailCard extends StatefulWidget {
 
 class _DetailCardState extends State<DetailCard> {
   int timesClicked = 0;
-  late int clicksToChangeState;
+
   late StatusDetailRepository statusDetailRepository;
   late StatusOrderRepository statusOrderRepository;
   Color? colorDetailStatus;
   var selectedDetail = "";
+  var lastTerminatedDetail = "";
+  int seconds = 0;
+  int minutes = 0;
+  int hours = 0;
 
   @override
   void setState(fn) {
@@ -48,10 +54,36 @@ class _DetailCardState extends State<DetailCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    clicksToChangeState = widget.order.details.length;
+
     colorDetailStatus = setColorWithStatus(widget.details.demEstado!);
     statusDetailRepository = StatusDetailRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
+
+    //Inicializamos el temporizador si está activado el modo "mostrar ultimo tiempo"
+
+    if (widget.config.mostrarUltimoTiempo!.contains("S") ||
+        (widget.config.soloUltimoPlato != "N" &&
+            lastTerminatedDetail == widget.details.demId.toString())) {
+      UserSharedPreferences.getDetailTimer(widget.details.demId.toString())
+          .then((value) {
+        var timer = value.split(":");
+
+        setState(() {
+          hours = int.parse(timer[0]);
+          minutes = int.parse(timer[1]);
+          seconds = int.parse(timer[2]);
+        });
+      });
+
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          seconds = seconds + 1;
+        });
+        //Seteamos cada segundo
+        UserSharedPreferences.setDetailTimer(
+            widget.details.demId.toString(), _checkTimerDetail());
+      });
+    }
   }
 
   @override
@@ -73,6 +105,14 @@ class _DetailCardState extends State<DetailCard> {
       });
     }));
 
+    if (widget.config.soloUltimoPlato != "N") {
+      UserSharedPreferences.getLastDetailSelected().then((value) {
+        setState(() {
+          lastTerminatedDetail = value;
+        });
+      });
+    }
+
     return Container(
       margin: EdgeInsets.only(left: 2, right: 2, bottom: 1),
       child: TextButton(
@@ -86,6 +126,17 @@ class _DetailCardState extends State<DetailCard> {
             primary: Color.fromARGB(255, 87, 87, 87),
           ),
           onPressed: () {
+            //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
+            if (widget.details.demEstado != "T" &&
+                (widget.config.mostrarUltimoTiempo!.contains("S"))) {
+              setState(() {
+                hours = 0;
+                minutes = 0;
+                seconds = 0;
+              });
+              UserSharedPreferences.removeDetailTimer(
+                  widget.details.demId.toString());
+            }
             //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
             if (!widget.details.demEstado!.contains("M") &&
                 !widget.config.comandaCompleta!.contains("N")) {
@@ -95,18 +146,48 @@ class _DetailCardState extends State<DetailCard> {
                   status: _toggleStateButton(details.demEstado!));
 
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
+                if (widget.config.soloUltimoPlato != "N" &&
+                    newStatus.status == "T") {
+                  UserSharedPreferences.removeLastDetailSelected();
+                  UserSharedPreferences.setLastDetailSelected(
+                      widget.details.demId.toString());
+                }
+
+                /*   if (details.demEstado == "T") {
+                  UserSharedPreferences.removeLastDetailSelected();
+                } */
+
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
               });
             }
+
+            //TODO: GESTIONAR LAS CONDICIONES DE SOLO_ULTIMO_PLATO.
           },
-          child: details.demSubpro!.isNotEmpty
-              ? ListTile(
-                  title: Text(
-                    details.demTitulo!,
-                    style: Styles.textTitle(
-                        double.parse(widget.config.letra!) * increaseFont),
-                  ),
-                  subtitle: Row(
+          child: ListTile(
+            title: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              children: [
+                Text(
+                  details.demTitulo!,
+                  style: Styles.textTitle(
+                      double.parse(widget.config.letra!) * increaseFont),
+                ),
+                (widget.config.mostrarUltimoTiempo!.contains("S") &&
+                                widget.config.soloUltimoPlato!.contains("N") ||
+                            (widget.config.soloUltimoPlato != "N" &&
+                                lastTerminatedDetail ==
+                                    widget.details.demId.toString())) &&
+                        widget.details.demEstado == "T" &&
+                        widget.order.camEstado != "T"
+                    ? Text(
+                        _checkTimerDetail(),
+                        style: Styles.timerDetailStyle(double.parse(widget.config.letra!) * increaseFont),
+                      )
+                    : Container()
+              ],
+            ),
+            subtitle: details.demSubpro!.isNotEmpty
+                ? Row(
                     children: [
                       Icon(Icons.arrow_right,
                           size: double.parse(widget.config.letra!) *
@@ -117,14 +198,9 @@ class _DetailCardState extends State<DetailCard> {
                             double.parse(widget.config.letra!) * increaseFont),
                       )
                     ],
-                  ))
-              : ListTile(
-                  title: Text(
-                    details.demTitulo!,
-                    style: Styles.textTitle(
-                        double.parse(widget.config.letra!) * increaseFont),
-                  ),
-                )),
+                  )
+                : Container(),
+          )),
     );
   }
 
@@ -151,34 +227,50 @@ class _DetailCardState extends State<DetailCard> {
     }
   }
 
-/*     if (status.contains('E')) {
-      return 'P';
-    } else if (widget.config.reparto!.contains("S") && status.contains('P')) {
-      return 'R';
-    } else if (widget.config.reparto!.contains("N") && status.contains('P') ||
-        status.contains('R')) {
-      return 'T';
-    } else {
-      return 'E';
-    } */
-}
+//Temporizador de los details terminados
+  _checkTimerDetail() {
+    _writeNumber(int value) {
+      if (value < 10) {
+        return "0$value";
+      } else {
+        return "$value";
+      }
+    }
+
+    if (seconds >= 60) {
+      setState(() {
+        seconds = 0;
+        minutes = minutes + 1;
+      });
+
+      if (minutes >= 60) {
+        setState(() {
+          minutes = 0;
+          hours = hours + 1;
+        });
+      }
+    }
+
+    return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
+  }
 
 //Setea el color dependiendo del estado de los pedidos de cada comanda
-setColorWithStatus(String status) {
-  switch (status) {
-    case "E":
-      return Colors.white;
+  setColorWithStatus(String status) {
+    switch (status) {
+      case "E":
+        return Colors.white;
 
-    case "P":
-      return Color(0xFFF5CB8F);
+      case "P":
+        return Color(0xFFF5CB8F);
 
-    case "T":
-      return Color(0xFFB0E1A0);
+      case "T":
+        return Color(0xFFB0E1A0);
 
-    case "R":
-      return Color.fromARGB(255, 211, 161, 219);
+      case "R":
+        return Color.fromARGB(255, 211, 161, 219);
 
-    default:
-      return Colors.white;
+      default:
+        return Colors.white;
+    }
   }
 }

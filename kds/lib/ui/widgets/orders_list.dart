@@ -12,6 +12,7 @@ import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kplayer/kplayer.dart';
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
@@ -47,10 +48,6 @@ class _OrdersListState extends State<OrdersList> {
   late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
-  var navbarHeightmin = 280.0;
-  var navbarHeightminReparto = 400.0;
-  var navbarHeightMedium = 170.0;
-  var navbarHeight = 70.0;
 
   bool showResumen = false;
   bool showOperarioDialog = false;
@@ -94,7 +91,7 @@ class _OrdersListState extends State<OrdersList> {
           //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
           FlutterPlatformAlert.playAlertSound();
         } else if (kIsWeb) {
-          //Player.asset("sounds/bell_ring.mp3").play();
+          Player.asset("sounds/bell_ring.mp3").play();
         }
       }
       Order newOrder = Order.fromJson(data);
@@ -417,7 +414,7 @@ class _OrdersListState extends State<OrdersList> {
               )
             : Container(
                 padding: EdgeInsets.only(top: 10),
-                height: navbarHeightMedium,
+                height: Styles.navbarHeightConfMed,
                 color: Styles.bottomNavColor,
                 child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: responsiveWidth),
@@ -459,7 +456,7 @@ class _OrdersListState extends State<OrdersList> {
                       )))
               : Container(
                   padding: EdgeInsets.only(top: 10),
-                  height: navbarHeightmin,
+                  height: Styles.navbarHeightConfMin,
                   color: Styles.bottomNavColor,
                   child: Padding(
                       padding:
@@ -492,7 +489,7 @@ class _OrdersListState extends State<OrdersList> {
                         ],
                       )))
               : Container(
-                  height: navbarHeightminReparto,
+                  height: Styles.navbarHeightConfMinReparto,
                   color: Styles.bottomNavColor,
                   child: Padding(
                       padding:
@@ -530,7 +527,7 @@ class _OrdersListState extends State<OrdersList> {
         ),
         Text(
           " | ",
-          style: Styles.urgent,
+          style: Styles.urgent(Styles.urgentDefaultSize),
         ),
         Icon(
           Icons.home,

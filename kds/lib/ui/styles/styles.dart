@@ -26,14 +26,14 @@ class Styles {
   );
 
 //SIZES
-
+  static double urgentDefaultSize = 27.0;
   static TextStyle btnTextSize(color) =>
       TextStyle(fontSize: 18.0, color: color);
   static double btnPaddingV = 26.0;
   static double btnPaddingH = 70.0;
   static double navbarHeightConfMax = 130.0;
-  static double navbarHeightConfMed = 220.0;
-  static double navbarHeightConfMin = 340.0;
+  static double navbarHeightConfMed = 250.0;
+  static double navbarHeightConfMin = 350.0;
   static double navbarHeightConfMinReparto = 390;
 
   static double navbarHeight = 100.0;
@@ -137,11 +137,12 @@ class Styles {
       color: Color.fromARGB(255, 87, 87, 87),
       fontWeight: FontWeight.w700);
 
-  static TextStyle subTextTitle(double fontSize) => GoogleFonts.getFont('Roboto',
-      fontSize: fontSize, color: Color.fromARGB(255, 87, 87, 87));
+  static TextStyle subTextTitle(double fontSize) =>
+      GoogleFonts.getFont('Roboto',
+          fontSize: fontSize, color: Color.fromARGB(255, 87, 87, 87));
 
-  static TextStyle get urgent => GoogleFonts.getFont('Roboto',
-      fontSize: 27, color: Colors.white, fontWeight: FontWeight.w700);
+  static TextStyle urgent(double fontSize) => GoogleFonts.getFont('Roboto',
+      fontSize: fontSize, color: Colors.white, fontWeight: FontWeight.w700);
 
   static TextStyle get regularText =>
       GoogleFonts.getFont('Roboto', fontSize: 17, color: Colors.white);
@@ -151,6 +152,9 @@ class Styles {
 
   static TextStyle get textBoldInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 27, fontWeight: FontWeight.w700);
+
+  static TextStyle timerDetailStyle (double fontSize) =>
+      GoogleFonts.getFont('Roboto', fontSize: fontSize, color: Colors.red, fontWeight: FontWeight.w800);
 
   static TextStyle get textTitleInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 34);
@@ -167,7 +171,7 @@ class Styles {
   static TextStyle get textButtonCancelar =>
       GoogleFonts.getFont('Roboto', fontSize: 35, color: Colors.white);
 
-      static TextStyle get textContadores =>
+  static TextStyle get textContadores =>
       GoogleFonts.getFont('Roboto', fontSize: 32, color: Colors.green);
 
   //UTILS
