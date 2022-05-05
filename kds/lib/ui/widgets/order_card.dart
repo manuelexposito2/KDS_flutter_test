@@ -968,7 +968,8 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget optionsFutureList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
-      future: futureOptions,
+      future: futureOptions =
+        optionsRepository.readOpciones(widget.order!.camId.toString()),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return optionsCheckboxesList(snapshot.data!);
