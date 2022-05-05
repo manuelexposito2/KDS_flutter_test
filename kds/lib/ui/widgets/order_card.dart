@@ -59,7 +59,7 @@ class _ComandaCardState extends State<OrderCard> {
   OrderDto? status;
   String? _timeString;
 
-  ReadOptionsDto? optionsDto;
+  ReadOptionsDto? currentOptions;
 
   int opcion1 = 0;
   int opcion2 = 0;
@@ -87,13 +87,13 @@ class _ComandaCardState extends State<OrderCard> {
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
 
-    //futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString());
+//    optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
   }
 
   @override
   Widget build(BuildContext context) {
     
-    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).whenComplete(() => print(widget.order!.camId.toString()));
+    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
     
     _checkAllDetails(widget.order!.camEstado!);
 
@@ -1006,6 +1006,7 @@ class _ComandaCardState extends State<OrderCard> {
         return InkWell(
           onTap: () {
             //TODO: Gestionar petición writeOpciones
+            optionsRepository.writeOpciones(currentOptions!);
           },
           child: Container(
               padding: const EdgeInsets.all(5.0),
@@ -1024,6 +1025,8 @@ class _ComandaCardState extends State<OrderCard> {
                     value: isChecked,
                     onChanged: (bool? value) {
                       //TODO: Gestionar cambio de estado
+                      //currentOptions!.toJson().keys.elementAt(index);
+                      //print(currentOptions!.toJson().keys.elementAt(index));
                       isChecked = !value!;
                     },
                   ),

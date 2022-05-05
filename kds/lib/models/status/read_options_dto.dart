@@ -44,5 +44,7 @@ class ReadOptionsDto {
     _data['opcion7'] = opcion7;
     _data['opcion8'] = opcion8;
     return _data;
+
+    // {data : {idOrder ....}}
   }
 }
