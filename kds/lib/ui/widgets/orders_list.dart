@@ -48,10 +48,6 @@ class _OrdersListState extends State<OrdersList> {
   late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
-  var navbarHeightmin = 280.0;
-  var navbarHeightminReparto = 400.0;
-  var navbarHeightMedium = 170.0;
-  var navbarHeight = 70.0;
 
   bool showResumen = false;
   bool showOperarioDialog = false;
@@ -418,7 +414,7 @@ class _OrdersListState extends State<OrdersList> {
               )
             : Container(
                 padding: EdgeInsets.only(top: 10),
-                height: navbarHeightMedium,
+                height: Styles.navbarHeightConfMed,
                 color: Styles.bottomNavColor,
                 child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: responsiveWidth),
@@ -460,7 +456,7 @@ class _OrdersListState extends State<OrdersList> {
                       )))
               : Container(
                   padding: EdgeInsets.only(top: 10),
-                  height: navbarHeightmin,
+                  height: Styles.navbarHeightConfMin,
                   color: Styles.bottomNavColor,
                   child: Padding(
                       padding:
@@ -493,7 +489,7 @@ class _OrdersListState extends State<OrdersList> {
                         ],
                       )))
               : Container(
-                  height: navbarHeightminReparto,
+                  height: Styles.navbarHeightConfMinReparto,
                   color: Styles.bottomNavColor,
                   child: Padding(
                       padding:
@@ -531,7 +527,7 @@ class _OrdersListState extends State<OrdersList> {
         ),
         Text(
           " | ",
-          style: Styles.urgent,
+          style: Styles.urgent(Styles.urgentDefaultSize),
         ),
         Icon(
           Icons.home,

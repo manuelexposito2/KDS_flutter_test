@@ -579,7 +579,7 @@ class _ComandaCardState extends State<OrderCard> {
       //Hacer condición de que solo sale este espacio si se da tap en el botón de urgente
       child: Text(
         '¡¡¡URGENTE!!!',
-        style: Styles.urgent,
+        style: Styles.urgent(double.parse(widget.config.letra!) * increaseFont),
       ),
     );
   }
@@ -1001,7 +1001,7 @@ class _ComandaCardState extends State<OrderCard> {
             height: 50,
             child: Text(
               '¡Marcar como URGENTE!',
-              style: Styles.urgent,
+              style: Styles.urgent(Styles.urgentDefaultSize),
             ),
           ));
     } else {
@@ -1025,7 +1025,7 @@ class _ComandaCardState extends State<OrderCard> {
             height: 50,
             child: Text(
               '¡Marcar como NO URGENTE',
-              style: Styles.urgent,
+              style: Styles.urgent(Styles.urgentDefaultSize),
             ),
           ));
     }
