@@ -86,12 +86,15 @@ class _ComandaCardState extends State<OrderCard> {
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
-    
+
+    //futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    //print("Estado actual: ${widget.order!.camEstado}");
+    
+    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).whenComplete(() => print(widget.order!.camId.toString()));
+    
     _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
@@ -258,7 +261,7 @@ class _ComandaCardState extends State<OrderCard> {
                                 orderExtended = orderRepository.getOrderById(
                                     widget.order!.camId.toString(),
                                     widget.config);
-
+                              
                                 return AlertDialog(
                                   content: _futureInfo(context),
                                 );
@@ -273,17 +276,19 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         widget.config.reparto!.contains("S") &&
-                            widget.config.opciones.isNotEmpty && order.camEstado!.contains('R') ?
-        Container(
-          height: 50,
-          color: Colors.white,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Row(children: [
-              Flexible(flex: 1, child: optionsFutureImageList(context))
-            ]),
-          ),
-        ) : Container(),
+                widget.config.opciones.isNotEmpty &&
+                order.camEstado!.contains('R')
+            ? Container(
+                height: 50,
+                color: Colors.white,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(children: [
+                    Flexible(flex: 1, child: optionsFutureImageList(context))
+                  ]),
+                ),
+              )
+            : Container(),
         //readOpciones(),
         //optionsFutureImageList(context),
         Container(
@@ -331,12 +336,9 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  
-
   Widget optionsFutureImageList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
-        future: futureOptions =
-        optionsRepository.readOpciones(widget.order!.camId.toString()),
+        future: futureOptions,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return optionsImageList(snapshot.data!);
@@ -367,7 +369,7 @@ class _ComandaCardState extends State<OrderCard> {
               iconSize: 40,
               splashRadius: 0.1,
               onPressed: () {
-                _getOptionValue(readOptionsDto, index-1) == 1
+                _getOptionValue(readOptionsDto, index - 1) == 1
                     ? setState(() {
                         //1
                       })
@@ -377,7 +379,7 @@ class _ComandaCardState extends State<OrderCard> {
 
                 print(index);
               },
-              icon: _getOptionValue(readOptionsDto, index-1) >= 1
+              icon: _getOptionValue(readOptionsDto, index - 1) >= 1
                   ? Image.asset(
                       'assets/images/${index.toString()}.png',
                       width: 40,
@@ -968,8 +970,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   Widget optionsFutureList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
-      future: futureOptions =
-        optionsRepository.readOpciones(widget.order!.camId.toString()),
+      future: futureOptions,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return optionsCheckboxesList(snapshot.data!);
@@ -998,9 +999,8 @@ class _ComandaCardState extends State<OrderCard> {
       itemCount: widget.config.opciones.length,
       itemBuilder: (context, index) {
         //TODO: Ver el estado antes
-        bool isChecked = _getOptionValue(readOptionsDto, index) == 1
-                        ? true
-                        : false;
+        bool isChecked =
+            _getOptionValue(readOptionsDto, index) == 1 ? true : false;
 
         return InkWell(
           onTap: () {
