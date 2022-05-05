@@ -6,16 +6,19 @@ import 'package:kds/models/get_workers_response.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/order_dto.dart';
+import 'package:kds/models/status/print_order_dto.dart';
 import 'package:kds/models/status/read_options_dto.dart';
 import 'package:kds/models/status/urgente_dto.dart';
 import 'package:kds/repository/impl_repo/options_repository_impl.dart';
 import 'package:kds/repository/impl_repo/order_repository_impl.dart';
+import 'package:kds/repository/impl_repo/print_order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/impl_repo/urgent_repository_impl.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/options_repository.dart';
 
 import 'package:kds/repository/repository/order_repository.dart';
+import 'package:kds/repository/repository/print_order_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/repository/repository/urgent_repository.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
@@ -46,6 +49,7 @@ class _ComandaCardState extends State<OrderCard> {
   late StatusOrderRepository statusOrderRepository;
   late UrgenteRepository urgenteRepository;
   late Future<ReadOptionsDto?> futureOptions;
+  late PrintOrderRepository printOrderRepository;
 
   Order? order;
 
@@ -86,15 +90,17 @@ class _ComandaCardState extends State<OrderCard> {
     urgenteRepository = UrgentRepositoryImpl();
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
+    printOrderRepository = PrintOrderRepositoryImpl();
 
     //futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    
-    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).whenComplete(() => print(widget.order!.camId.toString()));
-    
+    futureOptions = optionsRepository
+        .readOpciones(widget.order!.camId.toString())
+        .whenComplete(() => print(widget.order!.camId.toString()));
+
     _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
@@ -104,6 +110,9 @@ class _ComandaCardState extends State<OrderCard> {
       colorOrderStatus = Styles.mediumColor;
     } else {
       colorOrderStatus = setColor(widget.order!.camEstado!);
+      if(widget.order!.camEstado == "T"){
+        imprimirTicket();
+      }
     }
     //Imprime la comanda mostrando una animación
     return ShowUpAnimation(
@@ -261,7 +270,7 @@ class _ComandaCardState extends State<OrderCard> {
                                 orderExtended = orderRepository.getOrderById(
                                     widget.order!.camId.toString(),
                                     widget.config);
-                              
+
                                 return AlertDialog(
                                   content: _futureInfo(context),
                                 );
@@ -324,7 +333,10 @@ class _ComandaCardState extends State<OrderCard> {
                               backgroundColor: Colors.white,
                               primary: Color.fromARGB(255, 87, 87, 87)),
                           child: Icon(Icons.print),
-                          onPressed: () {},
+                          onPressed: () {
+                            //probar con ponerlo directamente en vez de desde un método, puede que la forma de llamarlo no sea la idonea
+                            imprimirTicket();
+                          },
                         ),
                       ),
                     )
@@ -334,6 +346,18 @@ class _ComandaCardState extends State<OrderCard> {
         ),
       ],
     );
+  }
+
+  imprimirTicket() {
+    PrintOrderDto newPrintOrder = PrintOrderDto(
+        idCabecera: widget.order!.camIdCab.toString(),
+        idOrder: widget.order!.camId.toString());
+
+    return widget.config.imprimirPendienteCobro!.contains("S") &&
+            widget.config.seleccionarOperario!.contains("S")
+      //Si no funciona puede que el problema sea que le estoy pasando dos datos en el dto cuando en el original solo debo pasarle uno por peticion
+        ? printOrderRepository.printAccount(newPrintOrder)
+        : printOrderRepository.printOrder(newPrintOrder);
   }
 
   Widget optionsFutureImageList(BuildContext context) {
@@ -491,7 +515,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
-  //Botón para poder asignar repartidor
+  //Botón para poder asignar trabajador
   Widget _buttonAsignar(Order order) {
     var bgColor = Colors.white;
     var primaryColor = Color.fromARGB(255, 87, 87, 87);
@@ -1134,6 +1158,4 @@ class _ComandaCardState extends State<OrderCard> {
               style: Styles.textTicketInfo,
             )));
   }
-
- 
 }
