@@ -80,7 +80,7 @@ class OptionsRepositoryImpl implements OptionsRepository {
     //var xbody = dto.toJson();
 
     final response = await http.post(Uri.parse(url),
-        headers: headers, body: writeOptions);
+        headers: headers, body: jsonEncode(writeOptions));
 
     if (response.statusCode == 200) {
       print("SUCCESS");

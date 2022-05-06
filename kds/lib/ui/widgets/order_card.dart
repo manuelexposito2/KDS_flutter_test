@@ -92,9 +92,10 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   Widget build(BuildContext context) {
-    
-    futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
-    
+    futureOptions = optionsRepository
+        .readOpciones(widget.order!.camId.toString())
+        .then((value) => currentOptions = value);
+
     _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
@@ -261,7 +262,7 @@ class _ComandaCardState extends State<OrderCard> {
                                 orderExtended = orderRepository.getOrderById(
                                     widget.order!.camId.toString(),
                                     widget.config);
-                              
+
                                 return AlertDialog(
                                   content: _futureInfo(context),
                                 );
@@ -698,13 +699,13 @@ class _ComandaCardState extends State<OrderCard> {
   //Dependiendo de la inicial dada pinta el "estado" dentro del diálogo de información
   camEstado(Order order) {
     if (order.camEstado == 'E') {
-      return Text('En espera', style: Styles.textRegularInfo);
+      return 'En espera';
     } else if (order.camEstado == 'P') {
-      return Text('En proceso', style: Styles.textRegularInfo);
+      return 'En proceso';
     } else if (order.camEstado == 'R') {
-      return Text('En recogida', style: Styles.textRegularInfo);
+      return 'En recogida';
     } else if (order.camEstado == 'T') {
-      return Text('Terminado', style: Styles.textRegularInfo);
+      return 'Terminado';
     }
   }
 
@@ -756,7 +757,7 @@ class _ComandaCardState extends State<OrderCard> {
                     style: Styles.textTitleInfo,
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 Wrap(
                   children: [
                     Container(
@@ -772,87 +773,34 @@ class _ComandaCardState extends State<OrderCard> {
                               style: Styles.textTitleInfo,
                             ),
                           ),
+                          //TODO: Comprobar como se ven algunos de estos datos: Nombre de cliente, agencia... etc
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.person),
-                                    Text(
-                                      ' Cliente: ',
-                                      style: Styles.textBoldInfo,
-                                    ),
-                                    Text(
-                                      '',
-                                      style: Styles.textRegularInfo,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.business_outlined),
-                                    Text(' Agencia: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(" ", style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.adjust_outlined),
-                                    Text(' Operario: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camOperario!,
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.push_pin),
-                                    Text(' Salón: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camSalon.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.query_stats_rounded),
-                                    Text(' Estado: ',
-                                        style: Styles.textBoldInfo),
-                                    camEstado(order),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.chat_bubble),
-                                    Text(' Notas: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camNota.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Divider(),
+                              Styles.infoTitle(
+                                  const Icon(Icons.person),
+                                  ' Cliente: ',
+                                  '${order.cliNombre} ${order.cliApellidos}'),
+                              Styles.infoTitle(
+                                  const Icon(Icons.business_outlined),
+                                  ' Agencia: ',
+                                  order.agcNombre!),
+                              Styles.infoTitle(
+                                  const Icon(Icons.adjust_outlined),
+                                  ' Operario: ',
+                                  order.camOperario!),
+                              Styles.infoTitle(const Icon(Icons.push_pin),
+                                  ' Salón: ', order.camSalon.toString()),
+                              Styles.infoTitle(
+                                  const Icon(Icons.query_stats_rounded),
+                                  ' Estado: ',
+                                  camEstado(order)),
+                              Styles.infoTitle(const Icon(Icons.chat_bubble),
+                                  ' Notas: ', order.camNota.toString()),
+                              const Divider(),
                               Padding(
                                   padding: espaciado, child: esPagado(order)),
-                              Divider()
+                              const Divider()
                             ],
                           )
                         ],
@@ -871,64 +819,18 @@ class _ComandaCardState extends State<OrderCard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.person),
-                                    Text(' Nombre: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliNombre.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.phone),
-                                    Text(' Teléfono: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliTelefono.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.place),
-                                    Text(' Dirección:',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliDireccion.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.zoom_in_map_rounded),
-                                    Text(' Zona: ', style: Styles.textBoldInfo),
-                                    Text(order.cliZona.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.chat_bubble),
-                                    Text(' Notas:', style: Styles.textBoldInfo),
-                                    Text(order.cliNotas.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
+                              Styles.infoTitle(const Icon(Icons.person),
+                                  ' Nombre: ', order.cliNombre.toString()),
+                              Styles.infoTitle(const Icon(Icons.phone),
+                                  ' Teléfono: ', order.cliTelefono.toString()),
+                              Styles.infoTitle(const Icon(Icons.place),
+                                  ' Dirección:', order.cliDireccion.toString()),
+                              Styles.infoTitle(
+                                  const Icon(Icons.zoom_in_map_rounded),
+                                  ' Zona: ',
+                                  order.cliZona.toString()),
+                              Styles.infoTitle(const Icon(Icons.chat_bubble),
+                                  ' Notas:', order.cliNotas.toString()),
                             ],
                           )
                         ],
@@ -954,7 +856,7 @@ class _ComandaCardState extends State<OrderCard> {
                             widget.config.opciones.isNotEmpty
                         ? SizedBox(
                             width: 500,
-                            height: 500,
+                            height: 600,
                             child: optionsFutureList(context))
                         : Container()
                   ],
@@ -1110,7 +1012,7 @@ class _ComandaCardState extends State<OrderCard> {
             alignment: Alignment.center,
             height: 50,
             child: Text(
-              '¡Marcar como NO URGENTE',
+              '¡Marcar como NO URGENTE!',
               style: Styles.urgent(Styles.urgentDefaultSize),
             ),
           ));
@@ -1137,6 +1039,4 @@ class _ComandaCardState extends State<OrderCard> {
               style: Styles.textTicketInfo,
             )));
   }
-
- 
 }
