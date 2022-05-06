@@ -249,17 +249,20 @@ class _ComandaCardState extends State<OrderCard> {
                       height: 40,
                       child: IconButton(
                           onPressed: () => showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                orderExtended = orderRepository.getOrderById(
-                                    widget.order!.camId.toString(),
-                                    widget.config);
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    orderExtended =
+                                        orderRepository.getOrderById(
+                                            widget.order!.camId.toString(),
+                                            widget.config);
 
-                                return AlertDialog(
-                                  content: _futureInfo(context),
-                                );
-                              },
-                              barrierDismissible: true),
+                                    return AlertDialog(
+                                      content: _futureInfo(context),
+                                    );
+                                  },
+                                  barrierDismissible: true)
+                              .whenComplete(() => optionsRepository
+                                  .writeOpciones(currentOptions!)),
                           icon: Icon(
                             Icons.info,
                             color: Color.fromARGB(255, 87, 87, 87),
@@ -858,7 +861,9 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
+            bottom: 0,
+            right: 0,
+            child: CustomIcons.closeBlueBtn(context))
       ],
     );
   }
@@ -877,16 +882,16 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
-    ReadOptionsDto newReadOpt = ReadOptionsDto(
-        idOrder: widget.order!.camId.toString(),
-        opcion1: readOptionsDto.opcion1,
-        opcion2: readOptionsDto.opcion2,
-        opcion3: readOptionsDto.opcion3,
-        opcion4: readOptionsDto.opcion4,
-        opcion5: readOptionsDto.opcion5,
-        opcion6: readOptionsDto.opcion6,
-        opcion7: readOptionsDto.opcion7,
-        opcion8: readOptionsDto.opcion8);
+/*     ReadOptionsDto newReadOpt = ReadOptionsDto(
+        idOrder: 0,
+        opcion1: 0,
+        opcion2: 0,
+        opcion3: 0,
+        opcion4: 0,
+        opcion5: 0,
+        opcion6: 0,
+        opcion7: 0,
+        opcion8: 0); */
     Color getColor(Set<MaterialState> states) {
       const Set<MaterialState> interactiveStates = <MaterialState>{
         MaterialState.pressed,
@@ -903,8 +908,9 @@ class _ComandaCardState extends State<OrderCard> {
         physics: NeverScrollableScrollPhysics(),
         itemCount: widget.config.opciones.length,
         itemBuilder: (context, index) {
-          //TODO: Ver el estado antes
-
+          //TODO: Está tomando el currentOptions antiguo, antes de cambiar el booleano. Ver como arreglar esto.
+          //TODO: El widget debe actualizarse
+          Map<String, dynamic> changedJson = readOptionsDto.toJson();
           bool isChecked =
               _getOptionValue(readOptionsDto, index) == 1 ? true : false;
 
@@ -921,8 +927,18 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
                 value: isChecked,
                 onChanged: (bool? value) {
+                  changedJson.update(
+                      "opcion${index + 1}", (value) => isChecked ? 0 : 1);
+                 
                   setState(() {
                     isChecked = value!;
+                    readOptionsDto = ReadOptionsDto.fromJson(changedJson);
+                    print(readOptionsDto.toJson().toString());
+                    //print(currentOptions!.toJson().update("opcion${index + 1}", (value) => isChecked ? 1 : 0));
+
+                    //newReadOpt.toJson().
+                    // newReadOpt.toJson()["opcion${index + 1}"] = 0;
+                    //print(readOptionsDto.toJson()["opcion${index + 1}"]);
                   });
                 },
               ),
