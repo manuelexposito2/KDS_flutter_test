@@ -37,14 +37,6 @@ class OptionsRepositoryImpl implements OptionsRepository {
 
     String url = "$urlKDS/writeOpciones";
 
-    //TODO: SOLUCIONAR [ERROR:flutter/lib/ui/ui_dart_state.cc(209)] Unhandled Exception: type 'int' is not a subtype of type 'String' in type cast
-
-    // print("DTO --> ${dto.toJson()}");
-    // print("MAP --> ${currentOptions}");
-    dto.toJson().forEach((key, value) {
-      // print("$key --> ${value.runtimeType}" );
-    });
-
     WriteOptionsDto writeOptions = WriteOptionsDto(
         data: Data(
             idOrder: dto.idOrder,
@@ -57,28 +49,8 @@ class OptionsRepositoryImpl implements OptionsRepository {
             opcion7: dto.opcion7,
             opcion8: dto.opcion8));
 
-    Map<String, dynamic> bodyDto = {
-      "idOrder": dto.idOrder,
-      "opcion1": dto.opcion1,
-      "opcion2": dto.opcion2,
-      "opcion3": dto.opcion3,
-      "opcion4": dto.opcion4,
-      "opcion5": dto.opcion5,
-      "opcion6": dto.opcion6,
-      "opcion7": dto.opcion7,
-      "opcion8": dto.opcion8,
-    };
-    //print(jsonEncode(dto.toJson()));
-    //print(jsonDecode(dto.toJson().toString()));
-    //print(dto.toJson());
-    //print(bodyDto.toString());
-    //print('"${jsonEncode(dto.toJson())}"');
-    print(bodyDto.toString());
   
     print(jsonEncode(writeOptions));
-    var xbody = "{data: " + dto.toJson().toString() + "}";
-    //var xbody = dto.toJson();
-
     final response = await http.post(Uri.parse(url),
         headers: headers, body: jsonEncode(writeOptions));
 

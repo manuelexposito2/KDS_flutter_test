@@ -23,6 +23,7 @@ import 'package:kds/ui/styles/custom_icons.dart';
 
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_card.dart';
+import 'package:kds/ui/widgets/labeled_checkbox.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:show_up_animation/show_up_animation.dart';
@@ -885,60 +886,75 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
-    Color getColor(Set<MaterialState> states) {
-      const Set<MaterialState> interactiveStates = <MaterialState>{
-        MaterialState.pressed,
-        MaterialState.hovered,
-        MaterialState.focused,
-      };
-      if (states.any(interactiveStates.contains)) {
-        return Styles.blueBtnColor;
-      }
-      return Styles.blueBtnColor;
-    }
+    ReadOptionsDto newReadOpt = ReadOptionsDto(
+        idOrder: widget.order!.camId.toString(),
+        opcion1: readOptionsDto.opcion1,
+        opcion2: readOptionsDto.opcion2,
+        opcion3: readOptionsDto.opcion3,
+        opcion4: readOptionsDto.opcion4,
+        opcion5: readOptionsDto.opcion5,
+        opcion6: readOptionsDto.opcion6,
+        opcion7: readOptionsDto.opcion7,
+        opcion8: readOptionsDto.opcion8);
 
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemCount: widget.config.opciones.length,
       itemBuilder: (context, index) {
         //TODO: Ver el estado antes
-        bool isChecked =
-            _getOptionValue(readOptionsDto, index) == 1 ? true : false;
 
-        return InkWell(
-          onTap: () {
-            //TODO: Gestionar petición writeOpciones
-            optionsRepository.writeOpciones(currentOptions!);
-          },
-          child: Container(
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                  color: _getOptionValue(readOptionsDto, index) == 1
-                      ? Color.fromARGB(255, 142, 224, 144)
-                      : Colors.transparent,
-                  border: Border.all(color: Styles.black),
-                  borderRadius: const BorderRadius.all(Radius.circular(5.0))),
-              margin: EdgeInsets.symmetric(vertical: 5.0),
-              child: Row(
-                children: [
-                  Checkbox(
-                    checkColor: Colors.white,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: isChecked,
-                    onChanged: (bool? value) {
-                      //TODO: Gestionar cambio de estado
-                      //currentOptions!.toJson().keys.elementAt(index);
-                      //print(currentOptions!.toJson().keys.elementAt(index));
-                      isChecked = !value!;
-                    },
-                  ),
-                  Text(
-                    widget.config.opciones.elementAt(index),
-                    style: Styles.textBoldInfo,
-                  )
-                ],
-              )),
-        );
+        bool isChecked = _getOptionValue(newReadOpt, index) == 1 ? true : false;
+
+        return Container(
+            padding: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+                color: isChecked
+                    ? Color.fromARGB(255, 142, 224, 144)
+                    : Colors.transparent,
+                border: Border.all(color: Styles.black),
+                borderRadius: const BorderRadius.all(Radius.circular(5.0))),
+            margin: EdgeInsets.symmetric(vertical: 5.0),
+            child: LabeledCheckbox(
+              label: widget.config.opciones.elementAt(index),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              value: isChecked,
+              onChanged: (bool newValue) {
+       /*          newReadOpt.toJson().forEach((key, value) {
+                  print("$key : $value");
+                }); */
+                print(newReadOpt.toJson()["opcion${index + 1}"]);
+                setState(() {
+                  isChecked = newValue;
+                  newReadOpt.toJson()["opcion${index + 1}"] = newValue ? 1 : 0;
+
+                  //print(newReadOpt.toJson().toString());
+                });
+              },
+            )
+            /*
+             Row(
+              children: [
+                Checkbox(
+                  checkColor: Colors.white,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: isChecked,
+                  onChanged: (bool? value) {
+                    //TODO: Gestionar cambio de estado
+                    //currentOptions!.toJson().keys.elementAt(index);
+                    //print(currentOptions!.toJson().keys.elementAt(index));
+                    print("CAMBIO");
+                    setState(() {
+                      isChecked = value!;
+                    });
+                  },
+                ),
+                Text(
+                  widget.config.opciones.elementAt(index),
+                  style: Styles.textBoldInfo,
+                )
+              ],
+            ) */
+            );
       },
     );
   }
