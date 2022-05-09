@@ -30,7 +30,7 @@ class OptionsRepositoryImpl implements OptionsRepository {
     }
   }
 
-  //TODO: Arreglar esta petición
+  
   @override
   Future<void> writeOpciones(ReadOptionsDto dto) async {
     String urlKDS = await ConfigRepository.getUrlKDS();

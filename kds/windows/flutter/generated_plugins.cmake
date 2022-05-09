@@ -3,8 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  dart_vlc
-  flutter_platform_alert
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
