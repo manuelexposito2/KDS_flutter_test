@@ -298,8 +298,6 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
               )
             : Container(),
-        //readOpciones(),
-        //optionsFutureImageList(context),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -487,7 +485,14 @@ class _ComandaCardState extends State<OrderCard> {
         color: Color.fromARGB(255, 19, 165, 19),
         size: 30,
       );
-    } else if (order.camEstado == 'M') {
+    } else if (order.camEstado == 'T' && widget.config.confirmarCerrar == "S") {
+      label = const Text('Cerrar');
+      icon = const Icon(
+        Icons.close,
+        color: Colors.red,
+        size: 30,
+      );
+    }else if (order.camEstado == 'M') {
       label = const Text("Eliminar");
       icon = Icon(Icons.close, color: Styles.incidenciaColor);
       status = "T";
@@ -688,7 +693,10 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+
+//TODO: Mirar la linea 1272 del main original (habrá cosas que tener en cuenta)
   String _toggleStateButton(String status) {
+    /*
     switch (status) {
       case "E":
         return "P";
@@ -708,6 +716,45 @@ class _ComandaCardState extends State<OrderCard> {
       default:
         return "T";
     }
+    */
+    if(widget.config.reparto!.contains("S")){
+      switch (status) {
+      case "E":
+        return "P";
+      case "P":
+        if (widget.order!.camPedido == 0 && widget.config.comandasRecoger != "N" || widget.order!.camPedido == 1 && widget.config.pedidosRecoger != "N" ) {
+          return "R";
+        } else if(widget.config.detallesRecoger != "N" && widget.order!.camPedido == "0" && widget.config.comandasRecoger != "N" || widget.order!.camPedido == "1" && widget.config.pedidosRecoger != "N"){
+          return "R";
+        }
+        else {
+          return "T";
+        }
+      case "R":
+        return "T";
+      case "T":
+        return "E";
+      default:
+        return "E";
+    }
+    }else{
+      switch (status) {
+      case "E":
+        return "P";
+      case "P":
+        return "T";
+      case "T":
+      if(widget.config.confirmarCerrar == "S" && widget.order!.camEstado != "T"){
+        return "TT";
+      }
+      else{
+        return "E";
+      }
+      default:
+        return "E";
+    }
+    }
+    
   }
 
   //Transforma el tiempo de alta de la orden de Datetime a minutos

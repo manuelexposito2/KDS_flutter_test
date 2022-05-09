@@ -46,6 +46,7 @@ class _OrdersListState extends State<OrdersList> {
   late OrderRepository orderRepository;
   late WorkersRepository workersRepository;
   late StatusOrderRepository statusOrderRepository;
+  late Future <List<Order>> futureList;
   String? filter = '';
 
 
@@ -72,6 +73,7 @@ class _OrdersListState extends State<OrdersList> {
     orderRepository = OrderRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
+    futureList = orderRepository.getOrders(filter!, widget.config);
   }
 
   @override
@@ -177,13 +179,22 @@ class _OrdersListState extends State<OrdersList> {
         });
       }
 
-      if (newStatus.status!.contains("T") || newStatus.status!.contains("R")) {
+      if (newStatus.status!.contains("T") && widget.config.confirmarCerrar != "S" || newStatus.status!.contains("R") ) {
         setState(() {
           ordersList!.removeWhere(
               (element) => element.camId.toString() == newStatus.idOrder);
         });
       }
 
+      //Mirar si esto es correcto
+/*       if (newStatus.status!.contains("T") && widget.config.confirmarCerrar == "S") {
+        setState(() {
+
+
+          
+        }); 
+      }*/
+   
       if (filter!.contains(terminadas) && newStatus.status!.contains("E") ||
           filter!.contains(recoger) && newStatus.status!.contains("T")) {
         setState(() {
@@ -204,7 +215,7 @@ class _OrdersListState extends State<OrdersList> {
 
     return Scaffold(
       body: FutureBuilder(
-          future: orderRepository.getOrders(filter!, widget.config),
+          future: futureList,
           builder: (context, snapshot) {
             //Se gestionan los distintos estados cuando se carga el cuerpo
             if (snapshot.connectionState == ConnectionState.waiting &&
