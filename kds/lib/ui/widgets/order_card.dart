@@ -80,14 +80,17 @@ class _ComandaCardState extends State<OrderCard> {
     statusOrderRepository = StatusOrderRepositoryImpl();
 
 //    optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
+    futureOptions = optionsRepository
+        .readOpciones(widget.order!.camId.toString())
+        .then((value) => currentOptions = value);
   }
 
   @override
   Widget build(BuildContext context) {
-    futureOptions = optionsRepository
+    /*  futureOptions = optionsRepository
         .readOpciones(widget.order!.camId.toString())
         .then((value) => currentOptions = value);
-
+ */
     _checkAllDetails(widget.order!.camEstado!);
 
     if (widget.order!.camEstado == "E" &&
@@ -291,8 +294,6 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
               )
             : Container(),
-        //readOpciones(),
-        //optionsFutureImageList(context),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -344,6 +345,8 @@ class _ComandaCardState extends State<OrderCard> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return optionsImageList(snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Text("Demasiadas peticiones. Espere...");
           } else {
             return const CircularProgressIndicator.adaptive();
           }
@@ -365,9 +368,6 @@ class _ComandaCardState extends State<OrderCard> {
         itemCount: widget.config.opciones.length,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          //Ignoramos el primer index ya que es el id
-          //widget.order!.camId.toString()
-          //index = index + 1;
           index++;
           if (index > 8) {
             return Container();
