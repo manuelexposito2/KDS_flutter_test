@@ -63,16 +63,8 @@ class _ComandaCardState extends State<OrderCard> {
   OrderDto? status;
   String? _timeString;
 
-  ReadOptionsDto? optionsDto;
-
-  int opcion1 = 0;
-  int opcion2 = 0;
-  int opcion3 = 0;
-  int opcion4 = 0;
-  int opcion5 = 0;
-  int opcion6 = 0;
-  int opcion7 = 0;
-  int opcion8 = 0;
+  //bool isChecked = false;
+  ReadOptionsDto? currentOptions;
 
   @override
   void setState(fn) {
@@ -92,14 +84,14 @@ class _ComandaCardState extends State<OrderCard> {
     statusOrderRepository = StatusOrderRepositoryImpl();
     printOrderRepository = PrintOrderRepositoryImpl();
 
-    //futureOptions = optionsRepository.readOpciones(widget.order!.camId.toString());
+//    optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
+    futureOptions = optionsRepository
+        .readOpciones(widget.order!.camId.toString())
+        .then((value) => currentOptions = value);
   }
 
   @override
   Widget build(BuildContext context) {
-    futureOptions = optionsRepository
-        .readOpciones(widget.order!.camId.toString())
-        .whenComplete(() => print(widget.order!.camId.toString()));
 
     _checkAllDetails(widget.order!.camEstado!);
 
@@ -265,17 +257,26 @@ class _ComandaCardState extends State<OrderCard> {
                       height: 40,
                       child: IconButton(
                           onPressed: () => showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                orderExtended = orderRepository.getOrderById(
-                                    widget.order!.camId.toString(),
-                                    widget.config);
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        orderExtended =
+                                            orderRepository.getOrderById(
+                                                widget.order!.camId.toString(),
+                                                widget.config);
 
-                                return AlertDialog(
-                                  content: _futureInfo(context),
-                                );
-                              },
-                              barrierDismissible: true),
+                                        return AlertDialog(
+                                          content: _futureInfo(context),
+                                        );
+                                      },
+                                      barrierDismissible: true)
+                                  .whenComplete(() {
+                                setState(() {
+                                  currentOptions!;
+                                });
+
+                                optionsRepository
+                                    .writeOpciones(currentOptions!);
+                              }),
                           icon: Icon(
                             Icons.info,
                             color: Color.fromARGB(255, 87, 87, 87),
@@ -298,8 +299,6 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
               )
             : Container(),
-        //readOpciones(),
-        //optionsFutureImageList(context),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 1),
           color: Colors.grey.shade400,
@@ -364,6 +363,8 @@ class _ComandaCardState extends State<OrderCard> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return optionsImageList(snapshot.data!);
+          } else if (snapshot.hasError) {
+            return Text("Demasiadas peticiones. Espere...");
           } else {
             return const CircularProgressIndicator.adaptive();
           }
@@ -371,6 +372,10 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsImageList(ReadOptionsDto readOptionsDto) {
+    readOptionsDto = currentOptions!;
+
+    Map<String, dynamic> changedJson = readOptionsDto.toJson();
+
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 40,
@@ -381,9 +386,7 @@ class _ComandaCardState extends State<OrderCard> {
         itemCount: widget.config.opciones.length,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          //Ignoramos el primer index ya que es el id
-          //widget.order!.camId.toString()
-          index = index + 1;
+          index++;
           if (index > 8) {
             return Container();
           }
@@ -391,17 +394,18 @@ class _ComandaCardState extends State<OrderCard> {
               iconSize: 40,
               splashRadius: 0.1,
               onPressed: () {
-                _getOptionValue(readOptionsDto, index - 1) == 1
-                    ? setState(() {
-                        //1
-                      })
-                    : setState(() {
-                        //0
-                      });
-
+                changedJson.update(
+                    "opcion$index",
+                    (value) => _getOptionValue(readOptionsDto, index - 1) == 1
+                        ? 0
+                        : 1);
+                setState(() {
+                  currentOptions = ReadOptionsDto.fromJson(changedJson);
+                });
+                optionsRepository.writeOpciones(currentOptions!);
                 print(index);
               },
-              icon: _getOptionValue(readOptionsDto, index - 1) >= 1
+              icon: _getOptionValue(readOptionsDto, index - 1) == 1
                   ? Image.asset(
                       'assets/images/${index.toString()}.png',
                       width: 40,
@@ -504,9 +508,6 @@ class _ComandaCardState extends State<OrderCard> {
         statusOrderRepository.statusOrder(newStatus).whenComplete(() {
           widget.socket!.emit(WebSocketEvents.modifyOrder, newStatus);
         });
-
-        ////debugPrint(newStatus.idOrder);
-        ////debugPrint(newStatus.status);
       },
       icon: icon,
       label: label,
@@ -598,7 +599,24 @@ class _ComandaCardState extends State<OrderCard> {
           Divider(thickness: 3.0),
           Align(
             alignment: Alignment.bottomRight,
-            child: CustomIcons.closeBlueBtn(context),
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Icon(Icons.close, size: 23.5),
+                      ),
+                      TextSpan(
+                        text: "Cerrar",
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                )),
           )
         ],
       ),
@@ -721,13 +739,13 @@ class _ComandaCardState extends State<OrderCard> {
   //Dependiendo de la inicial dada pinta el "estado" dentro del diálogo de información
   camEstado(Order order) {
     if (order.camEstado == 'E') {
-      return Text('En espera', style: Styles.textRegularInfo);
+      return 'En espera';
     } else if (order.camEstado == 'P') {
-      return Text('En proceso', style: Styles.textRegularInfo);
+      return 'En proceso';
     } else if (order.camEstado == 'R') {
-      return Text('En recogida', style: Styles.textRegularInfo);
+      return 'En recogida';
     } else if (order.camEstado == 'T') {
-      return Text('Terminado', style: Styles.textRegularInfo);
+      return 'Terminado';
     }
   }
 
@@ -779,7 +797,7 @@ class _ComandaCardState extends State<OrderCard> {
                     style: Styles.textTitleInfo,
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 Wrap(
                   children: [
                     Container(
@@ -795,87 +813,34 @@ class _ComandaCardState extends State<OrderCard> {
                               style: Styles.textTitleInfo,
                             ),
                           ),
+                          //TODO: Comprobar como se ven algunos de estos datos: Nombre de cliente, agencia... etc
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.person),
-                                    Text(
-                                      ' Cliente: ',
-                                      style: Styles.textBoldInfo,
-                                    ),
-                                    Text(
-                                      '',
-                                      style: Styles.textRegularInfo,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.business_outlined),
-                                    Text(' Agencia: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(" ", style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.adjust_outlined),
-                                    Text(' Operario: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camOperario!,
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.push_pin),
-                                    Text(' Salón: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camSalon.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.query_stats_rounded),
-                                    Text(' Estado: ',
-                                        style: Styles.textBoldInfo),
-                                    camEstado(order),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.chat_bubble),
-                                    Text(' Notas: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.camNota.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Divider(),
+                              Styles.infoTitle(
+                                  const Icon(Icons.person),
+                                  ' Cliente: ',
+                                  '${order.cliNombre} ${order.cliApellidos}'),
+                              Styles.infoTitle(
+                                  const Icon(Icons.business_outlined),
+                                  ' Agencia: ',
+                                  order.agcNombre!),
+                              Styles.infoTitle(
+                                  const Icon(Icons.adjust_outlined),
+                                  ' Operario: ',
+                                  order.camOperario!),
+                              Styles.infoTitle(const Icon(Icons.push_pin),
+                                  ' Salón: ', order.camSalon.toString()),
+                              Styles.infoTitle(
+                                  const Icon(Icons.query_stats_rounded),
+                                  ' Estado: ',
+                                  camEstado(order)),
+                              Styles.infoTitle(const Icon(Icons.chat_bubble),
+                                  ' Notas: ', order.camNota.toString()),
+                              const Divider(),
                               Padding(
                                   padding: espaciado, child: esPagado(order)),
-                              Divider()
+                              const Divider()
                             ],
                           )
                         ],
@@ -894,64 +859,18 @@ class _ComandaCardState extends State<OrderCard> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.person),
-                                    Text(' Nombre: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliNombre.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.phone),
-                                    Text(' Teléfono: ',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliTelefono.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.place),
-                                    Text(' Dirección:',
-                                        style: Styles.textBoldInfo),
-                                    Text(order.cliDireccion.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.zoom_in_map_rounded),
-                                    Text(' Zona: ', style: Styles.textBoldInfo),
-                                    Text(order.cliZona.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: espaciado,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.chat_bubble),
-                                    Text(' Notas:', style: Styles.textBoldInfo),
-                                    Text(order.cliNotas.toString(),
-                                        style: Styles.textRegularInfo)
-                                  ],
-                                ),
-                              ),
+                              Styles.infoTitle(const Icon(Icons.person),
+                                  ' Nombre: ', order.cliNombre.toString()),
+                              Styles.infoTitle(const Icon(Icons.phone),
+                                  ' Teléfono: ', order.cliTelefono.toString()),
+                              Styles.infoTitle(const Icon(Icons.place),
+                                  ' Dirección:', order.cliDireccion.toString()),
+                              Styles.infoTitle(
+                                  const Icon(Icons.zoom_in_map_rounded),
+                                  ' Zona: ',
+                                  order.cliZona.toString()),
+                              Styles.infoTitle(const Icon(Icons.chat_bubble),
+                                  ' Notas:', order.cliNotas.toString()),
                             ],
                           )
                         ],
@@ -977,7 +896,7 @@ class _ComandaCardState extends State<OrderCard> {
                             widget.config.opciones.isNotEmpty
                         ? SizedBox(
                             width: 500,
-                            height: 500,
+                            height: 600,
                             child: optionsFutureList(context))
                         : Container()
                   ],
@@ -987,7 +906,27 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
+            bottom: 0,
+            right: 0,
+            child: ElevatedButton(
+                onPressed: () {
+                  optionsRepository.writeOpciones(currentOptions!);
+                  Navigator.pop(context);
+                },
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Icon(Icons.close, size: 23.5),
+                      ),
+                      TextSpan(
+                        text: "Cerrar",
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                )))
       ],
     );
   }
@@ -1006,6 +945,10 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
+    readOptionsDto = currentOptions!;
+
+    Map<String, dynamic> changedJson = readOptionsDto.toJson();
+
     Color getColor(Set<MaterialState> states) {
       const Set<MaterialState> interactiveStates = <MaterialState>{
         MaterialState.pressed,
@@ -1013,52 +956,45 @@ class _ComandaCardState extends State<OrderCard> {
         MaterialState.focused,
       };
       if (states.any(interactiveStates.contains)) {
-        return Styles.blueBtnColor;
+        return Colors.blue;
       }
-      return Styles.blueBtnColor;
+      return Colors.red;
     }
 
     return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: widget.config.opciones.length,
-      itemBuilder: (context, index) {
-        //TODO: Ver el estado antes
-        bool isChecked =
-            _getOptionValue(readOptionsDto, index) == 1 ? true : false;
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: widget.config.opciones.length,
+        itemBuilder: (context, index) {
+          bool isChecked =
+              _getOptionValue(readOptionsDto, index) == 1 ? true : false;
 
-        return InkWell(
-          onTap: () {
-            //TODO: Gestionar petición writeOpciones
-          },
-          child: Container(
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                  color: _getOptionValue(readOptionsDto, index) == 1
-                      ? Color.fromARGB(255, 142, 224, 144)
-                      : Colors.transparent,
-                  border: Border.all(color: Styles.black),
-                  borderRadius: const BorderRadius.all(Radius.circular(5.0))),
-              margin: EdgeInsets.symmetric(vertical: 5.0),
-              child: Row(
-                children: [
-                  Checkbox(
-                    checkColor: Colors.white,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: isChecked,
-                    onChanged: (bool? value) {
-                      //TODO: Gestionar cambio de estado
-                      isChecked = !value!;
-                    },
-                  ),
-                  Text(
-                    widget.config.opciones.elementAt(index),
-                    style: Styles.textBoldInfo,
-                  )
-                ],
-              )),
-        );
-      },
-    );
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Center(
+              child: CheckboxListTile(
+                tileColor: isChecked
+                    ? Color.fromARGB(255, 142, 224, 144)
+                    : Colors.transparent,
+                title: Text(
+                  widget.config.opciones.elementAt(index),
+                  style: Styles.textBoldInfo,
+                ),
+                value: isChecked,
+                onChanged: (bool? value) {
+                  changedJson.update(
+                      "opcion${index + 1}", (value) => isChecked ? 0 : 1);
+
+                  setState(() {
+                    isChecked = value!;
+                    readOptionsDto = ReadOptionsDto.fromJson(changedJson);
+                    currentOptions = readOptionsDto;
+                    print(currentOptions!.toJson().toString());
+                  });
+                },
+              ),
+            );
+          });
+        });
   }
 
   _getOptionValue(ReadOptionsDto option, int index) {
@@ -1130,7 +1066,7 @@ class _ComandaCardState extends State<OrderCard> {
             alignment: Alignment.center,
             height: 50,
             child: Text(
-              '¡Marcar como NO URGENTE',
+              '¡Marcar como NO URGENTE!',
               style: Styles.urgent(Styles.urgentDefaultSize),
             ),
           ));

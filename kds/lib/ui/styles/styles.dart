@@ -39,7 +39,7 @@ class Styles {
   static double navbarHeight = 100.0;
   static EdgeInsets zeroPadding = EdgeInsets.all(0.0);
   static double buttonsOptionsWidth = 280.0;
-
+  static EdgeInsets espaciadoInfo = EdgeInsets.only(bottom: 20);
 //BUTTONS STYLE
 
   static final buttonEnProceso = ElevatedButton.styleFrom(
@@ -126,6 +126,19 @@ class Styles {
 
   //Text
 
+  static Widget infoTitle(Icon icon, String text, String data) {
+    return Padding(
+      padding: espaciadoInfo,
+      child: Row(
+        children: [
+          icon,
+          Text(text, style: Styles.textBoldInfo),
+          Text(data, style: Styles.textRegularInfo)
+        ],
+      ),
+    );
+  }
+
   static TextStyle get resumeTitle => GoogleFonts.getFont('Roboto',
       fontSize: 25, color: Colors.white, fontWeight: FontWeight.w900);
 
@@ -153,8 +166,9 @@ class Styles {
   static TextStyle get textBoldInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 27, fontWeight: FontWeight.w700);
 
-  static TextStyle timerDetailStyle (double fontSize) =>
-      GoogleFonts.getFont('Roboto', fontSize: fontSize, color: Colors.red, fontWeight: FontWeight.w800);
+  static TextStyle timerDetailStyle(double fontSize) =>
+      GoogleFonts.getFont('Roboto',
+          fontSize: fontSize, color: Colors.red, fontWeight: FontWeight.w800);
 
   static TextStyle get textTitleInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 34);

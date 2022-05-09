@@ -12,22 +12,4 @@ class CustomIcons{
   static Widget person = const Icon(Icons.person);
   static Widget menu = const Icon(Icons.menu);
 
-  static Widget closeBlueBtn(context) => ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: [
-                      WidgetSpan(
-                        child: Icon(Icons.close, size: 23.5),
-                      ),
-                      TextSpan(
-                        text: "Cerrar",
-                        style: TextStyle(fontSize: 20.0, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ));
 }
