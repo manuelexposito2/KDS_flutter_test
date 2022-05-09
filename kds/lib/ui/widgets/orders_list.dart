@@ -1,6 +1,7 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:kds/models/last_orders_response.dart';
 import 'package:kds/models/response_turno.dart';
 import 'package:kds/models/status/config.dart';
@@ -12,8 +13,7 @@ import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/repository/impl_repo/workers_repository_impl.dart';
 import 'package:kds/repository/repository/workers_repository.dart';
-import 'package:kds/utils/user_shared_preferences.dart';
-import 'package:kplayer/kplayer.dart';
+
 import 'package:kds/repository/repository/order_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
@@ -27,10 +27,6 @@ import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-//import 'package:show_up_animation/show_up_animation.dart';
-import 'package:flutter_platform_alert/flutter_platform_alert.dart';
-import 'package:flutter/foundation.dart';
-import 'dart:io' show Platform;
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -48,7 +44,6 @@ class _OrdersListState extends State<OrdersList> {
   late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
-
   bool showResumen = false;
   bool showOperarioDialog = false;
   String? mensaje;
@@ -57,6 +52,9 @@ class _OrdersListState extends State<OrdersList> {
   List<Order>? mensajes = [];
   Order? selectedOrder;
   ResponseTurno? responseTurno;
+
+  final player = AudioPlayer(androidApplyAudioAttributes: true);
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -80,20 +78,28 @@ class _OrdersListState extends State<OrdersList> {
     super.dispose();
   }
 
+
+  doBellRing() async {
+
+    await player.setAudioSource(
+        AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
+        initialPosition: Duration.zero,
+        preload: true);
+    
+    await player.play();
+  }
+
   @override
   Widget build(BuildContext context) {
-    //ESCUCHA LA NUEVA COMANDA Y LA AÑADE A LA LISTA
+    
     //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      //Si el sonido se activa en numierKDS.ini
+      
+
       if (widget.config.sonido!.contains("S")) {
-        if (defaultTargetPlatform == TargetPlatform.android) {
-          //TODO: Se debe interactuar con la app previamente o no saldrá el sonido. Ver como arreglar esto.
-          FlutterPlatformAlert.playAlertSound();
-        } else if (kIsWeb) {
-          Player.asset("sounds/bell_ring.mp3").play();
-        }
+        doBellRing();
       }
+
       Order newOrder = Order.fromJson(data);
 
       if (newOrder.camEstado == "M") {
