@@ -27,15 +27,15 @@ class Data {
     required this.opcion7,
     required this.opcion8,
   });
-  late final String idOrder;
-  late final int opcion1;
-  late final int opcion2;
-  late final int opcion3;
-  late final int opcion4;
-  late final int opcion5;
-  late final int opcion6;
-  late final int opcion7;
-  late final int opcion8;
+  late final dynamic idOrder;
+  late final dynamic opcion1;
+  late final dynamic opcion2;
+  late final dynamic opcion3;
+  late final dynamic opcion4;
+  late final dynamic opcion5;
+  late final dynamic opcion6;
+  late final dynamic opcion7;
+  late final dynamic opcion8;
   
   Data.fromJson(Map<String, dynamic> json){
     idOrder = json['idOrder'];

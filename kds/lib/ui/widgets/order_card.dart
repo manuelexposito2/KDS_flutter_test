@@ -249,20 +249,26 @@ class _ComandaCardState extends State<OrderCard> {
                       height: 40,
                       child: IconButton(
                           onPressed: () => showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    orderExtended =
-                                        orderRepository.getOrderById(
-                                            widget.order!.camId.toString(),
-                                            widget.config);
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        orderExtended =
+                                            orderRepository.getOrderById(
+                                                widget.order!.camId.toString(),
+                                                widget.config);
 
-                                    return AlertDialog(
-                                      content: _futureInfo(context),
-                                    );
-                                  },
-                                  barrierDismissible: true)
-                              .whenComplete(() => optionsRepository
-                                  .writeOpciones(currentOptions!)),
+                                        return AlertDialog(
+                                          content: _futureInfo(context),
+                                        );
+                                      },
+                                      barrierDismissible: true)
+                                  .whenComplete(() {
+                                setState(() {
+                                  currentOptions!;
+                                });
+
+                                optionsRepository
+                                    .writeOpciones(currentOptions!);
+                              }),
                           icon: Icon(
                             Icons.info,
                             color: Color.fromARGB(255, 87, 87, 87),
@@ -345,6 +351,10 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsImageList(ReadOptionsDto readOptionsDto) {
+    readOptionsDto = currentOptions!;
+
+    Map<String, dynamic> changedJson = readOptionsDto.toJson();
+
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 40,
@@ -357,7 +367,8 @@ class _ComandaCardState extends State<OrderCard> {
         itemBuilder: (context, index) {
           //Ignoramos el primer index ya que es el id
           //widget.order!.camId.toString()
-          index = index + 1;
+          //index = index + 1;
+          index++;
           if (index > 8) {
             return Container();
           }
@@ -365,17 +376,18 @@ class _ComandaCardState extends State<OrderCard> {
               iconSize: 40,
               splashRadius: 0.1,
               onPressed: () {
-                _getOptionValue(readOptionsDto, index - 1) == 1
-                    ? setState(() {
-                        //1
-                      })
-                    : setState(() {
-                        //0
-                      });
-
+                changedJson.update(
+                    "opcion$index",
+                    (value) => _getOptionValue(readOptionsDto, index - 1) == 1
+                        ? 0
+                        : 1);
+                setState(() {
+                  currentOptions = ReadOptionsDto.fromJson(changedJson);
+                });
+                optionsRepository.writeOpciones(currentOptions!);
                 print(index);
               },
-              icon: _getOptionValue(readOptionsDto, index - 1) >= 1
+              icon: _getOptionValue(readOptionsDto, index - 1) == 1
                   ? Image.asset(
                       'assets/images/${index.toString()}.png',
                       width: 40,
@@ -478,9 +490,6 @@ class _ComandaCardState extends State<OrderCard> {
         statusOrderRepository.statusOrder(newStatus).whenComplete(() {
           widget.socket!.emit(WebSocketEvents.modifyOrder, newStatus);
         });
-
-        ////debugPrint(newStatus.idOrder);
-        ////debugPrint(newStatus.status);
       },
       icon: icon,
       label: label,
@@ -572,7 +581,24 @@ class _ComandaCardState extends State<OrderCard> {
           Divider(thickness: 3.0),
           Align(
             alignment: Alignment.bottomRight,
-            child: CustomIcons.closeBlueBtn(context),
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Icon(Icons.close, size: 23.5),
+                      ),
+                      TextSpan(
+                        text: "Cerrar",
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                )),
           )
         ],
       ),
@@ -861,7 +887,27 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
+            bottom: 0,
+            right: 0,
+            child: ElevatedButton(
+                onPressed: () {
+                  optionsRepository.writeOpciones(currentOptions!);
+                  Navigator.pop(context);
+                },
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Icon(Icons.close, size: 23.5),
+                      ),
+                      TextSpan(
+                        text: "Cerrar",
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                )))
       ],
     );
   }
@@ -880,10 +926,7 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
-    
-
-      readOptionsDto = currentOptions!;
-
+    readOptionsDto = currentOptions!;
 
     Map<String, dynamic> changedJson = readOptionsDto.toJson();
 
