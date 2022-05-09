@@ -861,9 +861,7 @@ class _ComandaCardState extends State<OrderCard> {
           ),
         ),
         Positioned(
-            bottom: 0,
-            right: 0,
-            child: CustomIcons.closeBlueBtn(context))
+            bottom: 0, right: 0, child: CustomIcons.closeBlueBtn(context))
       ],
     );
   }
@@ -882,16 +880,13 @@ class _ComandaCardState extends State<OrderCard> {
   }
 
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
-/*     ReadOptionsDto newReadOpt = ReadOptionsDto(
-        idOrder: 0,
-        opcion1: 0,
-        opcion2: 0,
-        opcion3: 0,
-        opcion4: 0,
-        opcion5: 0,
-        opcion6: 0,
-        opcion7: 0,
-        opcion8: 0); */
+    
+
+      readOptionsDto = currentOptions!;
+
+
+    Map<String, dynamic> changedJson = readOptionsDto.toJson();
+
     Color getColor(Set<MaterialState> states) {
       const Set<MaterialState> interactiveStates = <MaterialState>{
         MaterialState.pressed,
@@ -908,9 +903,6 @@ class _ComandaCardState extends State<OrderCard> {
         physics: NeverScrollableScrollPhysics(),
         itemCount: widget.config.opciones.length,
         itemBuilder: (context, index) {
-          //TODO: Está tomando el currentOptions antiguo, antes de cambiar el booleano. Ver como arreglar esto.
-          //TODO: El widget debe actualizarse
-          Map<String, dynamic> changedJson = readOptionsDto.toJson();
           bool isChecked =
               _getOptionValue(readOptionsDto, index) == 1 ? true : false;
 
@@ -929,16 +921,12 @@ class _ComandaCardState extends State<OrderCard> {
                 onChanged: (bool? value) {
                   changedJson.update(
                       "opcion${index + 1}", (value) => isChecked ? 0 : 1);
-                 
+
                   setState(() {
                     isChecked = value!;
                     readOptionsDto = ReadOptionsDto.fromJson(changedJson);
-                    print(readOptionsDto.toJson().toString());
-                    //print(currentOptions!.toJson().update("opcion${index + 1}", (value) => isChecked ? 1 : 0));
-
-                    //newReadOpt.toJson().
-                    // newReadOpt.toJson()["opcion${index + 1}"] = 0;
-                    //print(readOptionsDto.toJson()["opcion${index + 1}"]);
+                    currentOptions = readOptionsDto;
+                    print(currentOptions!.toJson().toString());
                   });
                 },
               ),
