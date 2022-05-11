@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ import 'package:kds/ui/screens/waiting_screen.dart';
 import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -228,7 +231,7 @@ class _OrdersListState extends State<OrdersList> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
-                    snapshot.hasData ) {
+                    snapshot.hasData) {
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
 
@@ -353,9 +356,58 @@ class _OrdersListState extends State<OrdersList> {
       );
     });
   }
+/* 
+  void _checkDetailTimers(String id) {
+    UserSharedPreferences.getDetailTimer(id).then((value) {
+      var timer = value.split(":");
+
+      var hours = int.parse(timer[0]);
+      var minutes = int.parse(timer[1]);
+      var seconds = int.parse(timer[2]);
+
+      Timer.periodic(const Duration(seconds: 1), (timer) {
+        seconds++;
+        //Seteamos cada segundo
+        UserSharedPreferences.setDetailTimer(
+            id, _checkTimerDetail(hours, minutes, seconds));
+      });
+    });
+  }
+
+  _checkTimerDetail(var hours, var minutes, var seconds) {
+    _writeNumber(int value) {
+      if (value < 10) {
+        return "0$value";
+      } else {
+        return "$value";
+      }
+    }
+
+    if (seconds >= 60) {
+      seconds = 0;
+      minutes++;
+
+      if (minutes >= 60) {
+        minutes = 0;
+        hours++;
+      }
+    }
+
+    return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
+  } */
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
+
+/*     for (var orders in ordersList!) {
+      for (var d in orders.details) {
+        if (widget.config.mostrarUltimoTiempo!.contains("S") &&
+            d.demEstado == "T") {
+          _checkDetailTimers(d.demId.toString());
+        }
+      }
+    }
+ */
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
     return LayoutBuilder(

@@ -10,6 +10,7 @@ import 'package:kds/repository/impl_repo/status_order_repository_impl.dart';
 import 'package:kds/repository/repository/status_detail_repository.dart';
 import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
+import 'package:kds/ui/widgets/detail_timer.dart';
 import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
@@ -39,9 +40,6 @@ class _DetailCardState extends State<DetailCard> {
   Color? colorDetailStatus;
   var selectedDetail = "";
   var lastTerminatedDetail = "";
-  int seconds = 0;
-  int minutes = 0;
-  int hours = 0;
 
   @override
   void setState(fn) {
@@ -60,31 +58,6 @@ class _DetailCardState extends State<DetailCard> {
     statusOrderRepository = StatusOrderRepositoryImpl();
 
     //Inicializamos el temporizador si está activado el modo "mostrar ultimo tiempo"
-
-    if (widget.config.mostrarUltimoTiempo!.contains("S") && widget.details.demEstado == "T" ||
-        (widget.config.soloUltimoPlato!.contains("S") &&
-            lastTerminatedDetail == widget.details.demId.toString())) {
-      UserSharedPreferences.getDetailTimer(widget.details.demId.toString())
-          .then((value) {
-        var timer = value.split(":");
-
-        setState(() {
-          hours = int.parse(timer[0]);
-          minutes = int.parse(timer[1]);
-          seconds = int.parse(timer[2]);
-        });
-      });
-
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        setState(() {
-          seconds = seconds + 1;
-          print("Detail ${widget.details.demId} :  $seconds seteado");
-        });
-        //Seteamos cada segundo
-        UserSharedPreferences.setDetailTimer(
-            widget.details.demId.toString(), _checkTimerDetail());
-      });
-    }
   }
 
   @override
@@ -99,20 +72,20 @@ class _DetailCardState extends State<DetailCard> {
 
 //Estructura del item
   Widget _itemPedido(BuildContext context, Order order, Details details) {
-    //Setea el selectedDetail para ver si debe pintar este Detail o no
-    UserSharedPreferences.getResumeCall().then(((value) {
-      setState(() {
-        selectedDetail = value;
-      });
-    }));
-
-    if (widget.config.soloUltimoPlato != "N") {
+    if (widget.config.soloUltimoPlato!.contains("S")) {
       UserSharedPreferences.getLastDetailSelected().then((value) {
         setState(() {
           lastTerminatedDetail = value;
         });
       });
     }
+
+    //Setea el selectedDetail para ver si debe pintar este Detail o no
+    UserSharedPreferences.getResumeCall().then(((value) {
+      setState(() {
+        selectedDetail = value;
+      });
+    }));
 
     return Container(
       margin: EdgeInsets.only(left: 2, right: 2, bottom: 1),
@@ -128,16 +101,7 @@ class _DetailCardState extends State<DetailCard> {
           ),
           onPressed: () {
             //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
-            if (widget.details.demEstado != "T" &&
-                (widget.config.mostrarUltimoTiempo!.contains("S"))) {
-              setState(() {
-                hours = 0;
-                minutes = 0;
-                seconds = 0;
-              });
-              UserSharedPreferences.removeDetailTimer(
-                  widget.details.demId.toString());
-            }
+
             //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
             if (!widget.details.demEstado!.contains("M") &&
                 !widget.config.comandaCompleta!.contains("N")) {
@@ -154,9 +118,9 @@ class _DetailCardState extends State<DetailCard> {
                       widget.details.demId.toString());
                 }
 
-                /*   if (details.demEstado == "T") {
+                if (details.demEstado == "T") {
                   UserSharedPreferences.removeLastDetailSelected();
-                } */
+                }
 
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
               });
@@ -180,11 +144,10 @@ class _DetailCardState extends State<DetailCard> {
                                     widget.details.demId.toString())) &&
                         widget.details.demEstado == "T" &&
                         widget.order.camEstado != "T"
-                    ? Text(
-                        _checkTimerDetail(),
-                        style: Styles.timerDetailStyle(
-                            double.parse(widget.config.letra!) * increaseFont),
-                      )
+                    ? DetailTimerWidget(
+                        id: widget.details.demId.toString(),
+                        status: widget.details.demEstado!,
+                        config: widget.config)
                     : Container()
               ],
             ),
@@ -227,33 +190,6 @@ class _DetailCardState extends State<DetailCard> {
       default:
         return "T";
     }
-  }
-
-//Temporizador de los details terminados
-  _checkTimerDetail() {
-    _writeNumber(int value) {
-      if (value < 10) {
-        return "0$value";
-      } else {
-        return "$value";
-      }
-    }
-
-    if (seconds >= 60) {
-      setState(() {
-        seconds = 0;
-        minutes = minutes + 1;
-      });
-
-      if (minutes >= 60) {
-        setState(() {
-          minutes = 0;
-          hours = hours + 1;
-        });
-      }
-    }
-
-    return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
   }
 
 //Setea el color dependiendo del estado de los pedidos de cada comanda
