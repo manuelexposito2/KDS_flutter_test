@@ -118,6 +118,11 @@ class _DetailCardState extends State<DetailCard> {
                       widget.details.demId.toString());
                 }
 
+                if (newStatus.status != "T") {
+                  UserSharedPreferences.removeDetailTimer(
+                      newStatus.idDetail.toString());
+                }
+
                 if (details.demEstado == "T") {
                   UserSharedPreferences.removeLastDetailSelected();
                 }

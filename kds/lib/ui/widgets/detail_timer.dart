@@ -20,10 +20,10 @@ class DetailTimerWidget extends StatefulWidget {
 
 class _DetailTimerWidgetState extends State<DetailTimerWidget> {
   var lastTerminatedDetail = "";
-  int seconds = 0;
-  int minutes = 0;
-  int hours = 0;
 
+  Duration duration = Duration();
+
+  Timer? timer;
   @override
   void setState(fn) {
     if (mounted) {
@@ -31,79 +31,52 @@ class _DetailTimerWidgetState extends State<DetailTimerWidget> {
     }
   }
 
-  
+
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
-    if (widget.status != "T" &&
-        widget.config.mostrarUltimoTiempo!.contains("S")) {
-      setState(() {
-        hours = 0;
-        minutes = 0;
-        seconds = 0;
-      });
-      UserSharedPreferences.setDetailTimer(widget.id, _checkTimerDetail());
-    }
+    UserSharedPreferences.getDetailTimer(widget.id).then((value) {
+      duration = Duration(seconds: value);
+    });
+
     if (widget.config.mostrarUltimoTiempo!.contains("S") &&
             widget.status == "T" ||
         (widget.config.soloUltimoPlato!.contains("S") &&
             lastTerminatedDetail == widget.id)) {
-      UserSharedPreferences.getDetailTimer(widget.id).then((value) {
-        var timer = value.split(":");
-
-        setState(() {
-          hours = int.parse(timer[0]);
-          minutes = int.parse(timer[1]);
-          seconds = int.parse(timer[2]);
-        });
-      });
-
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        
-        setState(() {
-          seconds++;
-        });
-        //Seteamos cada segundo
-        UserSharedPreferences.setDetailTimer(widget.id, _checkTimerDetail());
-      });
+      startTimer();
     }
+  }
+
+  void addTime() {
+    final addSeconds = 1;
+
+    setState(() {
+      final seconds = duration.inSeconds + addSeconds;
+      duration = Duration(seconds: seconds);
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      addTime();
+
+      UserSharedPreferences.setDetailTimer(widget.id, duration.inSeconds);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final hours = twoDigits(duration.inHours.remainder(60));
+
     return Text(
-      _checkTimerDetail(),
+      '$hours:$minutes:$seconds',
       style: Styles.timerDetailStyle(
           double.parse(widget.config.letra!) * increaseFont),
     );
-  }
-
-//Temporizador de los details terminados
-  _checkTimerDetail() {
-    _writeNumber(int value) {
-      if (value < 10) {
-        return "0$value";
-      } else {
-        return "$value";
-      }
-    }
-
-    if (seconds >= 60) {
-      setState(() {
-        seconds = 0;
-        minutes++;
-      });
-
-      if (minutes >= 60) {
-        setState(() {
-          minutes = 0;
-          hours++;
-        });
-      }
-    }
-
-    return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
   }
 }

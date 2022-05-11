@@ -356,58 +356,11 @@ class _OrdersListState extends State<OrdersList> {
       );
     });
   }
-/* 
-  void _checkDetailTimers(String id) {
-    UserSharedPreferences.getDetailTimer(id).then((value) {
-      var timer = value.split(":");
-
-      var hours = int.parse(timer[0]);
-      var minutes = int.parse(timer[1]);
-      var seconds = int.parse(timer[2]);
-
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        seconds++;
-        //Seteamos cada segundo
-        UserSharedPreferences.setDetailTimer(
-            id, _checkTimerDetail(hours, minutes, seconds));
-      });
-    });
-  }
-
-  _checkTimerDetail(var hours, var minutes, var seconds) {
-    _writeNumber(int value) {
-      if (value < 10) {
-        return "0$value";
-      } else {
-        return "$value";
-      }
-    }
-
-    if (seconds >= 60) {
-      seconds = 0;
-      minutes++;
-
-      if (minutes >= 60) {
-        minutes = 0;
-        hours++;
-      }
-    }
-
-    return "${_writeNumber(hours)}:${_writeNumber(minutes)}:${_writeNumber(seconds)}";
-  } */
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
 
-/*     for (var orders in ordersList!) {
-      for (var d in orders.details) {
-        if (widget.config.mostrarUltimoTiempo!.contains("S") &&
-            d.demEstado == "T") {
-          _checkDetailTimers(d.demId.toString());
-        }
-      }
-    }
- */
+
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
     return LayoutBuilder(
