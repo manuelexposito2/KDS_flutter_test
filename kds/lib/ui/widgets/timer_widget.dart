@@ -37,6 +37,7 @@ class _TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    //Widget encargado de imprimir la hora actual
     return SizedBox(
       child: RichText(
         text: TextSpan(
@@ -55,6 +56,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     );
   }
 
+  //Método que trae la hora
   void _getTime() {
     final DateTime now = DateTime.now();
     final String formattedDateTime = _formatDateTime(now);

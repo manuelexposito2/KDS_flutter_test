@@ -78,7 +78,7 @@ class _OrdersListState extends State<OrdersList> {
     super.dispose();
   }
 
-
+  //Trae el sonido de la campana
   doBellRing() async {
 
     await player.setAudioSource(
@@ -95,7 +95,7 @@ class _OrdersListState extends State<OrdersList> {
     //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
       
-
+      //Si se activa  en configuración el sonido sonará la campana al crear una nueva orden
       if (widget.config.sonido!.contains("S")) {
         doBellRing();
       }
@@ -208,6 +208,7 @@ class _OrdersListState extends State<OrdersList> {
       });
     });
 
+    //Dependiendo del estado de la respuesta cargará una pantalla u otra
     return Scaffold(
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
@@ -596,6 +597,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Crea el botón para traer todas las comandas
   Widget _filterBtn(String newFilter, String title, ButtonStyle btnStyle) {
     Color _btnColor = Colors.white;
 
@@ -622,6 +624,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Widget que crea los botones de resumen de comandas, cambio de operario, refresh y pantalla completa
   Widget _buttonsOptions() {
     return SizedBox(
       width: Styles.buttonsOptionsWidth,

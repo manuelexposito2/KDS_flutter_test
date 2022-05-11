@@ -209,6 +209,7 @@ class _DetailCardState extends State<DetailCard> {
     switch (status) {
       case "E":
         return "P";
+        
       case "P":
         if (widget.config.reparto!.contains("S")) {
           return "R";
