@@ -61,8 +61,8 @@ class _DetailCardState extends State<DetailCard> {
 
     //Inicializamos el temporizador si está activado el modo "mostrar ultimo tiempo"
 
-    if (widget.config.mostrarUltimoTiempo!.contains("S") ||
-        (widget.config.soloUltimoPlato != "N" &&
+    if (widget.config.mostrarUltimoTiempo!.contains("S") && widget.details.demEstado == "T" ||
+        (widget.config.soloUltimoPlato!.contains("S") &&
             lastTerminatedDetail == widget.details.demId.toString())) {
       UserSharedPreferences.getDetailTimer(widget.details.demId.toString())
           .then((value) {
@@ -78,6 +78,7 @@ class _DetailCardState extends State<DetailCard> {
       Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           seconds = seconds + 1;
+          print("Detail ${widget.details.demId} :  $seconds seteado");
         });
         //Seteamos cada segundo
         UserSharedPreferences.setDetailTimer(
@@ -174,14 +175,15 @@ class _DetailCardState extends State<DetailCard> {
                 ),
                 (widget.config.mostrarUltimoTiempo!.contains("S") &&
                                 widget.config.soloUltimoPlato!.contains("N") ||
-                            (widget.config.soloUltimoPlato != "N" &&
+                            (widget.config.soloUltimoPlato!.contains("S") &&
                                 lastTerminatedDetail ==
                                     widget.details.demId.toString())) &&
                         widget.details.demEstado == "T" &&
                         widget.order.camEstado != "T"
                     ? Text(
                         _checkTimerDetail(),
-                        style: Styles.timerDetailStyle(double.parse(widget.config.letra!) * increaseFont),
+                        style: Styles.timerDetailStyle(
+                            double.parse(widget.config.letra!) * increaseFont),
                       )
                     : Container()
               ],

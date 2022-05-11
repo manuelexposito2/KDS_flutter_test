@@ -78,24 +78,19 @@ class _OrdersListState extends State<OrdersList> {
     super.dispose();
   }
 
-
   doBellRing() async {
-
     await player.setAudioSource(
         AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
         initialPosition: Duration.zero,
         preload: true);
-    
+
     await player.play();
   }
 
   @override
   Widget build(BuildContext context) {
-    
     //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      
-
       if (widget.config.sonido!.contains("S")) {
         doBellRing();
       }
@@ -223,8 +218,9 @@ class _OrdersListState extends State<OrdersList> {
                 !snapshot.hasData) {
               return WaitingScreen();
             } else if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError &&
-                !snapshot.hasData) {
+                snapshot.hasError) {
+              print(ordersList!.length);
+              print(snapshot.error);
               return ErrorScreen(
                 config: widget.config,
                 socket: widget.socket!,
@@ -232,7 +228,7 @@ class _OrdersListState extends State<OrdersList> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
-                    snapshot.hasData) {
+                    snapshot.hasData ) {
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
 

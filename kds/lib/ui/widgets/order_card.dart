@@ -103,7 +103,7 @@ class _ComandaCardState extends State<OrderCard> {
     } else {
       colorOrderStatus = setColor(widget.order!.camEstado!);
       if(widget.order!.camEstado == "T"){
-        imprimirTicket();
+       // imprimirTicket();
       }
     }
     //Imprime la comanda mostrando una animación
@@ -333,7 +333,7 @@ class _ComandaCardState extends State<OrderCard> {
                               primary: Color.fromARGB(255, 87, 87, 87)),
                           child: Icon(Icons.print),
                           onPressed: () {
-                            imprimirTicket();
+                           // imprimirTicket();
                           },
                         ),
                       ),
@@ -345,7 +345,7 @@ class _ComandaCardState extends State<OrderCard> {
       ],
     );
   }
-
+ /* 
   imprimirTicket() {
     PrintOrderDto newPrintOrder = PrintOrderDto(
         idCabecera: widget.order!.camIdCab.toString(),
@@ -355,7 +355,7 @@ class _ComandaCardState extends State<OrderCard> {
             widget.config.seleccionarOperario!.contains("S") && widget.order!.camEstado == "R"
         ? printOrderRepository.printAccount(newPrintOrder)
         : printOrderRepository.printOrder(newPrintOrder);
-  }
+  }  */
 
   Widget optionsFutureImageList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
@@ -632,7 +632,7 @@ class _ComandaCardState extends State<OrderCard> {
             border: Border.all(color: Colors.grey)),
         child: InkWell(
           onTap: () {
-            imprimirTicket();
+            //imprimirTicket();
             workersRepository
                 .setDealer(widget.config, widget.order!.camId.toString(),
                     worker.oprCodigo)
