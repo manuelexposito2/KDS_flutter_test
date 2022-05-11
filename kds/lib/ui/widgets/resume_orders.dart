@@ -36,7 +36,7 @@ class _ResumeOrdersWidgetState extends State<ResumeOrdersWidget> {
   Widget build(BuildContext context) {
     double respWidth = MediaQuery.of(context).size.width;
     double respHeight = MediaQuery.of(context).size.height;
-
+    //Widget que crea el resumen de las comandas
     return Container(
       margin: const EdgeInsets.all(5.0),
       height: respHeight - Styles.navbarHeight,
