@@ -25,6 +25,7 @@ import 'package:kds/ui/screens/waiting_screen.dart';
 import 'package:kds/ui/widgets/resume_orders.dart';
 import 'package:kds/ui/widgets/timer_widget.dart';
 import 'package:kds/utils/constants.dart';
+import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -44,6 +45,8 @@ class _OrdersListState extends State<OrdersList> {
   late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
+  int numOrders = 0;
+
   bool showResumen = false;
   bool showOperarioDialog = false;
   String? mensaje;
@@ -55,11 +58,14 @@ class _OrdersListState extends State<OrdersList> {
 
   final player = AudioPlayer(androidApplyAudioAttributes: true);
 
+  
+
   @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
     }
+    
   }
 
   @override
@@ -76,11 +82,12 @@ class _OrdersListState extends State<OrdersList> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    
   }
 
   //Trae el sonido de la campana
   doBellRing() async {
-
+    
     await player.setAudioSource(
         AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
         initialPosition: Duration.zero,
@@ -108,6 +115,7 @@ class _OrdersListState extends State<OrdersList> {
         });
       } else {
         setState(() {
+          
           ordersList!.add(newOrder);
         });
       }
@@ -234,8 +242,13 @@ class _OrdersListState extends State<OrdersList> {
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
                     snapshot.hasData) {
+
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
+
+              //Con esto seteamos el valor
+              UserSharedPreferences.setNumOrders(ordersList!.length).whenComplete(() { setState(() async {numOrders = await UserSharedPreferences.getNumOrders();});});
+              //numOrders = ordersList!.length;
 
               //Meto en la variable de mensajes todos los Mensajes de la lista
               mensajes!.addAll(ordersList!
@@ -306,9 +319,11 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+
+  //Toma las comandas y devuelve todos los detalles de las comandas siguiendo una serie de filtros 
+  //Se usa para el botón de resumen
   List<String> _refillResumeList(List<Order> ordersList) {
     resumeList.clear();
-
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
@@ -345,7 +360,6 @@ class _OrdersListState extends State<OrdersList> {
       } else {
         responsiveCrossAxisCount = 1;
       }
-
       (constraints.minWidth);
       return DynamicHeightGridView(
         builder: (context, index) => OrderCard(
@@ -362,7 +376,7 @@ class _OrdersListState extends State<OrdersList> {
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
-
+    
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1350) {
@@ -515,10 +529,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //Widget que pinta la información de Mostrar_contadores del numierKDS.ini
   Widget _contadores() {
-    /*
-    String texto = ordersList!.where((element) => element.camEstado!.contains("M")).length.toString();
-    print("ESTA ES LA BUENA " + ordersList!.where((element) => element.camEstado!.contains("M")).length.toString());
-    */
     return Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -529,6 +539,7 @@ class _OrdersListState extends State<OrdersList> {
           color: Colors.white,
         ),
         Text(
+          //'$numOrders'
           "0",
           style: Styles.textContadores,
         ),
