@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:kds/models/status/config.dart';
@@ -31,43 +32,42 @@ class _DetailTimerWidgetState extends State<DetailTimerWidget> {
     }
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
-    UserSharedPreferences.getDetailTimer(widget.id).then((value) {
+    UserSharedPreferences.getDetailTimer(widget.id.toString()).then((value) {
       duration = Duration(seconds: value);
     });
 
-    if (widget.config.mostrarUltimoTiempo!.contains("S") &&
+     if (widget.config.mostrarUltimoTiempo!.contains("S") && 
             widget.status == "T" ||
         (widget.config.soloUltimoPlato!.contains("S") &&
             lastTerminatedDetail == widget.id)) {
       startTimer();
-    }
+    } 
   }
 
-  void addTime() {
+   void addTime() {
     final addSeconds = 1;
 
     setState(() {
       final seconds = duration.inSeconds + addSeconds;
       duration = Duration(seconds: seconds);
+      UserSharedPreferences.setDetailTimer(widget.id.toString(), duration.inSeconds);
     });
   }
 
   void startTimer() {
     timer = Timer.periodic(Duration(seconds: 1), (_) {
       addTime();
-
-      UserSharedPreferences.setDetailTimer(widget.id, duration.inSeconds);
     });
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
+  
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     final minutes = twoDigits(duration.inMinutes.remainder(60));

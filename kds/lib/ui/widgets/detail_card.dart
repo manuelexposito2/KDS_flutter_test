@@ -111,20 +111,21 @@ class _DetailCardState extends State<DetailCard> {
                   status: _toggleStateButton(details.demEstado!));
 
               statusDetailRepository.statusDetail(newStatus).whenComplete(() {
-                if (widget.config.soloUltimoPlato != "N" &&
-                    newStatus.status == "T") {
-                  UserSharedPreferences.removeLastDetailSelected();
-                  UserSharedPreferences.setLastDetailSelected(
-                      widget.details.demId.toString());
-                }
+                if (widget.config.mostrarUltimoTiempo!.contains("S")) {
+                  
+                  if (widget.config.soloUltimoPlato != "N" &&
+                      newStatus.status == "T") {
+                    UserSharedPreferences.removeLastDetailSelected();
+                    UserSharedPreferences.setLastDetailSelected(
+                        widget.details.demId.toString());
+                  }
 
-                if (newStatus.status != "T") {
-                  UserSharedPreferences.removeDetailTimer(
-                      newStatus.idDetail.toString());
-                }
-
-                if (details.demEstado == "T") {
-                  UserSharedPreferences.removeLastDetailSelected();
+                  if (newStatus.status == "T") {
+                    UserSharedPreferences.setDetailTimer(
+                        newStatus.idDetail!, 0);
+                    UserSharedPreferences.removeDetailTimer(
+                        newStatus.idDetail.toString());
+                  }
                 }
 
                 widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
@@ -144,7 +145,8 @@ class _DetailCardState extends State<DetailCard> {
                 ),
                 (widget.config.mostrarUltimoTiempo!.contains("S") &&
                                 widget.config.soloUltimoPlato!.contains("N") ||
-                            (widget.config.soloUltimoPlato!.contains("S") &&
+                            (widget.config.mostrarUltimoTiempo!.contains("S") &&
+                                widget.config.soloUltimoPlato!.contains("S") &&
                                 lastTerminatedDetail ==
                                     widget.details.demId.toString())) &&
                         widget.details.demEstado == "T" &&
