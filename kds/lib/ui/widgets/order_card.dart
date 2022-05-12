@@ -55,7 +55,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   late WorkersRepository workersRepository;
-  //Esta comanda es la misma que la principal pero existe para darle más datos
   Future<Order>? orderExtended;
   Future<List<GetWorkers>>? listaOperarios;
   Color? colorOrderStatus;
@@ -75,7 +74,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     optionsRepository = OptionsRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
@@ -83,8 +81,6 @@ class _ComandaCardState extends State<OrderCard> {
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
     printOrderRepository = PrintOrderRepositoryImpl();
-
-//    optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
     futureOptions = optionsRepository
         .readOpciones(widget.order!.camId.toString())
         .then((value) => currentOptions = value);
@@ -94,7 +90,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget build(BuildContext context) {
 
     _checkAllDetails(widget.order!.camEstado!);
-
+    //Si el estado de la orden o de sus items es "E" seteará el nuevo valor
     if (widget.order!.camEstado == "E" &&
         widget.order!.details
             .where((element) => element.demEstado != "E")
@@ -151,7 +147,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
-  //Contenido de la comanda
+  //Cuerpo con el contenido de la comanda
   Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
@@ -164,7 +160,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   //Pinta la cabecera de las comandas
   Widget _comandaHeader(BuildContext context, Order order) {
-    //Actualiza el tiempo cada minuto del método total()
+    //Actualiza cada minuto el estado del tiempo
     Timer.periodic(
       Duration(minutes: 1),
       (Timer t) => setState(() {
@@ -202,7 +198,7 @@ class _ComandaCardState extends State<OrderCard> {
                         ],
                       ),
                     )
-                  : Container(),
+                  : Container(height: 45,),
               widget.order!.camEstado != "M"
                   ? Container(
                       child: Text(
@@ -357,6 +353,7 @@ class _ComandaCardState extends State<OrderCard> {
         : printOrderRepository.printOrder(newPrintOrder);
   }  */
 
+  //Espera una respuesta y pinta los iconos de las opciones de reparto
   Widget optionsFutureImageList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
         future: futureOptions,
@@ -371,6 +368,7 @@ class _ComandaCardState extends State<OrderCard> {
         });
   }
 
+  //imprime las imágenes de opciones de reparto
   Widget optionsImageList(ReadOptionsDto readOptionsDto) {
     readOptionsDto = currentOptions!;
 
@@ -386,6 +384,7 @@ class _ComandaCardState extends State<OrderCard> {
         itemCount: widget.config.opciones.length,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
+          //Por como funciona el grid view se quitó un container por medio del if
           index++;
           if (index > 8) {
             return Container();
@@ -403,7 +402,7 @@ class _ComandaCardState extends State<OrderCard> {
                   currentOptions = ReadOptionsDto.fromJson(changedJson);
                 });
                 optionsRepository.writeOpciones(currentOptions!);
-                print(index);
+                //print(index);
               },
               icon: _getOptionValue(readOptionsDto, index - 1) == 1
                   ? Image.asset(
@@ -431,6 +430,7 @@ class _ComandaCardState extends State<OrderCard> {
         widget.order!.details
             .where((element) => element.demArti != demArticuloSeparador)
             .length) {
+
       OrderDto newOrderStatus =
           OrderDto(idOrder: widget.order!.camId.toString(), status: newStatus);
 
@@ -657,7 +657,7 @@ class _ComandaCardState extends State<OrderCard> {
         ));
   }
 
-  //
+  //Espera la respuesta para traer la información de la orden
   Widget _futureInfo(BuildContext context) {
     return FutureBuilder<Order>(
       future: orderExtended,
@@ -690,6 +690,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Contenedor que se muestra en la lista de como urgente
   Widget _urgente(BuildContext context) {
     //Si cam_urgente == 1 mostrar widget, si no ocultarlo.
     //Setear el 1 al valor al darle click al botón Urgente dentro del Widget de information
@@ -706,6 +707,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Toggle central en el que se basa el cambio de estado tanto de las ordenes como de los detalles de la misma
   String _toggleStateButton(String status) {
     switch (status) {
       case "E":
@@ -931,6 +933,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Espera la información del readOptions para pintar los checkbox
   Widget optionsFutureList(BuildContext context) {
     return FutureBuilder<ReadOptionsDto?>(
       future: futureOptions,
@@ -944,6 +947,7 @@ class _ComandaCardState extends State<OrderCard> {
     );
   }
 
+  //Pinta los checkbox de opciones de reparto dentro del botón de información
   Widget optionsCheckboxesList(ReadOptionsDto readOptionsDto) {
     readOptionsDto = currentOptions!;
 
@@ -997,6 +1001,7 @@ class _ComandaCardState extends State<OrderCard> {
         });
   }
 
+  //Ayuda a tomar el valor de la opción de reparto elegida (Funciona tanto en el checkbox como al imprimir las imágenes)
   _getOptionValue(ReadOptionsDto option, int index) {
     switch (index) {
       case 0:
@@ -1073,7 +1078,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
-  //Imprime el ticket
+  //Imprime el ticket con la información de la comanda (Se usa dentro del botón de información)
   Widget _ticket(BuildContext context, Order order) {
     return Container(
         decoration: BoxDecoration(

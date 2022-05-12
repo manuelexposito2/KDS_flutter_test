@@ -47,6 +47,8 @@ class _OrdersListState extends State<OrdersList> {
   late StatusOrderRepository statusOrderRepository;
   String? filter = '';
 
+  int numOrders = 0;
+
   bool showResumen = false;
   bool showOperarioDialog = false;
   String? mensaje;
@@ -81,6 +83,7 @@ class _OrdersListState extends State<OrdersList> {
     super.dispose();
   }
 
+  //Trae el sonido de la campana
   doBellRing() async {
     await player.setAudioSource(
         AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
@@ -94,6 +97,7 @@ class _OrdersListState extends State<OrdersList> {
   Widget build(BuildContext context) {
     //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
+      //Si se activa  en configuración el sonido sonará la campana al crear una nueva orden
       if (widget.config.sonido!.contains("S")) {
         doBellRing();
       }
@@ -206,6 +210,7 @@ class _OrdersListState extends State<OrdersList> {
       });
     });
 
+    //Dependiendo del estado de la respuesta cargará una pantalla u otra
     return Scaffold(
       body: FutureBuilder(
           future: orderRepository.getOrders(filter!, widget.config),
@@ -235,6 +240,15 @@ class _OrdersListState extends State<OrdersList> {
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
 
+              //Con esto seteamos el valor
+              UserSharedPreferences.setNumOrders(ordersList!.length)
+                  .whenComplete(() {
+                setState(() async {
+                  numOrders = await UserSharedPreferences.getNumOrders();
+                });
+              });
+              //numOrders = ordersList!.length;
+
               //Meto en la variable de mensajes todos los Mensajes de la lista
               mensajes!.addAll(ordersList!
                   .where((element) => element.camEstado!.contains("M")));
@@ -248,27 +262,34 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return ordersList!.isNotEmpty
-                  ? Row(
-                      children: [
-                        Expanded(flex: 3, child: responsiveOrder()),
-                        showResumen
-                            ? Expanded(
-                                flex: 1,
-                                child: ResumeOrdersWidget(
-                                  lineasComandas: reordering(resumeList),
-                                  socket: widget.socket,
-                                ))
-                            : Container()
-                      ],
-                    )
-                  : WaitingScreen();
+              return Stack(
+                children: [
+                  ordersList!.isNotEmpty
+                      ? Row(
+                          children: [
+                            Expanded(flex: 3, child: responsiveOrder()),
+                            showResumen
+                                ? Expanded(
+                                    flex: 1,
+                                    child: ResumeOrdersWidget(
+                                      lineasComandas: reordering(resumeList),
+                                      socket: widget.socket,
+                                    ))
+                                : Container(),
+                          ],
+                        )
+                      : WaitingScreen(),
+                  Positioned(bottom: 0, child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: bottomNavBar(context)))
+                ],
+              );
             } else {
               return WaitingScreen();
             }
           }),
       //Barra de navegación de abajo
-      bottomNavigationBar: bottomNavBar(context),
+      // bottomNavigationBar: bottomNavBar(context),
     );
   }
 
@@ -304,9 +325,10 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Toma las comandas y devuelve todos los detalles de las comandas siguiendo una serie de filtros
+  //Se usa para el botón de resumen
   List<String> _refillResumeList(List<Order> ordersList) {
     resumeList.clear();
-
     for (var comanda in ordersList) {
       if (comanda.details.isNotEmpty) {
         for (var d in comanda.details) {
@@ -343,7 +365,6 @@ class _OrdersListState extends State<OrdersList> {
       } else {
         responsiveCrossAxisCount = 1;
       }
-
       (constraints.minWidth);
       return DynamicHeightGridView(
         builder: (context, index) => OrderCard(
@@ -359,7 +380,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
-
 
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
@@ -515,10 +535,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //Widget que pinta la información de Mostrar_contadores del numierKDS.ini
   Widget _contadores() {
-    /*
-    String texto = ordersList!.where((element) => element.camEstado!.contains("M")).length.toString();
-    print("ESTA ES LA BUENA " + ordersList!.where((element) => element.camEstado!.contains("M")).length.toString());
-    */
     return Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -529,7 +545,8 @@ class _OrdersListState extends State<OrdersList> {
           color: Colors.white,
         ),
         Text(
-          "0",
+          //'$numOrders'
+          "${ordersList!.length}",
           style: Styles.textContadores,
         ),
         Text(
@@ -597,6 +614,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Crea el botón para traer todas las comandas
   Widget _filterBtn(String newFilter, String title, ButtonStyle btnStyle) {
     Color _btnColor = Colors.white;
 
@@ -623,6 +641,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
+  //Widget que crea los botones de resumen de comandas, cambio de operario, refresh y pantalla completa
   Widget _buttonsOptions() {
     return SizedBox(
       width: Styles.buttonsOptionsWidth,
