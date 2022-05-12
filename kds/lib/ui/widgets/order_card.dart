@@ -55,7 +55,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   late OrderRepository orderRepository;
   late WorkersRepository workersRepository;
-  //Esta comanda es la misma que la principal pero existe para darle más datos
   Future<Order>? orderExtended;
   Future<List<GetWorkers>>? listaOperarios;
   Color? colorOrderStatus;
@@ -75,7 +74,6 @@ class _ComandaCardState extends State<OrderCard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     optionsRepository = OptionsRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
@@ -83,8 +81,6 @@ class _ComandaCardState extends State<OrderCard> {
     orderRepository = OrderRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
     printOrderRepository = PrintOrderRepositoryImpl();
-
-//    optionsRepository.readOpciones(widget.order!.camId.toString()).then((value) => currentOptions = value);
     futureOptions = optionsRepository
         .readOpciones(widget.order!.camId.toString())
         .then((value) => currentOptions = value);
@@ -94,7 +90,7 @@ class _ComandaCardState extends State<OrderCard> {
   Widget build(BuildContext context) {
 
     _checkAllDetails(widget.order!.camEstado!);
-
+    //Si el estado de la orden o de sus items es "E" seteará el nuevo valor
     if (widget.order!.camEstado == "E" &&
         widget.order!.details
             .where((element) => element.demEstado != "E")
@@ -151,7 +147,7 @@ class _ComandaCardState extends State<OrderCard> {
     }
   }
 
-  //Contenido de la comanda
+  //Cuerpo con el contenido de la comanda
   Widget _contentCard(BuildContext context, Order order) {
     return Column(
       children: [
@@ -164,7 +160,7 @@ class _ComandaCardState extends State<OrderCard> {
 
   //Pinta la cabecera de las comandas
   Widget _comandaHeader(BuildContext context, Order order) {
-    //Actualiza el tiempo cada minuto del método total()
+    //Actualiza cada minuto el estado del tiempo
     Timer.periodic(
       Duration(minutes: 1),
       (Timer t) => setState(() {
