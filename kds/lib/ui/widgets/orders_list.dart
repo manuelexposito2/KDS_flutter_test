@@ -240,13 +240,7 @@ class _OrdersListState extends State<OrdersList> {
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
 
-              //Con esto seteamos el valor
-              UserSharedPreferences.setNumOrders(ordersList!.length)
-                  .whenComplete(() {
-                setState(() async {
-                  numOrders = await UserSharedPreferences.getNumOrders();
-                });
-              });
+            
               //numOrders = ordersList!.length;
 
               //Meto en la variable de mensajes todos los Mensajes de la lista

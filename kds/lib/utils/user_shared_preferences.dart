@@ -69,24 +69,6 @@ class UserSharedPreferences {
     _prefs.remove("lastDetailSelected");
   }
 
-//************************************************ 
 
-static Future <int> getNumOrders() async {
-  _prefs = await SharedPreferences.getInstance();
-  final numOrders = _prefs.getInt("numOrders");
-  return numOrders ?? 0;
-}
-
-static Future<void> setNumOrders(int num) async{
-  _prefs = await SharedPreferences.getInstance();
-  
-  _prefs.setInt("numOrders", num);
-}
-
-static Future<void> removeNumOrders() async {
-  _prefs = await SharedPreferences.getInstance();
-
-  _prefs.remove("numOrders");
-}
   
 }
