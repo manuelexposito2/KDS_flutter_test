@@ -58,14 +58,11 @@ class _OrdersListState extends State<OrdersList> {
 
   final player = AudioPlayer(androidApplyAudioAttributes: true);
 
-  
-
   @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
     }
-    
   }
 
   @override
@@ -82,26 +79,22 @@ class _OrdersListState extends State<OrdersList> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    
   }
 
   //Trae el sonido de la campana
   doBellRing() async {
-    
     await player.setAudioSource(
         AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
         initialPosition: Duration.zero,
         preload: true);
-    
+
     await player.play();
   }
 
   @override
   Widget build(BuildContext context) {
-    
     //Socket encargado de escuchar si está activado el sonido, de ser así lanzará el evento cada que llegue una comanda nueva o cambie el estado urgente
     widget.socket!.on(WebSocketEvents.newOrder, (data) {
-      
       //Si se activa  en configuración el sonido sonará la campana al crear una nueva orden
       if (widget.config.sonido!.contains("S")) {
         doBellRing();
@@ -115,7 +108,6 @@ class _OrdersListState extends State<OrdersList> {
         });
       } else {
         setState(() {
-          
           ordersList!.add(newOrder);
         });
       }
@@ -242,12 +234,16 @@ class _OrdersListState extends State<OrdersList> {
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting &&
                     snapshot.hasData) {
-
               mensajes!.clear();
               ordersList = snapshot.data as List<Order>;
 
               //Con esto seteamos el valor
-              UserSharedPreferences.setNumOrders(ordersList!.length).whenComplete(() { setState(() async {numOrders = await UserSharedPreferences.getNumOrders();});});
+              UserSharedPreferences.setNumOrders(ordersList!.length)
+                  .whenComplete(() {
+                setState(() async {
+                  numOrders = await UserSharedPreferences.getNumOrders();
+                });
+              });
               //numOrders = ordersList!.length;
 
               //Meto en la variable de mensajes todos los Mensajes de la lista
@@ -263,27 +259,34 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return ordersList!.isNotEmpty
-                  ? Row(
-                      children: [
-                        Expanded(flex: 3, child: responsiveOrder()),
-                        showResumen
-                            ? Expanded(
-                                flex: 1,
-                                child: ResumeOrdersWidget(
-                                  lineasComandas: reordering(resumeList),
-                                  socket: widget.socket,
-                                ))
-                            : Container()
-                      ],
-                    )
-                  : WaitingScreen();
+              return Stack(
+                children: [
+                  ordersList!.isNotEmpty
+                      ? Row(
+                          children: [
+                            Expanded(flex: 3, child: responsiveOrder()),
+                            showResumen
+                                ? Expanded(
+                                    flex: 1,
+                                    child: ResumeOrdersWidget(
+                                      lineasComandas: reordering(resumeList),
+                                      socket: widget.socket,
+                                    ))
+                                : Container(),
+                          ],
+                        )
+                      : WaitingScreen(),
+                  Positioned(bottom: 0, child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: bottomNavBar(context)))
+                ],
+              );
             } else {
               return WaitingScreen();
             }
           }),
       //Barra de navegación de abajo
-      bottomNavigationBar: bottomNavBar(context),
+      // bottomNavigationBar: bottomNavBar(context),
     );
   }
 
@@ -319,8 +322,7 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-
-  //Toma las comandas y devuelve todos los detalles de las comandas siguiendo una serie de filtros 
+  //Toma las comandas y devuelve todos los detalles de las comandas siguiendo una serie de filtros
   //Se usa para el botón de resumen
   List<String> _refillResumeList(List<Order> ordersList) {
     resumeList.clear();
@@ -375,8 +377,9 @@ class _OrdersListState extends State<OrdersList> {
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
+
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
-    
+
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       if (constraints.minWidth > 1350) {
@@ -540,7 +543,7 @@ class _OrdersListState extends State<OrdersList> {
         ),
         Text(
           //'$numOrders'
-          "0",
+          "${ordersList!.length}",
           style: Styles.textContadores,
         ),
         Text(

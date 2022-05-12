@@ -198,7 +198,7 @@ class _ComandaCardState extends State<OrderCard> {
                         ],
                       ),
                     )
-                  : Container(height: 42,),
+                  : Container(height: 45,),
               widget.order!.camEstado != "M"
                   ? Container(
                       child: Text(
