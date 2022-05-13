@@ -270,18 +270,14 @@ class _OrdersListState extends State<OrdersList> {
                     return screen(390);
                   }
               });
-
-              //responsiveWidget(1350, 1000, screen(130), screen(250), screen(350));
             } else {
               return WaitingScreen();
             }
           }),
-      //Barra de navegación de abajo
-      // bottomNavigationBar: bottomNavBar(context),
     );
   }
 
-
+  
   Widget screen(double margen){
     return Stack(
                 children: [
@@ -372,10 +368,10 @@ class _OrdersListState extends State<OrdersList> {
       //cambian su tamaño, para mayor uniformidad se creó esta serie de  condicionales 
       var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
-        responsiveCrossAxisCount = 6;
+        responsiveCrossAxisCount = 5;
       } else if (constraints.minWidth > 1500) {
         responsiveCrossAxisCount = 5;
-      } else if (constraints.minWidth > 1000) {
+      } else if (constraints.minWidth > 1300) {
         responsiveCrossAxisCount = 4;
       } else if (constraints.minWidth > 900) {
         responsiveCrossAxisCount = 3;
