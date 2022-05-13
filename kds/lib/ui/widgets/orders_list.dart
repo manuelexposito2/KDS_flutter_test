@@ -29,7 +29,7 @@ import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'dart:html';
-
+import 'package:fullscreen/fullscreen.dart';
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -75,12 +75,21 @@ class _OrdersListState extends State<OrdersList> {
     orderRepository = OrderRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
+    
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  void enterFullScreen(FullScreenMode fullScreenMode) async {
+    await FullScreen.enterFullScreen(fullScreenMode);
+  }
+
+  void exitFullScreen() async {
+    await FullScreen.exitFullScreen();
   }
 
   //Trae el sonido de la campana
@@ -693,11 +702,20 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // ------------------------
-              void goFullScreen() {
-  document.documentElement!.requestFullscreen();
-}
+              
+
+              enterFullScreen(FullScreenMode.EMERSIVE_STICKY);
+
+              /*
+              onPressed: () async {
+                exitFullScreen();
+              }
+              */
+
+
+
               // ------------------------
             },
             child: CustomIcons.fullscreen,
