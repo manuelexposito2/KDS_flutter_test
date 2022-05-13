@@ -49,6 +49,7 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   just_audio: ^0.9.21
   responsive_framework: ^0.1.7
+  fullscreen: ^1.0.3
 
 dev_dependencies:
   flutter_test:
