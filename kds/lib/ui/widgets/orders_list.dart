@@ -28,6 +28,8 @@ import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'dart:html';
+
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -259,10 +261,35 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return Stack(
+              return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                  if(constraints.maxWidth > 1350) {
+                    return screen(130);
+                  }else if(constraints.maxWidth > 1000){
+                    return screen(250);
+                  }else{
+                    return screen(390);
+                  }
+              });
+
+              //responsiveWidget(1350, 1000, screen(130), screen(250), screen(350));
+            } else {
+              return WaitingScreen();
+            }
+          }),
+      //Barra de navegación de abajo
+      // bottomNavigationBar: bottomNavBar(context),
+    );
+  }
+
+
+  Widget screen(double margen){
+    return Stack(
                 children: [
                   ordersList!.isNotEmpty
-                      ? Row(
+                      ? Container(
+                        margin: EdgeInsets.only(bottom: margen),
+                        child: Row(
+                        
                           children: [
                             Expanded(flex: 3, child: responsiveOrder()),
                             showResumen
@@ -274,20 +301,13 @@ class _OrdersListState extends State<OrdersList> {
                                     ))
                                 : Container(),
                           ],
-                        )
+                        ),)
                       : WaitingScreen(),
                   Positioned(bottom: 0, child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: bottomNavBar(context)))
                 ],
               );
-            } else {
-              return WaitingScreen();
-            }
-          }),
-      //Barra de navegación de abajo
-      // bottomNavigationBar: bottomNavBar(context),
-    );
   }
 
   //Widget de error de evento errorNotifyOrden
@@ -348,6 +368,8 @@ class _OrdersListState extends State<OrdersList> {
   Widget responsiveOrder() {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+      //Al usar GriwView, debido a que dependiendo del tamaño de la pantalla los items
+      //cambian su tamaño, para mayor uniformidad se creó esta serie de  condicionales 
       var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
         responsiveCrossAxisCount = 6;
@@ -675,7 +697,13 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // ------------------------
+              void goFullScreen() {
+  document.documentElement!.requestFullscreen();
+}
+              // ------------------------
+            },
             child: CustomIcons.fullscreen,
             style: Styles.btnActionStyle,
           )
