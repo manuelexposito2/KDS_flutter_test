@@ -28,7 +28,7 @@ import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-import 'dart:html';
+//import 'dart:html';
 import 'package:fullscreen/fullscreen.dart';
 
 class OrdersList extends StatefulWidget {
@@ -58,6 +58,8 @@ class _OrdersListState extends State<OrdersList> {
   Order? selectedOrder;
   ResponseTurno? responseTurno;
 
+  bool activeB = false;
+
   final player = AudioPlayer(androidApplyAudioAttributes: true);
 
   @override
@@ -75,21 +77,12 @@ class _OrdersListState extends State<OrdersList> {
     orderRepository = OrderRepositoryImpl();
     workersRepository = WorkersRepositoryImpl();
     statusOrderRepository = StatusOrderRepositoryImpl();
-    
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-  }
-
-  void enterFullScreen(FullScreenMode fullScreenMode) async {
-    await FullScreen.enterFullScreen(fullScreenMode);
-  }
-
-  void exitFullScreen() async {
-    await FullScreen.exitFullScreen();
   }
 
   //Trae el sonido de la campana
@@ -270,14 +263,15 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-                  if(constraints.maxWidth > 1350) {
-                    return screen(130);
-                  }else if(constraints.maxWidth > 1000){
-                    return screen(250);
-                  }else{
-                    return screen(390);
-                  }
+              return LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                if (constraints.maxWidth > 1350) {
+                  return screen(130);
+                } else if (constraints.maxWidth > 1000) {
+                  return screen(250);
+                } else {
+                  return screen(390);
+                }
               });
             } else {
               return WaitingScreen();
@@ -286,33 +280,34 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  
-  Widget screen(double margen){
+  Widget screen(double margen) {
     return Stack(
-                children: [
-                  ordersList!.isNotEmpty
-                      ? Container(
-                        margin: EdgeInsets.only(bottom: margen),
-                        child: Row(
-                        
-                          children: [
-                            Expanded(flex: 3, child: responsiveOrder()),
-                            showResumen
-                                ? Expanded(
-                                    flex: 1,
-                                    child: ResumeOrdersWidget(
-                                      lineasComandas: reordering(resumeList),
-                                      socket: widget.socket,
-                                    ))
-                                : Container(),
-                          ],
-                        ),)
-                      : WaitingScreen(),
-                  Positioned(bottom: 0, child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: bottomNavBar(context)))
-                ],
-              );
+      children: [
+        ordersList!.isNotEmpty
+            ? Container(
+                margin: EdgeInsets.only(bottom: margen),
+                child: Row(
+                  children: [
+                    Expanded(flex: 3, child: responsiveOrder()),
+                    showResumen
+                        ? Expanded(
+                            flex: 1,
+                            child: ResumeOrdersWidget(
+                              lineasComandas: reordering(resumeList),
+                              socket: widget.socket,
+                            ))
+                        : Container(),
+                  ],
+                ),
+              )
+            : WaitingScreen(),
+        Positioned(
+            bottom: 0,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: bottomNavBar(context)))
+      ],
+    );
   }
 
   //Widget de error de evento errorNotifyOrden
@@ -374,7 +369,7 @@ class _OrdersListState extends State<OrdersList> {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       //Al usar GriwView, debido a que dependiendo del tamaño de la pantalla los items
-      //cambian su tamaño, para mayor uniformidad se creó esta serie de  condicionales 
+      //cambian su tamaño, para mayor uniformidad se creó esta serie de  condicionales
       var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
         responsiveCrossAxisCount = 5;
@@ -404,7 +399,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
-
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
     return LayoutBuilder(
@@ -702,29 +696,27 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () async {
-              // ------------------------
-              
-
-              enterFullScreen(FullScreenMode.EMERSIVE_STICKY);
-
-              /*
-              onPressed: () async {
-                exitFullScreen();
-              }
-              */
-
-
-
-              // ------------------------
-            },
-            child: CustomIcons.fullscreen,
-            style: Styles.btnActionStyle,
-          )
+          onPressed: () {
+            //FUNCIONA PERFECTAMENTE EL CAMBIO A PANTALLA COMPLETA
+            //Pero no se puede utilizar de momento porque el import html da problemas con android
+            //import 'dart:html';
+          /*
+          document.documentElement!.requestFullscreen();
+          document.exitFullscreen();
+          */
+        },
+        //TODO: averiguar cómo cambiar el ícono dependiendo del cambio de pantalla
+        //CustomIcons.medScreen
+        child: CustomIcons.fullscreen,
+        style: Styles.btnActionStyle,
+      )
         ],
       ),
     );
   }
+
+  
+
 
   //Abre el primer dialogo para la selección de operario
   dialogoOperario() {
