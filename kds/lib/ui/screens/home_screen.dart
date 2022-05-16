@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kds/models/status/config.dart';
-import 'package:kds/repository/impl_repo/config_repository.dart';
-
 import 'package:kds/ui/widgets/orders_list.dart';
 
 import 'package:kds/utils/websocket_events.dart';

@@ -31,7 +31,6 @@ import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 //import 'dart:html';
-import 'package:fullscreen/fullscreen.dart';
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -91,8 +90,7 @@ class _OrdersListState extends State<OrdersList> {
   doBellRing() async {
     await player.setAudioSource(
         AudioSource.uri(Uri.parse("asset:///assets/sounds/bell_ring.mp3")),
-        initialPosition: Duration.zero,
-        preload: true);
+        initialPosition: Duration.zero);
 
     await player.play();
   }
@@ -561,7 +559,7 @@ class _OrdersListState extends State<OrdersList> {
         ),
         Text(
           //'$numOrders'
-          "${ordersList!.length}",
+          "${ordersList!.where((element) => element.camEstado != "M").length}",
           style: Styles.textContadores,
         ),
         Text(
@@ -694,6 +692,8 @@ class _OrdersListState extends State<OrdersList> {
           ),
           ElevatedButton(
           onPressed: () {
+
+            
             //FUNCIONA PERFECTAMENTE EL CAMBIO A PANTALLA COMPLETA
             //Pero no se puede utilizar de momento porque el import html da problemas con android
             //import 'dart:html';
