@@ -30,6 +30,8 @@ import 'package:kds/utils/constants.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+//import 'dart:html';
+import 'package:fullscreen/fullscreen.dart';
 
 class OrdersList extends StatefulWidget {
   OrdersList({Key? key, this.socket, required this.config}) : super(key: key);
@@ -57,6 +59,8 @@ class _OrdersListState extends State<OrdersList> {
   List<Order>? mensajes = [];
   Order? selectedOrder;
   ResponseTurno? responseTurno;
+
+  bool activeB = false;
 
   final player = AudioPlayer(androidApplyAudioAttributes: true);
 
@@ -256,34 +260,50 @@ class _OrdersListState extends State<OrdersList> {
 
               resumeList = _refillResumeList(ordersList!);
 
-              return Stack(
-                children: [
-                  ordersList!.isNotEmpty
-                      ? Row(
-                          children: [
-                            Expanded(flex: 3, child: responsiveOrder()),
-                            showResumen
-                                ? Expanded(
-                                    flex: 1,
-                                    child: ResumeOrdersWidget(
-                                      lineasComandas: reordering(resumeList),
-                                      socket: widget.socket,
-                                    ))
-                                : Container(),
-                          ],
-                        )
-                      : WaitingScreen(),
-                  Positioned(bottom: 0, child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: bottomNavBar(context)))
-                ],
-              );
+              return LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                if (constraints.maxWidth > 1350) {
+                  return screen(130);
+                } else if (constraints.maxWidth > 1000) {
+                  return screen(250);
+                } else {
+                  return screen(390);
+                }
+              });
             } else {
               return WaitingScreen();
             }
           }),
-      //Barra de navegación de abajo
-      // bottomNavigationBar: bottomNavBar(context),
+    );
+  }
+
+  Widget screen(double margen) {
+    return Stack(
+      children: [
+        ordersList!.isNotEmpty
+            ? Container(
+                margin: EdgeInsets.only(bottom: margen),
+                child: Row(
+                  children: [
+                    Expanded(flex: 3, child: responsiveOrder()),
+                    showResumen
+                        ? Expanded(
+                            flex: 1,
+                            child: ResumeOrdersWidget(
+                              lineasComandas: reordering(resumeList),
+                              socket: widget.socket,
+                            ))
+                        : Container(),
+                  ],
+                ),
+              )
+            : WaitingScreen(),
+        Positioned(
+            bottom: 0,
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: bottomNavBar(context)))
+      ],
     );
   }
 
@@ -345,12 +365,14 @@ class _OrdersListState extends State<OrdersList> {
   Widget responsiveOrder() {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+      //Al usar GriwView, debido a que dependiendo del tamaño de la pantalla los items
+      //cambian su tamaño, para mayor uniformidad se creó esta serie de  condicionales
       var responsiveCrossAxisCount = 6;
       if (constraints.minWidth > 1700) {
-        responsiveCrossAxisCount = 6;
+        responsiveCrossAxisCount = 5;
       } else if (constraints.minWidth > 1500) {
         responsiveCrossAxisCount = 5;
-      } else if (constraints.minWidth > 1000) {
+      } else if (constraints.minWidth > 1300) {
         responsiveCrossAxisCount = 4;
       } else if (constraints.minWidth > 900) {
         responsiveCrossAxisCount = 3;
@@ -374,7 +396,6 @@ class _OrdersListState extends State<OrdersList> {
 
   //Imprime la barra de navegación
   Widget bottomNavBar(BuildContext context) {
-
     double responsiveWidth = MediaQuery.of(context).size.width / 40;
 
     return LayoutBuilder(
@@ -672,14 +693,27 @@ class _OrdersListState extends State<OrdersList> {
             style: Styles.btnActionStyle,
           ),
           ElevatedButton(
-            onPressed: () {},
-            child: CustomIcons.fullscreen,
-            style: Styles.btnActionStyle,
-          )
+          onPressed: () {
+            //FUNCIONA PERFECTAMENTE EL CAMBIO A PANTALLA COMPLETA
+            //Pero no se puede utilizar de momento porque el import html da problemas con android
+            //import 'dart:html';
+          /*
+          document.documentElement!.requestFullscreen();
+          document.exitFullscreen();
+          */
+        },
+        //TODO: averiguar cómo cambiar el ícono dependiendo del cambio de pantalla
+        //CustomIcons.medScreen
+        child: CustomIcons.fullscreen,
+        style: Styles.btnActionStyle,
+      )
         ],
       ),
     );
   }
+
+  
+
 
   //Abre el primer dialogo para la selección de operario
   dialogoOperario() {
