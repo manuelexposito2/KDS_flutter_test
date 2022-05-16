@@ -36,7 +36,8 @@ class _LandingScreenState extends State<LandingScreen> {
             url,
             OptionBuilder()
                 .setTransports(['websocket'])
-                .disableAutoConnect()
+                //.disableAutoConnect()
+                .enableAutoConnect()
                 .build());
 
         socket.onConnect((_) {
@@ -54,9 +55,9 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           });
         });
-        socket.connect();
+       // socket.connect();
 
-        socket.onDisconnect((_) => print('disconnect'));
+      //  socket.onDisconnect((_) => print('disconnect'));
       },
     );
   }

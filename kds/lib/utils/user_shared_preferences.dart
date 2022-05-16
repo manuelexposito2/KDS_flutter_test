@@ -27,18 +27,18 @@ class UserSharedPreferences {
   }
 
 //Para el temporizador de los detalles de las comandas
-  static Future<void> setDetailTimer(String idDetail, String timer) async {
+  static Future<void> setDetailTimer(String idDetail, int seconds) async {
     _prefs = await SharedPreferences.getInstance();
 
-    await _prefs.setString("timer_$idDetail", timer);
+    await _prefs.setInt("timer_$idDetail", seconds);
   }
 
-  static Future<String> getDetailTimer(String idDetail) async {
+  static Future<int> getDetailTimer(String idDetail) async {
     _prefs = await SharedPreferences.getInstance();
 
-    final getTime = _prefs.getString("timer_$idDetail");
+    final getTime = _prefs.getInt("timer_$idDetail");
 
-    return getTime ?? '00:00:00';
+    return getTime ?? 0;
   }
 
   static Future<void> removeDetailTimer(String idDetail) async {
@@ -69,24 +69,6 @@ class UserSharedPreferences {
     _prefs.remove("lastDetailSelected");
   }
 
-//************************************************ 
 
-static Future <int> getNumOrders() async {
-  _prefs = await SharedPreferences.getInstance();
-  final numOrders = _prefs.getInt("numOrders");
-  return numOrders ?? 0;
-}
-
-static Future<void> setNumOrders(int num) async{
-  _prefs = await SharedPreferences.getInstance();
-  
-  _prefs.setInt("numOrders", num);
-}
-
-static Future<void> removeNumOrders() async {
-  _prefs = await SharedPreferences.getInstance();
-
-  _prefs.remove("numOrders");
-}
   
 }
