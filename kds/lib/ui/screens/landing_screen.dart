@@ -14,6 +14,11 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController urlController = TextEditingController();
+  bool showUrlForm = false;
+  String? rutaActual;
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -30,42 +35,126 @@ class _LandingScreenState extends State<LandingScreen> {
 
     //TODO: Quedaría gestionar los errores y una mejor pantalla de carga.
     UserSharedPreferences.removeResumeCall();
-    ConfigRepository.getUrlKDS().then(
-      (url) {
-        Socket socket = io(
-            url,
-            OptionBuilder()
-                .setTransports(['websocket'])
-                //.disableAutoConnect()
-                .enableAutoConnect()
-                .build());
 
-        socket.onConnect((_) {
-          print("Connected");
+    try {
+      ConfigRepository.getUrlKDS().then(
+        (url) {
+          rutaActual = url;
+          Socket socket = io(
+              url,
+              OptionBuilder()
+                  .setTransports(['websocket'])
+                  //.disableAutoConnect()
+                  .enableAutoConnect()
+                  .build());
 
-          ConfigRepository.readConfig().then((config) {
-            print(config.toJson().toString());
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute<void>(
-                  builder: (BuildContext context) => HomeScreen(
-                        socket: socket,
-                        config: config,
-                      )),
-            );
+          socket.onConnect((_) {
+            print("Connected");
+
+            ConfigRepository.readConfig().then((config) {
+              print(config.toJson().toString());
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => HomeScreen(
+                          socket: socket,
+                          config: config,
+                        )),
+              );
+            });
           });
-        });
-       // socket.connect();
-
-      //  socket.onDisconnect((_) => print('disconnect'));
-      },
-    );
+        },
+      );
+    } catch (e) {
+      setState(() {
+        showUrlForm = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 5), () {
+      setState(() {
+        showUrlForm = true;
+      });
+    });
+    //TODO: Dar la opción a reintroducir la URL desde aquí.
     return Center(
-      child: CircularProgressIndicator(),
+      child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: showUrlForm
+              ? _formUrl()
+              : Center(child: CircularProgressIndicator())),
     );
+  }
+
+  _formUrl() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Parece que hay un problema con la ruta. \n La ruta actual es: $rutaActual",
+              style: TextStyle(fontSize: 25.0),
+            ),
+            SizedBox(
+              width: 470,
+              height: 200,
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: "http://192.168.1.43:82"
+                        ),
+                        controller: urlController,
+                        validator: (value) {
+                          print(value);
+                          if (value!.isEmpty) {
+                            return "La URL no es válida";
+                          }
+                          return null;
+                        },
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _submitForm(context);
+                                Navigator.of(context).pop();
+                                _askForManuallyRestart(context);
+                              }
+                            },
+                            child: Text("Cambiar URL")),
+                      )
+                    ],
+                  )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _submitForm(BuildContext context) {
+    ConfigRepository.writeNewUrl(urlController.text);
+  }
+
+  _askForManuallyRestart(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Todo listo."),
+            content: Text("Reinicia el programa para conectarte al servidor."),
+          );
+        });
   }
 }
