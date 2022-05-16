@@ -100,39 +100,14 @@ class _DetailCardState extends State<DetailCard> {
             primary: Color.fromARGB(255, 87, 87, 87),
           ),
           onPressed: () {
-            //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
-
-            //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
-            if (!widget.details.demEstado!.contains("M") &&
-                !widget.config.comandaCompleta!.contains("N")) {
-              DetailDto newStatus = DetailDto(
-                  idOrder: order.camId.toString(),
-                  idDetail: details.demId.toString(),
-                  status: _toggleStateButton(details.demEstado!));
-
-              statusDetailRepository.statusDetail(newStatus).whenComplete(() {
-                if (widget.config.mostrarUltimoTiempo!.contains("S")) {
-                  
-                  if (widget.config.soloUltimoPlato != "N" &&
-                      newStatus.status == "T") {
-                    UserSharedPreferences.removeLastDetailSelected();
-                    UserSharedPreferences.setLastDetailSelected(
-                        widget.details.demId.toString());
-                  }
-
-                  if (newStatus.status == "T") {
-                    UserSharedPreferences.setDetailTimer(
-                        newStatus.idDetail!, 0);
-                    UserSharedPreferences.removeDetailTimer(
-                        newStatus.idDetail.toString());
-                  }
-                }
-
-                widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
-              });
+            if (widget.config.modificarPeso!.contains("S") &&
+                details.demPedirPeso == 1 &&
+                details.demEstado == "E") {
+              Navigator.of(context).restorablePush(_dialogBuilder);
+              //_dialogBuilder
+            } else {
+              _modifyDetail(order, details);
             }
-
-            //TODO: GESTIONAR LAS CONDICIONES DE SOLO_ULTIMO_PLATO.
           },
           child: ListTile(
             title: Wrap(
@@ -176,12 +151,53 @@ class _DetailCardState extends State<DetailCard> {
     );
   }
 
+  static Route<Object?> _dialogBuilder(
+      BuildContext context, Object? arguments) {
+    return DialogRoute<void>(
+      context: context,
+      builder: (BuildContext context) =>
+           AlertDialog(title: Text('Material Alert!')),
+    );
+  }
+
+  _modifyDetail(Order order, Details details) {
+    //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
+
+    //Las funciones solo existiran si la comanda no es un mensaje (M) o si la comanda completa está desactivada
+
+    if (!widget.details.demEstado!.contains("M") &&
+        !widget.config.comandaCompleta!.contains("N")) {
+      DetailDto newStatus = DetailDto(
+          idOrder: order.camId.toString(),
+          idDetail: details.demId.toString(),
+          status: _toggleStateButton(details.demEstado!));
+
+      statusDetailRepository.statusDetail(newStatus).whenComplete(() {
+        if (widget.config.mostrarUltimoTiempo!.contains("S")) {
+          if (widget.config.soloUltimoPlato != "N" && newStatus.status == "T") {
+            UserSharedPreferences.removeLastDetailSelected();
+            UserSharedPreferences.setLastDetailSelected(
+                widget.details.demId.toString());
+          }
+
+          if (newStatus.status == "T") {
+            UserSharedPreferences.setDetailTimer(newStatus.idDetail!, 0);
+            UserSharedPreferences.removeDetailTimer(
+                newStatus.idDetail.toString());
+          }
+        }
+
+        widget.socket!.emit(WebSocketEvents.modifyDetail, newStatus);
+      });
+    }
+  }
+
   //Cambia el estado de los pedidos de la comanda
   String _toggleStateButton(String status) {
     switch (status) {
       case "E":
         return "P";
-        
+
       case "P":
         if (widget.config.reparto!.contains("S")) {
           return "R";
