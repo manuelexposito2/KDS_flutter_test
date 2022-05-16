@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kds/main.dart';
+import 'package:kds/repository/impl_repo/config_repository.dart';
+import 'package:kds/ui/screens/landing_screen.dart';
 import 'package:kds/ui/styles/custom_icons.dart';
 import 'package:kds/utils/constants.dart';
 
@@ -39,19 +42,35 @@ class _TimerWidgetState extends State<TimerWidget> {
   Widget build(BuildContext context) {
     //Widget encargado de imprimir la hora actual
     return SizedBox(
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(
-            color: Colors.white,
-          ),
-          children: [
-            TextSpan(text: version),
-            WidgetSpan(
-              child: CustomIcons.clock(Colors.white, 28.0),
+      child: Row(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                ConfigRepository.writeNewUrl('http://192.168.1.42:82')
+                    .whenComplete(() {
+                  Navigator.pushReplacement<void, void>(
+                    context,
+                    MaterialPageRoute<void>(
+                        builder: (BuildContext context) => LandingScreen()),
+                  );
+                });
+              },
+              child: Text("Prueba")),
+          RichText(
+            text: TextSpan(
+              style: TextStyle(
+                color: Colors.white,
+              ),
+              children: [
+                TextSpan(text: version),
+                WidgetSpan(
+                  child: CustomIcons.clock(Colors.white, 28.0),
+                ),
+                TextSpan(text: _timeString, style: TextStyle(fontSize: 30.0)),
+              ],
             ),
-            TextSpan(text: _timeString, style: TextStyle(fontSize: 30.0)),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
