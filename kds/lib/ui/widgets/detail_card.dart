@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/cambiar_peso_dto.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
@@ -47,7 +48,6 @@ class _DetailCardState extends State<DetailCard> {
   var selectedDetail = "";
   var lastTerminatedDetail = "";
   late final int decimalRange;
-
   @override
   void setState(fn) {
     if (mounted) {
@@ -164,6 +164,7 @@ class _DetailCardState extends State<DetailCard> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            key: UniqueKey(),
             title: Text('Confirme peso', style: Styles.textBoldInfo),
             content: _pesoForm(),
             actions: [
@@ -189,7 +190,24 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      pesoController.clear();
+                      //CAMBIAR PESO PETICION
+                      //TODO:
+                      //Solucionar esta excepción cuando se manda el evento vacío.
+                      /*
+                      The following FormatException was thrown while handling a gesture:
+Invalid number (at character 1)
+
+                      */
+                      if (int.parse(
+                              pesoController.text.replaceFirst(",", "")) ==
+                          0) {
+                        Navigator.of(context).pop();
+                        _showPesoCeroDialog(context);
+                      } else {
+                        _cambiarPeso(context);
+                        Navigator.of(context).pop();
+                        pesoController.clear();
+                      }
                     });
                   },
                   child: Container(
@@ -209,8 +227,26 @@ class _DetailCardState extends State<DetailCard> {
         });
   }
 
-  Widget _pesoForm() {
+  _cambiarPeso(BuildContext context) {
+    print(widget.details.demSubpro!
+        .replaceFirst("Peso: ", "")
+        .replaceFirst("Kg", ""));
+    statusDetailRepository
+        .cambiarPeso(CambiarPesoDto(
+            idOrder: widget.order.camId.toString(),
+            idDetail: widget.details.demId.toString(),
+            pesoAnterior: widget.details.demSubpro!
+                .replaceFirst("Peso: ", "")
+                .replaceFirst("Kg", ""),
+            nuevoPeso: pesoController.text.isEmpty
+                ? widget.details.demSubpro!
+                    .replaceFirst("Peso: ", "")
+                    .replaceFirst("Kg", "")
+                : pesoController.text.replaceAll(",", ".")))
+        .whenComplete(() => _modifyDetail(widget.order, widget.details));
+  }
 
+  Widget _pesoForm() {
     var hint = widget.details.demSubpro
         ?.replaceAll("Peso:", "")
         .replaceAll("Kg", "")
@@ -232,21 +268,13 @@ class _DetailCardState extends State<DetailCard> {
                   border: Border.all(
                       color: Color.fromARGB(255, 54, 54, 54), width: 2)),
               child: TextFormField(
-                validator: (value) {
-                  /*
-                      if (value == null || value.isEmpty) {
-                        return "Debe introducir un codigo de operario";
-                      }
-                      return null;
-                      */
-                },
                 controller: pesoController,
                 style: const TextStyle(fontSize: 35),
                 decoration: InputDecoration(
                     hintText: hint,
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white))),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                //keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [],
                 enabled: false,
               ),
@@ -375,7 +403,8 @@ class _DetailCardState extends State<DetailCard> {
                   style: Styles.buttonPeso),
               ElevatedButton(
                   onPressed: () {
-                    pesoController.text.startsWith("0") ||
+                    pesoController.text.startsWith("0") &&
+                                !pesoController.text.contains(",") ||
                             !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
                             pesoController.text.contains(",") &&
@@ -396,6 +425,33 @@ class _DetailCardState extends State<DetailCard> {
         ],
       ),
     );
+  }
+
+  _showPesoCeroDialog(BuildContext context) {
+    showDialog(
+        //barrierColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            key: UniqueKey(),
+            elevation: 0.1,
+            title: Text("Va a marcar el peso a 0.00Kg. ¿Confirmar?"),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _dialogModificarPeso(context);
+                  },
+                  child: Text("No")),
+              ElevatedButton(
+                  onPressed: () {
+                    _cambiarPeso(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Sí"))
+            ],
+          );
+        });
   }
 
   _modifyDetail(Order order, Details details) {
