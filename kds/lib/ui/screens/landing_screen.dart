@@ -6,7 +6,7 @@ import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
 
 import 'package:kds/utils/user_shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:socket_io_client/socket_io_client.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _LandingScreenState extends State<LandingScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController urlController = TextEditingController();
   bool showUrlForm = false;
-  String? rutaActual = 'http://192.168.1.42:82';
+  String? rutaActual;
 
   @override
   void setState(fn) {
@@ -31,8 +31,6 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   void initState() {
-   
-
     super.initState();
 
     //Primero buscamos la UrlKDS del fichero numierKDS.ini, y cuando la tengamos, hacemos la conexión
@@ -42,30 +40,34 @@ class _LandingScreenState extends State<LandingScreen> {
     UserSharedPreferences.removeResumeCall();
 
     try {
-      rutaActual = 'http://192.168.1.42:82';
-      Socket socket = io(
-          'http://192.168.1.42:82',
-          OptionBuilder()
-              .setTransports(['websocket'])
-              //.disableAutoConnect()
-              .enableAutoConnect()
-              .build());
+      ConfigRepository.getUrlKDS().then(
+        (url) {
+          rutaActual = url;
+          Socket socket = io(
+              rutaActual,
+              OptionBuilder()
+                  .setTransports(['websocket'])
+                  //.disableAutoConnect()
+                  .enableAutoConnect()
+                  .build());
 
-      socket.onConnect((_) {
-        print("Connected");
+          socket.onConnect((_) {
+            print("Connected");
 
-        ConfigRepository.readConfig().then((config) {
-          print(config.toJson().toString());
-          Navigator.pushReplacement<void, void>(
-            context,
-            MaterialPageRoute<void>(
-                builder: (BuildContext context) => HomeScreen(
-                      socket: socket,
-                      config: config,
-                    )),
-          );
-        });
-      });
+            ConfigRepository.readConfig().then((config) {
+              print(config.toJson().toString());
+              Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (BuildContext context) => HomeScreen(
+                          socket: socket,
+                          config: config,
+                        )),
+              );
+            });
+          });
+        },
+      );
     } catch (e) {
       setState(() {
         showUrlForm = true;
@@ -151,7 +153,7 @@ class _LandingScreenState extends State<LandingScreen> {
       rutaActual = urlController.text;
     });
 
-    //return ConfigRepository.writeNewUrl(urlController.text);
+    return ConfigRepository.writeNewUrl(urlController.text);
   }
 
   _askForManuallyRestart(BuildContext context) {

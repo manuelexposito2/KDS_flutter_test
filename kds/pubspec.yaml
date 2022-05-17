@@ -52,7 +52,10 @@ dependencies:
   fullscreen: ^1.0.3
   flutter_grid_button: ^2.0.0
 
+
   path_provider: ^2.0.10
+
+  dhttpd: ^4.0.1
 
 dev_dependencies:
   flutter_test:

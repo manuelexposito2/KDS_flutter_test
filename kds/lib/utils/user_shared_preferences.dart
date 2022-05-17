@@ -52,23 +52,42 @@ class UserSharedPreferences {
   static Future<String> getLastDetailSelected() async {
     _prefs = await SharedPreferences.getInstance();
 
-  final lastSelected = _prefs.getString("lastDetailSelected");
+    final lastSelected = _prefs.getString("lastDetailSelected");
 
     return lastSelected ?? '';
-
   }
+
   static Future<void> setLastDetailSelected(String idDetail) async {
     _prefs = await SharedPreferences.getInstance();
 
     await _prefs.setString("lastDetailSelected", idDetail);
   }
 
-    static Future<void> removeLastDetailSelected() async {
+  static Future<void> removeLastDetailSelected() async {
     _prefs = await SharedPreferences.getInstance();
 
     _prefs.remove("lastDetailSelected");
   }
 
+  //Buscar la URL del KDS para Web
 
-  
+  static Future<String?> getUrlKds() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    final urlKds = _prefs.getString("urlKDS");
+
+    return urlKds;
+  }
+
+  static Future<void> setUrlKds(String newUrl) async {
+    _prefs = await SharedPreferences.getInstance();
+
+    await _prefs.setString("urlKDS", newUrl);
+  }
+
+  static Future<void> removeUrlKds() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    _prefs.remove("urlKDS");
+  }
 }
