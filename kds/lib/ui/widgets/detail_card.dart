@@ -210,7 +210,6 @@ class _DetailCardState extends State<DetailCard> {
   }
 
   Widget _pesoForm() {
-    var contadorComa = 0;
 
     var hint = widget.details.demSubpro
         ?.replaceAll("Peso:", "")
