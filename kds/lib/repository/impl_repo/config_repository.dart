@@ -67,13 +67,14 @@ class ConfigRepository {
     final String url = "$urlBase/readConfig";
 
     final request = await http.get(Uri.parse(url));
-
+    
     if (request.statusCode == 200) {
       //debugPrint(Config.fromJson(jsonDecode(request.body)).toJson().toString());
       return Config.fromJson(jsonDecode(request.body));
     } else {
       throw Exception("No pudo leerse el archivo numierKDS.ini");
     }
+    
 
     // throw UnimplementedError();
   }

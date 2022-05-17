@@ -22,14 +22,14 @@ class ReadOptionsDto {
   
   ReadOptionsDto.fromJson(Map<String, dynamic> json){
     idOrder = json['idOrder'];
-    opcion1 = json['opcion1'];
-    opcion2 = json['opcion2'];
-    opcion3 = json['opcion3'];
-    opcion4 = json['opcion4'];
-    opcion5 = json['opcion5'];
-    opcion6 = json['opcion6'];
-    opcion7 = json['opcion7'];
-    opcion8 = json['opcion8'];
+    opcion1 = json['opcion1'] ?? 0 ;
+    opcion2 = json['opcion2'] ?? 0 ;
+    opcion3 = json['opcion3'] ?? 0 ;
+    opcion4 = json['opcion4'] ?? 0 ;
+    opcion5 = json['opcion5'] ?? 0 ;
+    opcion6 = json['opcion6'] ?? 0 ;
+    opcion7 = json['opcion7'] ?? 0 ;
+    opcion8 = json['opcion8'] ?? 0 ;
   }
 
   Map<String, dynamic> toJson() {

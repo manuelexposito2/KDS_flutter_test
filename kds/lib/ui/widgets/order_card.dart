@@ -88,7 +88,7 @@ class _ComandaCardState extends State<OrderCard> {
     futureOptions = optionsRepository
         .readOpciones(widget.order!.camId.toString())
         .then((value) => currentOptions = value);
-        
+
     _checkAllDetails(widget.order!.camEstado!);
     //Si el estado de la orden o de sus items es "E" seteará el nuevo valor
     if (widget.order!.camEstado == "E" &&
@@ -363,6 +363,7 @@ class _ComandaCardState extends State<OrderCard> {
           if (snapshot.hasData) {
             return optionsImageList(snapshot.data!);
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Text("Demasiadas peticiones. Espere...");
           } else {
             return const CircularProgressIndicator.adaptive();
@@ -395,6 +396,10 @@ class _ComandaCardState extends State<OrderCard> {
               iconSize: 40,
               splashRadius: 0.1,
               onPressed: () {
+                if (currentOptions!.idOrder == null) {
+                  changedJson.update("idOrder", (value) => widget.order!.camId);
+                }
+
                 changedJson.update(
                     "opcion$index",
                     (value) => _getOptionValue(readOptionsDto, index - 1) == 1
@@ -403,6 +408,7 @@ class _ComandaCardState extends State<OrderCard> {
                 setState(() {
                   currentOptions = ReadOptionsDto.fromJson(changedJson);
                 });
+
                 optionsRepository.writeOpciones(currentOptions!);
                 //print(index);
               },
@@ -989,6 +995,12 @@ class _ComandaCardState extends State<OrderCard> {
                 ),
                 value: isChecked,
                 onChanged: (bool? value) {
+
+                  if (currentOptions!.idOrder == null) {
+                    changedJson.update(
+                        "idOrder", (value) => widget.order!.camId);
+                  }
+
                   changedJson.update(
                       "opcion${index + 1}", (value) => isChecked ? 0 : 1);
 
