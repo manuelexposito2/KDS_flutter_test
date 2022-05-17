@@ -13,7 +13,6 @@ import 'package:kds/repository/repository/status_order_repository.dart';
 import 'package:kds/ui/styles/styles.dart';
 import 'package:kds/ui/widgets/detail_timer.dart';
 import 'package:kds/utils/constants.dart';
-import 'package:kds/utils/decimal_checker.dart';
 import 'package:kds/utils/user_shared_preferences.dart';
 import 'package:kds/utils/websocket_events.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -111,7 +110,8 @@ class _DetailCardState extends State<DetailCard> {
             if (widget.config.modificarPeso!.contains("S") &&
                 details.demPedirPeso == 1 &&
                 details.demEstado == "E") {
-              Navigator.of(context).restorablePush(_dialogBuilder);
+              //Navigator.of(context).restorablePush(_dialogBuilder);
+              _dialogModificarPeso(context);
               //_dialogBuilder
             } else {
               _modifyDetail(order, details);
@@ -159,52 +159,54 @@ class _DetailCardState extends State<DetailCard> {
     );
   }
 
-  Route<Object?> _dialogBuilder(BuildContext context, Object? arguments) {
-    return DialogRoute<void>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text('Confirme peso', style: Styles.textBoldInfo),
-        content: _pesoForm(),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  pesoController.clear();
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                width: 300,
-                height: 70,
-                child: Text(
-                  'Cerrar',
-                  textAlign: TextAlign.center,
-                  style: Styles.textButtonCancelar,
-                ),
-              ),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.red))),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  pesoController.clear();
-                });
-              },
-              child: Container(
-                alignment: Alignment.center,
-                width: 300,
-                height: 70,
-                child: Text(
-                  'Confirmar',
-                  textAlign: TextAlign.center,
-                  style: Styles.textButtonCancelar,
-                ),
-              ),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green)))
-        ],
-      ),
-    );
+  _dialogModificarPeso(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirme peso', style: Styles.textBoldInfo),
+            content: _pesoForm(),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      Navigator.of(context).pop();
+                      pesoController.clear();
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 300,
+                    height: 70,
+                    child: Text(
+                      'Cerrar',
+                      textAlign: TextAlign.center,
+                      style: Styles.textButtonCancelar,
+                    ),
+                  ),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red))),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      pesoController.clear();
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 300,
+                    height: 70,
+                    child: Text(
+                      'Confirmar',
+                      textAlign: TextAlign.center,
+                      style: Styles.textButtonCancelar,
+                    ),
+                  ),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green)))
+            ],
+          );
+        });
   }
 
   Widget _pesoForm() {
@@ -216,7 +218,7 @@ class _DetailCardState extends State<DetailCard> {
         .replaceAll(".", ",");
 
     return Container(
-      height: 570,
+      height: 600,
       child: Column(
         children: [
           Divider(),
@@ -257,7 +259,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "7";
                   },
@@ -267,7 +270,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "8";
                   },
@@ -277,7 +281,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "9";
                   },
@@ -291,7 +296,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "4";
                   },
@@ -301,7 +307,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "5";
                   },
@@ -311,7 +318,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "6";
                   },
@@ -325,7 +333,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "1";
                   },
@@ -335,7 +344,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "2";
                   },
@@ -345,7 +355,8 @@ class _DetailCardState extends State<DetailCard> {
                   onPressed: () {
                     !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "3";
                   },
@@ -366,9 +377,10 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     pesoController.text.startsWith("0") ||
-                    !pesoController.text.contains(",") &&
+                            !pesoController.text.contains(",") &&
                                 pesoController.text.length >= 6 ||
-                            pesoController.text.contains(",") && pesoController.text.split(",").last.length > 2
+                            pesoController.text.contains(",") &&
+                                pesoController.text.split(",").last.length > 2
                         ? null
                         : pesoController.text = pesoController.text + "0";
                   },
@@ -386,7 +398,6 @@ class _DetailCardState extends State<DetailCard> {
       ),
     );
   }
-
 
   _modifyDetail(Order order, Details details) {
     //Si el estado no es T ni está activado mostrar último tiempo, no pasará nada.
