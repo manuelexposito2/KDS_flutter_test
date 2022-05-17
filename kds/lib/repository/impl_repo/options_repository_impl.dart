@@ -26,11 +26,20 @@ class OptionsRepositoryImpl implements OptionsRepository {
     if (request.statusCode == 200) {
       return ReadOptionsDto.fromJson(jsonDecode(request.body));
     } else {
-      throw Exception(request.statusCode);
+      return ReadOptionsDto(
+          idOrder: id,
+          opcion1: 0,
+          opcion2: 0,
+          opcion3: 0,
+          opcion4: 0,
+          opcion5: 0,
+          opcion6: 0,
+          opcion7: 0,
+          opcion8: 0);
+      //throw Exception(request.statusCode);
     }
   }
 
-  
   @override
   Future<void> writeOpciones(ReadOptionsDto dto) async {
     String urlKDS = await ConfigRepository.getUrlKDS();
@@ -49,7 +58,6 @@ class OptionsRepositoryImpl implements OptionsRepository {
             opcion7: dto.opcion7,
             opcion8: dto.opcion8));
 
-  
     print(jsonEncode(writeOptions));
     final response = await http.post(Uri.parse(url),
         headers: headers, body: jsonEncode(writeOptions));
@@ -61,4 +69,3 @@ class OptionsRepositoryImpl implements OptionsRepository {
     }
   }
 }
-

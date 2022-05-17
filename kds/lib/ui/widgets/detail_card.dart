@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kds/models/last_orders_response.dart';
+import 'package:kds/models/status/cambiar_peso_dto.dart';
 import 'package:kds/models/status/config.dart';
 import 'package:kds/models/status/detail_dto.dart';
 import 'package:kds/models/status/order_dto.dart';
@@ -189,6 +190,22 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
+                      //CAMBIAR PESO PETICION
+                      statusDetailRepository
+                          .cambiarPeso(CambiarPesoDto(
+                              idOrder: widget.order.camId.toString(),
+                              idDetail: widget.details.demId.toString(),
+                              pesoAnterior: widget.details.demSubpro!
+                                  .replaceAll("Peso: ", "")
+                                  .replaceAll("Kg", ""),
+                              nuevoPeso: pesoController.text.isEmpty
+                                  ? widget.details.demSubpro!
+                                      .replaceAll("Peso: ", "")
+                                      .replaceAll("Kg", "")
+                                  : pesoController.text.replaceAll(",", ".")))
+                          .whenComplete(() =>
+                              _modifyDetail(widget.order, widget.details));
+                      Navigator.of(context).pop();
                       pesoController.clear();
                     });
                   },
@@ -210,7 +227,6 @@ class _DetailCardState extends State<DetailCard> {
   }
 
   Widget _pesoForm() {
-
     var hint = widget.details.demSubpro
         ?.replaceAll("Peso:", "")
         .replaceAll("Kg", "")
@@ -232,21 +248,14 @@ class _DetailCardState extends State<DetailCard> {
                   border: Border.all(
                       color: Color.fromARGB(255, 54, 54, 54), width: 2)),
               child: TextFormField(
-                validator: (value) {
-                  /*
-                      if (value == null || value.isEmpty) {
-                        return "Debe introducir un codigo de operario";
-                      }
-                      return null;
-                      */
-                },
+              
                 controller: pesoController,
                 style: const TextStyle(fontSize: 35),
                 decoration: InputDecoration(
                     hintText: hint,
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white))),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                //keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [],
                 enabled: false,
               ),
