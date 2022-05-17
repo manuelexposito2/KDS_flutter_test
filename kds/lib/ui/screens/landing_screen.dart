@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:kds/repository/impl_repo/config_repository.dart';
 import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
 
 import 'package:kds/utils/user_shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -19,6 +22,7 @@ class _LandingScreenState extends State<LandingScreen> {
   bool showUrlForm = false;
   String? rutaActual;
 
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -26,8 +30,11 @@ class _LandingScreenState extends State<LandingScreen> {
     }
   }
 
+
   @override
   void initState() {
+    getApplicationDocumentsDirectory().then((value) => print(value));
+
     super.initState();
 
     //Primero buscamos la UrlKDS del fichero numierKDS.ini, y cuando la tengamos, hacemos la conexión
@@ -41,7 +48,7 @@ class _LandingScreenState extends State<LandingScreen> {
         (url) {
           rutaActual = url;
           Socket socket = io(
-              url,
+              rutaActual,
               OptionBuilder()
                   .setTransports(['websocket'])
                   //.disableAutoConnect()
@@ -95,12 +102,15 @@ class _LandingScreenState extends State<LandingScreen> {
     return Scaffold(
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Parece que hay un problema con la ruta. \n La ruta actual es: $rutaActual",
-              style: TextStyle(fontSize: 25.0),
-            ),
+            rutaActual == "http://" || rutaActual!.isEmpty
+                ? Text("Conecta la app al servidor.",
+                    style: TextStyle(fontSize: 25.0))
+                : Text(
+                    "Parece que hay un problema con la ruta. \n La ruta actual es: $rutaActual, ¿es correcta?",
+                    style: TextStyle(fontSize: 25.0),
+                  ),
             SizedBox(
               width: 470,
               height: 200,
@@ -110,9 +120,8 @@ class _LandingScreenState extends State<LandingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextFormField(
-                        decoration: InputDecoration(
-                          hintText: "http://192.168.1.43:82"
-                        ),
+                        decoration:
+                            InputDecoration(hintText: "192.168.1.43:82"),
                         controller: urlController,
                         validator: (value) {
                           print(value);
@@ -143,8 +152,12 @@ class _LandingScreenState extends State<LandingScreen> {
     );
   }
 
-  _submitForm(BuildContext context) {
-    ConfigRepository.writeNewUrl(urlController.text);
+  _submitForm(BuildContext context) async {
+    setState(() {
+      rutaActual = urlController.text;
+    });
+
+    return ConfigRepository.writeNewUrl(urlController.text);
   }
 
   _askForManuallyRestart(BuildContext context) {

@@ -228,7 +228,7 @@ class _OrdersListState extends State<OrdersList> {
                 !snapshot.hasData) {
               return WaitingScreen();
             } else if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasError) {
+                snapshot.hasError && !snapshot.hasData) {
               print(ordersList!.length);
               print(snapshot.error);
               return ErrorScreen(

@@ -51,6 +51,8 @@ dependencies:
   responsive_framework: ^0.1.7
   fullscreen: ^1.0.3
 
+  path_provider: ^2.0.10
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

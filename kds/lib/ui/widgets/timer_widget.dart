@@ -60,6 +60,8 @@ class _TimerWidgetState extends State<TimerWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         TextFormField(
+                          decoration:
+                              InputDecoration(hintText: "192.168.1.43:82"),
                           controller: urlController,
                           validator: (value) {
                             print(value);
