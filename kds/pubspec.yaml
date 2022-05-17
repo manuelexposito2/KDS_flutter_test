@@ -50,6 +50,7 @@ dependencies:
   just_audio: ^0.9.21
   responsive_framework: ^0.1.7
   fullscreen: ^1.0.3
+  flutter_grid_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:
