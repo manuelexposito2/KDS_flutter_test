@@ -6,7 +6,7 @@ import 'package:kds/ui/screens/error_screen.dart';
 import 'package:kds/ui/screens/home_screen.dart';
 
 import 'package:kds/utils/user_shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:socket_io_client/socket_io_client.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -22,7 +22,6 @@ class _LandingScreenState extends State<LandingScreen> {
   bool showUrlForm = false;
   String? rutaActual;
 
-
   @override
   void setState(fn) {
     if (mounted) {
@@ -30,11 +29,8 @@ class _LandingScreenState extends State<LandingScreen> {
     }
   }
 
-
   @override
   void initState() {
-    getApplicationDocumentsDirectory().then((value) => print(value));
-
     super.initState();
 
     //Primero buscamos la UrlKDS del fichero numierKDS.ini, y cuando la tengamos, hacemos la conexión
