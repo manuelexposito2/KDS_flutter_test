@@ -109,7 +109,7 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 
   _submitForm(BuildContext context) {
-    ConfigRepository.writeNewUrl(urlController.text);
+    //ConfigRepository.writeNewUrl(urlController.text);
   }
 
   _askForManuallyRestart(BuildContext context) {
