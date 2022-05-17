@@ -77,6 +77,16 @@ class Styles {
     shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.zero)),
   );
+// -------------------------------------
+  static final buttonPeso = ElevatedButton.styleFrom(
+    primary: whiteBtn,
+    minimumSize: Size(260, 120),
+    padding:
+        EdgeInsets.symmetric(vertical: btnPaddingV, horizontal: btnPaddingH),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.zero)),
+  );
+
   static final buttonTodas = ElevatedButton.styleFrom(
     primary: whiteBtn,
     padding:
@@ -162,6 +172,9 @@ class Styles {
 
   static TextStyle get textWarning =>
       GoogleFonts.getFont('Roboto', fontSize: 25, color: Colors.black);
+
+      static TextStyle get textPesoBtn =>
+      GoogleFonts.getFont('Roboto', fontSize: 25, color: Color.fromARGB(255, 44, 44, 44));
 
   static TextStyle get textBoldInfo =>
       GoogleFonts.getFont('Roboto', fontSize: 27, fontWeight: FontWeight.w700);
