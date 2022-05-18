@@ -171,6 +171,7 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
+                      print(pesoController.text);
                       Navigator.of(context).pop();
                       pesoController.clear();
                     });
@@ -190,6 +191,7 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
+                      
                       //CAMBIAR PESO PETICION
                       //TODO:
                       //Solucionar esta excepción cuando se manda el evento vacío.
@@ -198,9 +200,7 @@ class _DetailCardState extends State<DetailCard> {
 Invalid number (at character 1)
 
                       */
-                      if (int.parse(
-                              pesoController.text.replaceFirst(",", "")) ==
-                          0) {
+                      if (int.parse(pesoController.text) == 0) {
                         Navigator.of(context).pop();
                         _showPesoCeroDialog(context);
                       } else {
@@ -228,9 +228,7 @@ Invalid number (at character 1)
   }
 
   _cambiarPeso(BuildContext context) {
-    print(widget.details.demSubpro!
-        .replaceFirst("Peso: ", "")
-        .replaceFirst("Kg", ""));
+    
     statusDetailRepository
         .cambiarPeso(CambiarPesoDto(
             idOrder: widget.order.camId.toString(),
@@ -439,6 +437,7 @@ Invalid number (at character 1)
             actions: [
               ElevatedButton(
                   onPressed: () {
+                    
                     Navigator.pop(context);
                     _dialogModificarPeso(context);
                   },
