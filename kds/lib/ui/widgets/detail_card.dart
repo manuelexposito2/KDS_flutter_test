@@ -171,7 +171,6 @@ class _DetailCardState extends State<DetailCard> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      print(pesoController.text);
                       Navigator.of(context).pop();
                       pesoController.clear();
                     });
@@ -190,19 +189,24 @@ class _DetailCardState extends State<DetailCard> {
                       backgroundColor: MaterialStateProperty.all(Colors.red))),
               ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      
-                      //CAMBIAR PESO PETICION
-                      //TODO:
-                      //Solucionar esta excepción cuando se manda el evento vacío.
-                      /*
-                      The following FormatException was thrown while handling a gesture:
-Invalid number (at character 1)
+                    String lastValue = widget.details.demSubpro!
+                        .replaceFirst("Peso: ", "")
+                        .replaceFirst("Kg", "");
 
-                      */
-                      if (int.parse(pesoController.text) == 0) {
+                    setState(() {
+                      if (pesoController.text.contains(",")) {
+                        pesoController.text =
+                            pesoController.text.replaceAll(",", ".");
+                      }
+
+                      if (pesoController.text.isNotEmpty &&
+                              double.parse(pesoController.text) == 0 ||
+                          double.parse(lastValue) == 0) {
                         Navigator.of(context).pop();
                         _showPesoCeroDialog(context);
+                      } else if (pesoController.text.isEmpty) {
+                        _modifyDetail(widget.order, widget.details);
+                        Navigator.of(context).pop();
                       } else {
                         _cambiarPeso(context);
                         Navigator.of(context).pop();
@@ -228,19 +232,16 @@ Invalid number (at character 1)
   }
 
   _cambiarPeso(BuildContext context) {
-    
+    print(pesoController.text.replaceFirst(",", "."));
+    String lastValue = widget.details.demSubpro!
+        .replaceFirst("Peso: ", "")
+        .replaceFirst("Kg", "");
     statusDetailRepository
         .cambiarPeso(CambiarPesoDto(
             idOrder: widget.order.camId.toString(),
             idDetail: widget.details.demId.toString(),
-            pesoAnterior: widget.details.demSubpro!
-                .replaceFirst("Peso: ", "")
-                .replaceFirst("Kg", ""),
-            nuevoPeso: pesoController.text.isEmpty
-                ? widget.details.demSubpro!
-                    .replaceFirst("Peso: ", "")
-                    .replaceFirst("Kg", "")
-                : pesoController.text.replaceAll(",", ".")))
+            pesoAnterior: lastValue,
+            nuevoPeso: pesoController.text.replaceFirst(",", ".")))
         .whenComplete(() => _modifyDetail(widget.order, widget.details));
   }
 
@@ -437,7 +438,6 @@ Invalid number (at character 1)
             actions: [
               ElevatedButton(
                   onPressed: () {
-                    
                     Navigator.pop(context);
                     _dialogModificarPeso(context);
                   },
